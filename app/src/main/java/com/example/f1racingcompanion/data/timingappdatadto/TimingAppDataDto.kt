@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.di.data.timingappdatadto
+package com.example.f1racingcompanion.data.timingappdatadto
 
 data class TimingAppDataDto(
     val time: String,

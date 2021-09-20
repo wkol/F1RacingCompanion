@@ -1,12 +1,13 @@
-package com.example.f1racingcompanion.di.data
+package com.example.f1racingcompanion.api
 
-import com.example.f1racingcompanion.di.data.negotiateDto.NegotiateDto
+import com.example.f1racingcompanion.data.StreamingStatusDto
+import com.example.f1racingcompanion.data.negotiateDto.NegotiateDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface Formula1LiveTimingApi {
     @GET("negotiate")
-    suspend fun negeotiate(
+    suspend fun negotiate(
         @Query("connectionData", encoded = false) hubName: String,
         @Query("clientProtocol", encoded = false) clientProtocol: String = "1.5"
         ): NegotiateDto

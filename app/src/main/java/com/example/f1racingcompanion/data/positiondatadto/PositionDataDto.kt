@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.di.data.positiondatadto
+package com.example.f1racingcompanion.data.positiondatadto
 
 data class PositionDataDto(
 

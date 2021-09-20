@@ -1,10 +1,10 @@
 package com.example.f1racingcompanion.utils
 
-import com.example.f1racingcompanion.di.data.Formula1LiveTimingApi
+import com.example.f1racingcompanion.api.Formula1LiveTimingApi
 
 object LiveTimingUtils {
     suspend fun getConnectionToken(api: Formula1LiveTimingApi, hubData: String): String {
-        val response = api.negeotiate(hubData)
+        val response = api.negotiate(hubData)
         return response.connectionToken
     }
     suspend fun checkForActiveSession(api: Formula1LiveTimingApi): Boolean? {

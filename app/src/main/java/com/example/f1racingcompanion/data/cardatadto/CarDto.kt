@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.di.data.cardatadto
+package com.example.f1racingcompanion.data.cardatadto
 
 import com.google.gson.annotations.SerializedName
 

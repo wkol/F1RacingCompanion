@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.di.data
+package com.example.f1racingcompanion.data
 
 
 import com.google.gson.annotations.SerializedName
