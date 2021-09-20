@@ -60,6 +60,12 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.0"
 
+    // Dagger(Hilt) packages
+    implementation "com.google.dagger:hilt-android:$dagger_version"
+    annotationProcessor "com.google.dagger:hilt-compiler:$dagger_version"
+    testImplementation "com.google.dagger:hilt-android-testing:$dagger_version"
+    testAnnotationProcessor "com.google.dagger:hilt-compiler:$dagger_version"
+
     // Retrofit packages
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.google.code.gson:gson:$gson_version"
