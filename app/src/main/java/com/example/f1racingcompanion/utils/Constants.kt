@@ -9,6 +9,18 @@ object Constants {
         "5" to "Brake",
         "45" to "DRS"
     )
-    val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/negotiate"
+    val hubName = "Streaming"
+
+    val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
+
+
+    val subscribedStreams = listOf(
+        "Heartbeat", "CarData.z", "Position.z",
+        "ExtrapolatedClock", "TopThree", "RcmSeries",
+        "TimingStats", "TimingAppData",
+        "WeatherData", "TrackStatus", "DriverList",
+        "RaceControlMessages", "SessionInfo",
+        "SessionData", "LapCount", "TimingData"
+    )
 }
 
