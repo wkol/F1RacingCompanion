@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.api
 
+import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.StreamingStatusDto
 import com.example.f1racingcompanion.data.negotiateDto.NegotiateDto
 import com.example.f1racingcompanion.utils.Constants
@@ -10,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface Formula1LiveTimingApi {
+interface Formula1Service {
     @GET("negotiate")
     suspend fun negotiate(
         @Query("connectionData", encoded = false) hubName: String,
@@ -22,8 +23,15 @@ interface Formula1LiveTimingApi {
 
     companion object {
 
-        fun create(): Formula1LiveTimingApi {
-            val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
+        fun create(): Formula1Service {
+            val logger = HttpLoggingInterceptor().apply {
+                level = if(BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BASIC
+                }
+                else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
+            }
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(logger)
@@ -34,7 +42,7 @@ interface Formula1LiveTimingApi {
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(Formula1LiveTimingApi::class.java)
+                .create(Formula1Service::class.java)
         }
     }
 }

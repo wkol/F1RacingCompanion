@@ -1,6 +1,6 @@
 package com.example.f1racingcompanion.data
 
-import com.example.f1racingcompanion.api.Formula1LiveTimingApi
+import com.example.f1racingcompanion.api.Formula1Service
 import com.example.f1racingcompanion.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,8 +12,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Formula1LiveTimingRepository @Inject constructor(
-    private val api: Formula1LiveTimingApi
+class Formula1Repository @Inject constructor(
+    private val api: Formula1Service
 ) {
 
     fun getConnectionToken(hubData: String): Flow<Result<String>> = flow {

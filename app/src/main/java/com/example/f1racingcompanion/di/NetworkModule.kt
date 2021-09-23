@@ -1,6 +1,7 @@
 package com.example.f1racingcompanion.di
 
-import com.example.f1racingcompanion.api.Formula1LiveTimingApi
+import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.api.LiveTimingService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,5 +14,6 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideFormula1LiveTimingApi(): Formula1LiveTimingApi = Formula1LiveTimingApi.create()
+    fun provideFormula1LiveTimingApi(): Formula1Service = Formula1Service.create()
+
 }
