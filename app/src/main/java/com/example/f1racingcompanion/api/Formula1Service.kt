@@ -20,29 +20,4 @@ interface Formula1Service {
 
     @GET("static/StreamingStatus.json")
     suspend fun streamingStatus(): StreamingStatusDto
-
-    companion object {
-
-        fun create(): Formula1Service {
-            val logger = HttpLoggingInterceptor().apply {
-                level = if(BuildConfig.DEBUG) {
-                    HttpLoggingInterceptor.Level.BASIC
-                }
-                else {
-                    HttpLoggingInterceptor.Level.NONE
-                }
-            }
-
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .build()
-
-            return Retrofit.Builder()
-                .baseUrl(Constants.LIVETIMING_NEGOTIATE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(Formula1Service::class.java)
-        }
-    }
 }

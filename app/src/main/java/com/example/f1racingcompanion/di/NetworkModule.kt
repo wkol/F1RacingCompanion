@@ -1,11 +1,17 @@
 package com.example.f1racingcompanion.di
 
+import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.api.Formula1Service
-import com.example.f1racingcompanion.api.LiveTimingService
+import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
@@ -14,6 +20,29 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideFormula1LiveTimingApi(): Formula1Service = Formula1Service.create()
+    fun provideFormula1LService(okHttpClient: OkHttpClient): Formula1Service {
+        return Retrofit.Builder()
+            .baseUrl(Constants.LIVETIMING_NEGOTIATE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(Formula1Service::class.java)
+    }
 
+    @Singleton
+    @Provides
+    fun provideRepository(api: Formula1Service): Formula1Repository = Formula1Repository(api)
+
+    @Provides
+    fun provideOkHTTPClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.HEADERS
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
+            })
+            .build()
+    }
 }

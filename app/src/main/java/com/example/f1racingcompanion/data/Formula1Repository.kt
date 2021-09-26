@@ -1,6 +1,7 @@
 package com.example.f1racingcompanion.data
 
 import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ class Formula1Repository @Inject constructor(
     private val api: Formula1Service
 ) {
 
-    fun getConnectionToken(hubData: String): Flow<Result<String>> = flow {
+    fun getConnectionToken(hubData: String = Constants.HUB_DATA): Flow<Result<String>> = flow {
         try {
             emit(Result.Loading<String>())
             val response = api.negotiate(hubData)
