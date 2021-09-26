@@ -78,14 +78,13 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_logger_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     // Scarlet package
-    implementation "com.github.tinder.Scarlet:scarlet-core:$scarlet_version"
-    implementation "com.github.tinder.Scarlet:scarlet:$scarlet_version"
-    implementation "com.github.tinder.Scarlet:scarlet-protocol-websocket-okhttp:$scarlet_version"
-    implementation "com.github.tinder.Scarlet:scarlet-message-adapter-gson:$scarlet_version"
-    implementation "com.github.tinder.Scarlet:scarlet-message-adapter-gson:$scarlet_version"
-    //noinspection GradleDependency
-    implementation "com.github.tinder.Scarlet:scarlet-stream-adapter-coroutines:0.2.x-SNAPSHOT"
+    implementation "com.github.tinder.scarlet:scarlet:$scarlet_version"
+    implementation "com.github.tinder.scarlet:scarlet-lifecycle-android:$scarlet_version"
+    implementation "com.github.tinder.scarlet:scarlet-protocol-websocket-okhttp:$scarlet_version"
+    implementation "com.github.tinder.scarlet:scarlet-message-adapter-gson:$scarlet_version"
 
+    // Timber log package
+    implementation "com.jakewharton.timber:timber:$timber_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     testImplementation "org.mockito:mockito-core:$mockito_version"
 
