@@ -8,23 +8,13 @@ import okhttp3.HttpUrl
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
-    fun createHubMessage(method: String, args: List<String>): String {
-        return Gson().toJson(
-            mutableMapOf(
-                'H' to Constants.HUB_NAME,
-                'M' to method,
-                'A' to args,
-                'I' to 1
-            )
-        )
-    }
 
     fun decodeMessage(text: String): String {
         val byteArray = Base64.decode(text, Base64.DEFAULT) // I relay that given text is correct b64 encoded
         return byteArray.zlibDecompress()
     }
 
-    fun createWebSocketUrl(token: String, connectionData: String = "[{\"name\": \"Streaming\"}]"): String {
+    fun createWebSocketUrl(token: String): String {
         val url = HttpUrl.Builder()
             .scheme("https")
             .host(Constants.WEBSCOKET_HOST)
@@ -32,11 +22,10 @@ object LiveTimingUtils {
             .addPathSegment(Constants.WEBSOCKET_CONNECT_PATH)
             .addQueryParameter("transport", Constants.WEBSCOKET_TRANSPORT)
             .addQueryParameter("connectionToken", token)
-            .addQueryParameter("connectionData", connectionData)
+            .addQueryParameter("connectionData", Constants.HUB_DATA)
             .addQueryParameter("clientProtocol", Constants.WEBSCOKET_PROTOCOL)
             .build().toUrl()
-        val res = url.toString().replace("https", "wss")
-        return res
+        return url.toString().replace("https", "wss")
     }
 
 }
