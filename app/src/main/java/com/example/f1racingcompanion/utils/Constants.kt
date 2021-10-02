@@ -11,7 +11,7 @@ object Constants {
     )
     const val HUB_NAME = "Streaming"
 
-    const val HUB_DATA = "[\"name\": \"Streaming\"]"
+    const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
 
     const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
 
