@@ -3,6 +3,7 @@ package com.example.f1racingcompanion.api
 import android.app.Application
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.Subscribe
+import com.example.f1racingcompanion.data.webSocketResponse.WebSocketResponse
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
 import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
@@ -21,7 +22,8 @@ interface LiveTimingService {
     fun observeEvents(): Flow<WebSocketEvent>
 
     @Receive
-    fun observeData(): Flow<Array<String>>
+    fun observeData(): Flow<WebSocketResponse>
+
     @Send
     fun subscribeToTopics(message: Subscribe)
 
