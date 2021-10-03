@@ -1,10 +1,13 @@
 package com.example.f1racingcompanion.data.cardatadto
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class CarEntryDto(
-    @SerializedName("Utc")
+    @Json(name = "Utc")
     val time: String,
-    @SerializedName("Cars")
+    @Json(name = "Cars")
     val cars: List<CarDto>
 )

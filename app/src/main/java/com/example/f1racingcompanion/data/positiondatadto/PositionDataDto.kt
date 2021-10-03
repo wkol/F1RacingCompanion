@@ -1,5 +1,8 @@
 package com.example.f1racingcompanion.data.positiondatadto
 
-data class PositionDataDto(
+import com.squareup.moshi.JsonClass
 
-    val entries: List<PositionEntryDto>)
+@JsonClass(generateAdapter = true)
+data class PositionDataDto(
+    val entries: List<PositionEntryDto>
+    )

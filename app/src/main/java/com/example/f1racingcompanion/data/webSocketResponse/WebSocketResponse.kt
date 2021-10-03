@@ -1,13 +1,15 @@
 package com.example.f1racingcompanion.data.webSocketResponse
 
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class WebSocketResponse(
-    @SerializedName("C")
+    @Json(name = "C")
     val c: String,
-    @SerializedName("M")
+    @Json(name = "M")
     val m: List<Message>,
-    @SerializedName("S")
+    @Json(name = "S")
     val s: Int
 )

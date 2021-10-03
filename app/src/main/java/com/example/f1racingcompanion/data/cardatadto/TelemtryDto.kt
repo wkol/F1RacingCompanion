@@ -1,18 +1,21 @@
 package com.example.f1racingcompanion.data.cardatadto
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class TelemetryDto (
-    @SerializedName("0")
+    @Json(name = "0")
     val rmpValue: Int,
-    @SerializedName("2")
+    @Json(name = "2")
     val speed: Int,
-    @SerializedName("3")
+    @Json(name = "3")
     val currentGear: Byte,
-    @SerializedName("4")
+    @Json(name = "4")
     val throttleValue: Int,
-    @SerializedName("5")
+    @Json(name = "5")
     val brakeValue: Int,
-    @SerializedName("45")
+    @Json(name = "45")
     val DRSValue: Int
 )

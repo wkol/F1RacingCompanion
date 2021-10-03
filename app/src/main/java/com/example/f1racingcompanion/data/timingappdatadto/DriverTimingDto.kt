@@ -1,9 +1,12 @@
 package com.example.f1racingcompanion.data.timingappdatadto
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class DriverTimingDto(
-    @SerializedName("Lines")
+    @Json(name = "Lines")
     val driverNum: Int
 
 )

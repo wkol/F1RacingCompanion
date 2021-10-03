@@ -1,14 +1,17 @@
 package com.example.f1racingcompanion.data
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Subscribe(
-    @SerializedName("H")
+    @Json(name = "H")
     val hub: String,
-    @SerializedName("M")
+    @Json(name = "M")
     val method: String,
-    @SerializedName("A")
+    @Json(name = "A")
     val arguments: List<List<String>>,
-    @SerializedName("I")
+    @Json(name = "I")
     val increment: Int
 )

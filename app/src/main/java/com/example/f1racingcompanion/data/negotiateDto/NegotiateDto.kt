@@ -1,27 +1,28 @@
 package com.example.f1racingcompanion.data.negotiateDto
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-import com.google.gson.annotations.SerializedName
-
+@JsonClass(generateAdapter = true)
 data class NegotiateDto(
-    @SerializedName("ConnectionId")
+    @Json(name = "ConnectionId")
     val connectionId: String,
-    @SerializedName("ConnectionTimeout")
+    @Json(name = "ConnectionTimeout")
     val connectionTimeout: Double,
-    @SerializedName("ConnectionToken")
+    @Json(name = "ConnectionToken")
     val connectionToken: String,
-    @SerializedName("DisconnectTimeout")
+    @Json(name = "DisconnectTimeout")
     val disconnectTimeout: Double,
-    @SerializedName("KeepAliveTimeout")
+    @Json(name = "KeepAliveTimeout")
     val keepAliveTimeout: Double,
-    @SerializedName("LongPollDelay")
+    @Json(name = "LongPollDelay")
     val longPollDelay: Double,
-    @SerializedName("ProtocolVersion")
+    @Json(name = "ProtocolVersion")
     val protocolVersion: String,
-    @SerializedName("TransportConnectTimeout")
+    @Json(name = "TransportConnectTimeout")
     val transportConnectTimeout: Double,
-    @SerializedName("TryWebSockets")
+    @Json(name = "TryWebSockets")
     val tryWebSockets: Boolean,
-    @SerializedName("Url")
+    @Json(name = "Url")
     val url: String
 )
