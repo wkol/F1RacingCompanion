@@ -9,12 +9,23 @@ object Constants {
         "5" to "Brake",
         "45" to "DRS"
     )
-    val hubName = "Streaming"
+    const val HUB_NAME = "Streaming"
 
-    val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
+    const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
 
+    const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
 
-    val subscribedStreams = listOf(
+    const val WEBSCOKET_HOST = "livetiming.formula1.com"
+
+    const val WEBSOCKET_SIGNALR_PATH = "signalr"
+
+    const val WEBSOCKET_CONNECT_PATH = "connect"
+
+    const val WEBSCOKET_TRANSPORT = "webSockets"
+
+    const val WEBSCOKET_PROTOCOL = "1.5"
+
+    val SUBSRIBED_STREAMS = listOf(
         "Heartbeat", "CarData.z", "Position.z",
         "ExtrapolatedClock", "TopThree", "RcmSeries",
         "TimingStats", "TimingAppData",

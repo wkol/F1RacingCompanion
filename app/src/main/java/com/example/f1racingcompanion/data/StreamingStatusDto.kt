@@ -1,9 +1,11 @@
 package com.example.f1racingcompanion.data
 
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class StreamingStatusDto(
-    @SerializedName("Status")
+    @Json(name = "Status")
     val status: String
 )
