@@ -7,12 +7,12 @@ import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.LiveTimingUtils.decodeMessage
 import com.google.gson.Gson
+import com.squareup.moshi.Moshi
 import com.tinder.scarlet.websocket.WebSocketEvent
-//import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import kotlinx.coroutines.flow.*
 import timber.log.Timber
 
-class LiveTimingRepository (private val webSocketService: LiveTimingService) {
+class LiveTimingRepository (private val webSocketService: LiveTimingService, private val moshi: Moshi) {
 
     fun startWebSocket() = flow {
         webSocketService.observeEvents().collect { event ->
@@ -34,7 +34,7 @@ class LiveTimingRepository (private val webSocketService: LiveTimingService) {
     fun getData() = flow {
         webSocketService.observeData().collect { data ->
             Timber.d("Received data in from of $data")
-            for(line in data.m) {
+            for(line in data) {
                 emit(when(line.messageData[0]) {
                     "CarData.z" -> Gson().fromJson(decodeMessage(line.messageData[1]), CarDataDto::class.java)
                     "Position.z" -> Gson().fromJson(decodeMessage(line.messageData[1]), PositionDataDto::class.java)

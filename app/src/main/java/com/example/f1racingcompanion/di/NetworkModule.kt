@@ -4,6 +4,7 @@ import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.api.Formula1Service
 import com.example.f1racingcompanion.data.Formula1Repository
 import com.example.f1racingcompanion.utils.Constants
+import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -37,7 +38,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesMoshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    fun providesMoshi(): Moshi = Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(KotlinJsonAdapterFactory()).build()
 
 
     @Provides
@@ -52,6 +53,5 @@ class NetworkModule {
             })
             .build()
     }
-
 
 }

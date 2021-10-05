@@ -3,12 +3,12 @@ package com.example.f1racingcompanion.api
 import android.app.Application
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.Subscribe
-import com.example.f1racingcompanion.data.webSocketResponse.WebSocketResponse
+import com.example.f1racingcompanion.data.Message.Message
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
+import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
-import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter
 import com.tinder.scarlet.messageadapter.moshi.MoshiMessageAdapter
 import com.tinder.scarlet.websocket.ShutdownReason
 import com.tinder.scarlet.websocket.WebSocketEvent
@@ -25,7 +25,8 @@ interface LiveTimingService {
     fun observeEvents(): Flow<WebSocketEvent>
 
     @Receive
-    fun observeData(): Flow<WebSocketResponse>
+    @Wrapped(path = ["M"])
+    fun observeData(): Flow<List<Message>>
 
     @Send
     fun subscribeToTopics(message: Subscribe)
