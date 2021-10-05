@@ -3,7 +3,7 @@ package com.example.f1racingcompanion.api
 import android.app.Application
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.Subscribe
-import com.example.f1racingcompanion.data.webSocketResponse.Message
+import com.example.f1racingcompanion.data.Message.Message
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi

@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.data.webSocketResponse
+package com.example.f1racingcompanion.data.Message
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
