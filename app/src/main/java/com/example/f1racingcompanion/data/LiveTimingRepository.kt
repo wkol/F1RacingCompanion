@@ -3,10 +3,8 @@ package com.example.f1racingcompanion.data
 import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
-import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.LiveTimingUtils.decodeMessage
-import com.google.gson.Gson
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.websocket.WebSocketEvent
 import kotlinx.coroutines.flow.*
@@ -36,10 +34,10 @@ class LiveTimingRepository (private val webSocketService: LiveTimingService, pri
             Timber.d("Received data in from of $data")
             for(line in data) {
                 emit(when(line.messageData[0]) {
-                    "CarData.z" -> Gson().fromJson(decodeMessage(line.messageData[1]), CarDataDto::class.java)
-                    "Position.z" -> Gson().fromJson(decodeMessage(line.messageData[1]), PositionDataDto::class.java)
-                    "TimingData" -> Gson().fromJson(line.messageData[1], TimingAppDataDto::class.java)
-                    // Ignore invalid data
+                    "CarData.z" -> moshi.adapter(CarDataDto::class.java).fromJson(decodeMessage(line.messageData[1]))!!
+                    "Position.z" -> moshi.adapter(PositionDataDto::class.java).fromJson(decodeMessage(line.messageData[1]))!!
+                    "TimingData" -> moshi.adapter(TimingDataDto::class.java).fromJson(line.messageData[1])!!
+                    "TimingStats" -> moshi.adapter(TimingStatsDto::class.java).fromJson(line.messageData[1])!!
                     else -> continue
                 })
             }
