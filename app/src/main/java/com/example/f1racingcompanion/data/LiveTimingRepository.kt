@@ -36,7 +36,8 @@ class LiveTimingRepository (private val webSocketService: LiveTimingService, pri
                 emit(when(line.messageData[0]) {
                     "CarData.z" -> moshi.adapter(CarDataDto::class.java).fromJson(decodeMessage(line.messageData[1]))!!
                     "Position.z" -> moshi.adapter(PositionDataDto::class.java).fromJson(decodeMessage(line.messageData[1]))!!
-                    // Ignore invalid data
+                    "TimingData" -> moshi.adapter(TimingData::class.java).fromJson(line.messageData[1])!!
+                    "TimingStats" -> moshi.adapter(TimingStats::class.java).fromJson(line.messageData[1])!!
                     else -> continue
                 })
             }
