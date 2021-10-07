@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class SectorValue(
     @Json(name = "Value")
-    val value: Int?,
+    val value: String?,
     @Json(name = "PersonalFastest")
     val personalFastest: Boolean?,
     @Json(name = "OverallFastest")

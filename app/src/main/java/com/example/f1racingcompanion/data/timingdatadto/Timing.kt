@@ -12,6 +12,8 @@ data class Timing(
     @Json(name = "GapToLeader")
     val gap: String?,
     @Json(name = "IntervalToPositionAhead")
-    val interval: Interval?
+    val interval: Interval?,
+    @Json(name = "LastLapTime")
+    val lastLap: SectorValue?
     )
 
