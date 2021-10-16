@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class BestStat (
     @Json(name = "Position")
-    val position: Int,
+    val position: Int?,
     @Json(name = "Value")
     val value: Int?,
     @Json(name = "Lap")

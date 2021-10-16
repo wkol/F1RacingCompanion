@@ -11,9 +11,15 @@ data class Timing(
     val speeds: Map<String, SectorValue>?,
     @Json(name = "GapToLeader")
     val gap: String?,
-    @Json(name = "IntervalToPositionAhead")
-    val interval: Interval?,
+    @Json(name = "TimeDiffToPositionAhead")
+    val interval: String?,
     @Json(name = "LastLapTime")
-    val lastLap: SectorValue?
+    val lastLap: SectorValue?,
+    @Json(name = "TimeDiffToFastest")
+    val timeDiffFastest: String?,
+    @Json(name = "InPit")
+    val inPit: Boolean?,
+    @Json(name = "PitOut")
+    val outPit: Boolean?
     )
 
