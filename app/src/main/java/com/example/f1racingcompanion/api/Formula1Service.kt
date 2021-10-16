@@ -10,7 +10,7 @@ interface Formula1Service {
     suspend fun negotiate(
         @Query("connectionData", encoded = false) hubName: String,
         @Query("clientProtocol", encoded = false) clientProtocol: String = "1.5"
-        ): NegotiateDto
+    ): NegotiateDto
 
     @GET("static/StreamingStatus.json")
     suspend fun streamingStatus(): StreamingStatusDto

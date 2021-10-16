@@ -21,5 +21,4 @@ data class Timing(
     val inPit: Boolean?,
     @Json(name = "PitOut")
     val outPit: Boolean?
-    )
-
+)

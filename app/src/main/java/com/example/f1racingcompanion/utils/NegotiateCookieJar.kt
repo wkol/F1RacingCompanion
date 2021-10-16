@@ -4,7 +4,7 @@ import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 
-class NegotiateCookieJar: CookieJar {
+class NegotiateCookieJar : CookieJar {
     private val cookies = mutableListOf<Cookie>()
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {

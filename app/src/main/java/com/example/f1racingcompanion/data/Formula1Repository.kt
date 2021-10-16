@@ -35,16 +35,19 @@ class Formula1Repository @Inject constructor(
             val response = api.streamingStatus()
             emit(
                 Result.Success<Boolean>(
-                    data = (when (response.status) {
-                        "Offline" -> false
-                        "Online" -> true
-                        else -> null
-                    })))
+                    data = (
+                        when (response.status) {
+                            "Offline" -> false
+                            "Online" -> true
+                            else -> null
+                        }
+                        )
+                )
+            )
         } catch (e: IOException) {
             emit(Result.Error<Boolean>(msg = e.localizedMessage ?: "Unknown error"))
         } catch (e: HttpException) {
             emit(Result.Error<Boolean>("Unable to connect to the server"))
         }
     }.flowOn(Dispatchers.IO)
-
 }

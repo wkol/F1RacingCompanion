@@ -34,4 +34,3 @@ object Constants {
         "SessionData", "LapCount", "TimingData"
     )
 }
-

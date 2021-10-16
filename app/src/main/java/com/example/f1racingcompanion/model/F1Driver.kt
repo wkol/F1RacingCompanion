@@ -13,8 +13,8 @@ data class F1Driver(
     val lastSectors: MutableMap<String, SectorValue>,
     val teamColor: Color
 ) {
-    fun updateLastSectors(sector :Map<String, SectorValue>) {
-        if(sector.contains("1")) {
+    fun updateLastSectors(sector: Map<String, SectorValue>) {
+        if (sector.contains("1")) {
             lastSectors.clear()
         }
         lastSectors.plus(sector)
