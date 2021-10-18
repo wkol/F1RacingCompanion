@@ -8,5 +8,5 @@ data class CarEntryDto(
     @Json(name = "Utc")
     val time: String,
     @Json(name = "Cars")
-    val cars: List<CarDto>
+    val cars: Map<Int, CarDto>
 )
