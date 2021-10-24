@@ -10,6 +10,8 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+// In the future refactor the method fromJson
 class LiveTimingDataParser(
     private val timingStatsAdapter: JsonAdapter<TimingStatsDto>,
     private val timingDataAdapter: JsonAdapter<TimingDataDto>,
@@ -18,44 +20,61 @@ class LiveTimingDataParser(
 ) : JsonAdapter<LiveTimingData<*>>() {
     @FromJson
     override fun fromJson(reader: JsonReader): LiveTimingData<*>? {
-        if (reader.hasNext()) {
-            val token = reader.peek()
-            if (token == JsonReader.Token.BEGIN_ARRAY) {
-                reader.beginArray()
-                val name = reader.nextString()
-                val data = reader.readJsonValue()
-                val date = SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                    Locale.US
-                ).parse(reader.nextString())
-                reader.endArray()
-                return when (name) {
-                    "TimingStats" -> LiveTimingData<TimingStatsDto>(
-                        name,
-                        timingStatsAdapter.lenient().fromJsonValue(data),
-                        date
-                    )
-                    "TimingData" -> LiveTimingData<TimingDataDto>(
-                        name,
-                        timingDataAdapter.lenient().fromJsonValue(data),
-                        date
-                    )
-                    "CarData.z" -> LiveTimingData<CarDataDto>(
-                        name,
-                        carDataAdapter.lenient().fromJson(LiveTimingUtils.decodeMessage(data.toString())),
-                        date
-                    )
-                    "Position.z" -> LiveTimingData<PositionDataDto>(
-                        name,
-                        positionDataAdapter.lenient().fromJson(LiveTimingUtils.decodeMessage(data.toString())),
-                        date
-                    )
-                    else -> null
+        reader.beginObject()
+        var el: String
+        while (reader.hasNext()) {
+            try {
+                el = reader.nextName()
+            } catch (e: Exception) {
+                reader.skipValue()
+                continue
+            }
+            if (el == "A") {
+                if (reader.hasNext()) {
+                    val token = reader.peek()
+                    if (token == JsonReader.Token.BEGIN_ARRAY) {
+                        reader.beginArray()
+                        val name = reader.nextString()
+                        val data = reader.readJsonValue()
+                        val date = SimpleDateFormat(
+                            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                            Locale.US
+                        ).parse(reader.nextString())
+                        reader.endArray()
+                        reader.endObject()
+                        return when (name) {
+                            "TimingStats" -> LiveTimingData<TimingStatsDto>(
+                                name,
+                                timingStatsAdapter.lenient().fromJsonValue(data),
+                                date
+                            )
+                            "TimingData" -> LiveTimingData<TimingDataDto>(
+                                name,
+                                timingDataAdapter.lenient().fromJsonValue(data),
+                                date
+                            )
+                            "CarData.z" -> LiveTimingData<CarDataDto>(
+                                name,
+                                carDataAdapter.lenient()
+                                    .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
+                                date
+                            )
+                            "Position.z" -> LiveTimingData<PositionDataDto>(
+                                name,
+                                positionDataAdapter.lenient()
+                                    .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
+                                date
+                            )
+                            else -> null
+                        }
+                    }
                 }
             }
         }
+        reader.endObject()
         return null
     }
+
 
     override fun toJson(writer: JsonWriter, value: LiveTimingData<*>?) {
         return
