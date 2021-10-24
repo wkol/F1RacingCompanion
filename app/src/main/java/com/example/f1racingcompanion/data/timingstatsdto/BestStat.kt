@@ -8,7 +8,7 @@ data class BestStat(
     @Json(name = "Position")
     val position: Int?,
     @Json(name = "Value")
-    val value: Int?,
+    val value: String?,
     @Json(name = "Lap")
     val lap: Int?
 )
