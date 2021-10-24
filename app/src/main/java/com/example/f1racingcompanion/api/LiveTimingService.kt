@@ -10,6 +10,7 @@ import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
+import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Scarlet
@@ -30,20 +31,24 @@ interface LiveTimingService {
     fun observeEvents(): Flow<WebSocketEvent>
 
     @Receive
-    @Wrapped(path = ["M", "A"])
-    fun observeTelemetry(): Flow<List<LiveTimingData<CarDataDto>>>
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeTelemetry(): Flow<LiveTimingData<CarDataDto>>
 
     @Receive
-    @Wrapped(path = ["M", "A"])
-    fun observeTimingStats(): Flow<List<LiveTimingData<TimingStatsDto>>>
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeTimingStats(): Flow<LiveTimingData<TimingStatsDto>>
 
     @Receive
-    @Wrapped(path = ["M", "A"])
-    fun observeTimingData(): Flow<List<LiveTimingData<TimingDataDto>>>
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeTimingData(): Flow<LiveTimingData<TimingDataDto>>
 
     @Receive
-    @Wrapped(path = ["M", "A"])
-    fun observeCarPosition(): Flow<List<LiveTimingData<PositionDataDto>>>
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeCarPosition(): Flow<LiveTimingData<PositionDataDto>>
 
     @Send
     fun subscribeToTopics(message: Subscribe)

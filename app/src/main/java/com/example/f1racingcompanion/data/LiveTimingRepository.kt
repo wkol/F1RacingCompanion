@@ -1,6 +1,11 @@
 package com.example.f1racingcompanion.data
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.f1racingcompanion.api.LiveTimingService
+import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.utils.Constants
 import com.tinder.scarlet.websocket.WebSocketEvent
 import kotlinx.coroutines.flow.*
@@ -29,28 +34,26 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
     fun getTimingStats() = flow {
         webSocketService.observeTimingStats().collect { data ->
             Timber.d("Received TimingStatsData")
-            data.forEach {
-                emit(it)
-            }
+            emit(data)
         }
     }
 
     fun getTimingData() = flow {
         webSocketService.observeTimingData().collect { data ->
+            emit(data)
             Timber.d("Received TimingData")
-            data.forEach {
-                emit(it)
-            }
+//            data.forEach {
+//                emit(it)
+//            }
+//        }
         }
     }
 
     fun getDriverTelemetry(number: Int) = flow {
         webSocketService.observeTelemetry().collect { data ->
             Timber.d("Received CarData")
-            data.forEach {
-                for (entry in it.data!!.entries) {
-                    emit(entry[number])
-                }
+            for (entry in data.data!!.entries) {
+                emit(entry[number])
             }
         }
     }
@@ -58,10 +61,9 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
     fun getPositions() = flow {
         webSocketService.observeCarPosition().collect { data ->
             Timber.d("Received PositionData")
-            data.forEach {
-                emit(it)
-            }
+            emit(data)
         }
     }
 
 }
+
