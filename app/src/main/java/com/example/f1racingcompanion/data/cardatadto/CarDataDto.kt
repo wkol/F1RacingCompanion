@@ -6,5 +6,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class CarDataDto(
     @Json(name = "Entries")
-    val entries: List<Map<Int, CarEntryDto>>
+    val entries: List<CarEntryDto>
 )
