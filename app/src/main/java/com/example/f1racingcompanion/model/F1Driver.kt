@@ -11,7 +11,8 @@ data class F1Driver(
     val team: String,
     var lapTime: String,
     val lastSectors: MutableMap<String, SectorValue>,
-    val teamColor: Color
+    val teamColor: Color,
+    val tires: Tires
 ) {
     fun updateLastSectors(sector: Map<String, SectorValue>) {
         if (sector.contains("1")) {
