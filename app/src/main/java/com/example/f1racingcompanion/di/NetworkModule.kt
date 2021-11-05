@@ -37,7 +37,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesMoshi(): Moshi = Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(KotlinJsonAdapterFactory()).build()
+    fun providesMoshi(): Moshi =
+        Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(KotlinJsonAdapterFactory()).build()
 
     @Provides
     fun provideOkHTTPClient(): OkHttpClient {

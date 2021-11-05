@@ -2,7 +2,6 @@ package com.example.f1racingcompanion.api
 
 import android.app.Application
 import com.example.f1racingcompanion.BuildConfig
-import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.data.Subscribe
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
@@ -23,7 +22,9 @@ import com.tinder.scarlet.ws.Receive
 import com.tinder.scarlet.ws.Send
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import okhttp3.*
+import okhttp3.Cookie
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 
 interface LiveTimingService {
@@ -56,7 +57,12 @@ interface LiveTimingService {
     companion object {
 
         @ExperimentalCoroutinesApi
-        fun create(token: String, cookie: Cookie, app: Application, moshi: Moshi): LiveTimingService {
+        fun create(
+            token: String,
+            cookie: Cookie,
+            app: Application,
+            moshi: Moshi
+        ): LiveTimingService {
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
                     HttpLoggingInterceptor().apply {

@@ -36,12 +36,12 @@ class Formula1Repository @Inject constructor(
             emit(
                 Result.Success<Boolean>(
                     data = (
-                        when (response.status) {
-                            "Offline" -> false
-                            "Online" -> true
-                            else -> null
-                        }
-                        )
+                            when (response.status) {
+                                "Offline" -> false
+                                "Online" -> true
+                                else -> null
+                            }
+                            )
                 )
             )
         } catch (e: IOException) {

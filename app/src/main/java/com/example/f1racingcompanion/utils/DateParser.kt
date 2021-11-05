@@ -12,6 +12,7 @@ class DateParser {
         "\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
         Locale.US
     ).parse(reader.nextString())
+
     @ToJson
     fun toJson(date: Date): String = date.toString()
 }

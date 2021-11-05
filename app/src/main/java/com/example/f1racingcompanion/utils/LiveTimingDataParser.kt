@@ -91,8 +91,14 @@ class LiveTimingDataParser(
                 val dataAdapter = moshi.adapter<TimingDataDto>(TimingDataDto::class.java)
                 val statsAdapter = moshi.adapter<TimingStatsDto>(TimingStatsDto::class.java)
                 val carDataAdapter = moshi.adapter<CarDataDto>(CarDataDto::class.java)
-                val positionDataAdapter = moshi.adapter<PositionDataDto>(PositionDataDto::class.java)
-                return LiveTimingDataParser(statsAdapter, dataAdapter, carDataAdapter, positionDataAdapter)
+                val positionDataAdapter =
+                    moshi.adapter<PositionDataDto>(PositionDataDto::class.java)
+                return LiveTimingDataParser(
+                    statsAdapter,
+                    dataAdapter,
+                    carDataAdapter,
+                    positionDataAdapter
+                )
             }
             return null
         }

@@ -15,7 +15,7 @@ data class Stint(
     val compound: String?,
     @Json(name = "New")
     val newTires: Boolean?,
-    )
+)
 
 //        Compound: HARD
 //        LapFlags: 0
