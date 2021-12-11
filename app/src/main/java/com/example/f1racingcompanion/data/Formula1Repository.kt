@@ -1,10 +1,12 @@
 package com.example.f1racingcompanion.data
 
+import androidx.compose.runtime.collectAsState
 import com.example.f1racingcompanion.api.Formula1Service
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okio.IOException
@@ -16,6 +18,8 @@ import javax.inject.Singleton
 class Formula1Repository @Inject constructor(
     private val api: Formula1Service
 ) {
+
+    val sessionStatus = checkForActiveSession()
 
     fun getConnectionToken(hubData: String = Constants.HUB_DATA): Flow<Result<String>> = flow {
         try {
@@ -36,7 +40,7 @@ class Formula1Repository @Inject constructor(
             emit(
                 Result.Success<Boolean>(
                     data = (
-                            when (response.status) {
+                            when (response.endDate) {
                                 "Offline" -> false
                                 "Online" -> true
                                 else -> null
