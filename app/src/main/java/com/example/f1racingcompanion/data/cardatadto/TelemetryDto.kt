@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class TelemetryDto (
+data class TelemetryDto(
     @Json(name = "0")
     val rmpValue: Int,
     @Json(name = "2")

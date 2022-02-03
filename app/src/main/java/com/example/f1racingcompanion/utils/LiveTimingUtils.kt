@@ -1,16 +1,18 @@
 package com.example.f1racingcompanion.utils
 
-import com.google.gson.Gson
-import java.io.ByteArrayOutputStream
-import android.util.*
+import android.util.Base64
 import okhttp3.HttpUrl
-
+import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
 
     fun decodeMessage(text: String): String {
-        val byteArray = Base64.decode(text, Base64.DEFAULT) // I relay that given text is correct b64 encoded
+        if (text.length % 4 != 0 || !text.matches(Regex("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$"))) {
+            throw IllegalArgumentException("Invalid Base64 encoded string")
+        }
+        val byteArray =
+            Base64.decode(text, Base64.DEFAULT) // I relay that given text is correct b64 encoded
         return byteArray.zlibDecompress()
     }
 
@@ -27,8 +29,8 @@ object LiveTimingUtils {
             .build().toUrl()
         return url.toString().replace("https", "wss")
     }
-
 }
+
 fun ByteArray.zlibDecompress(): String {
     val inflater = Inflater(true) // Given data is without any header - only raw data
 

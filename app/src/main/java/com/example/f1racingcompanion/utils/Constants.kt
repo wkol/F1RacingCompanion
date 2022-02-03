@@ -33,5 +33,8 @@ object Constants {
         "RaceControlMessages", "SessionInfo",
         "SessionData", "LapCount", "TimingData"
     )
-}
 
+    val offsetMap = mapOf(
+        "russia" to listOf(16715, 1654, 10799, 1063)
+    )
+}

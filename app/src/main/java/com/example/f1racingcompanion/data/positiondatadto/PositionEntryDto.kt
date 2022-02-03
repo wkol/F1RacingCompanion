@@ -8,5 +8,5 @@ data class PositionEntryDto(
     @Json(name = "Timestamp")
     val time: String,
     @Json(name = "Entries")
-    val cars: Map<String, CarPositionDto>
+    val cars: Map<Int, CarPositionDto>
 )

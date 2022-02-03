@@ -1,13 +1,12 @@
 package com.example.f1racingcompanion.data.timingappdatadto
 
 import com.squareup.moshi.Json
-
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class DriverTimingDto(
-    @Json(name = "Lines")
-    val driverNum: Int
+    @Json(name = "Stints")
+    val staints: Map<Int, Stint>
 
 )
 
