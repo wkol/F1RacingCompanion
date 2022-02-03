@@ -90,7 +90,7 @@ dependencies {
     // Moshi wrapped annotation
     implementation "com.serjltt.moshi:moshi-lazy-adapters:$moshi_lazy_version"
     implementation "dev.zacsweers.moshix:moshi-adapters:0.14.1"
-
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
     // Test packages
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
