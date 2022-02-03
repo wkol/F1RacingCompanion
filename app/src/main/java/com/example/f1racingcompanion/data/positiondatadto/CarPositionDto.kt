@@ -8,9 +8,9 @@ data class CarPositionDto(
     @Json(name = "Status")
     val status: String,
     @Json(name = "X")
-    val xPosition: Int,
+    val xPosition: Float,
     @Json(name = "Y")
-    val yPosition: Int,
+    val yPosition: Float,
     @Json(name = "Z")
-    val zPosition: Int
+    val zPosition: Float
 )
