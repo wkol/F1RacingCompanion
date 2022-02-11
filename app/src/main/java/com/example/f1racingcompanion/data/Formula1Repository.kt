@@ -19,8 +19,6 @@ class Formula1Repository @Inject constructor(
     private val api: Formula1Service
 ) {
 
-    val sessionStatus = checkForActiveSession()
-
     fun getConnectionToken(hubData: String = Constants.HUB_DATA): Flow<Result<String>> = flow {
         try {
             emit(Result.Loading<String>())

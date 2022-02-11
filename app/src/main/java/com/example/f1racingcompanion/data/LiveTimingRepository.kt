@@ -14,6 +14,15 @@ import javax.inject.Singleton
 @Singleton
 class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
+    fun subscribe()  {
+        webSocketService.subscribeToTopics(Subscribe(
+            "Streaming",
+            "Subscribe",
+            listOf(Constants.SUBSRIBED_STREAMS),
+            0
+        ))
+    }
+
     fun startWebSocket() =
         webSocketService.observeEvents().onEach { event ->
             if (event is WebSocketEvent.OnConnectionOpened) {
@@ -26,6 +35,9 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
                     )
                 )
                 Timber.d("Sent subscribe request")
+            }
+            if (event is WebSocketEvent.OnMessageReceived) {
+                Timber.d(event.message.toString())
             }
             Timber.d("Received event: ${event::class.java.simpleName}")
         }.flowOn(Dispatchers.IO)

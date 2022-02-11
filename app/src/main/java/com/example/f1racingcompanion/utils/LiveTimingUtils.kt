@@ -1,6 +1,10 @@
 package com.example.f1racingcompanion.utils
 
 import android.util.Base64
+import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
+import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
+import com.example.f1racingcompanion.model.*
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater
@@ -51,5 +55,44 @@ fun ByteArray.zlibDecompress(): String {
         inflater.end()
 
         decompressedStream.toString(Charsets.UTF_8.name())
+    }
+}
+
+
+fun TimingDataDto.toListTimingData(): List<TimingData> {
+    val timingAppDatas = mutableListOf<TimingData>()
+    for ((key, value) in this.lines) {
+        val driver = F1Driver.getDriverByNumber(key)
+        val gapToLoader = value.gap
+        val gapToNext = value.interval
+        val lastLapTime = value.lastLap?.value
+        val fastestLap = value.lastLap?.overallFastest
+        val sector = value.sector
+        timingAppDatas.add(TimingData(driver, gapToLoader, gapToNext, lastLapTime, fastestLap, sector))
+    }
+    return timingAppDatas
+}
+
+
+fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
+    val timingAppDatas = mutableListOf<TimingAppData>()
+    for ((key, value) in this.lapInfo) {
+        val driver = F1Driver.getDriverByNumber(key)
+        val pitstopCount = value.stints.keys.first()
+        val stint = value.stints[pitstopCount]!!
+        val compound = Compound.valueOf(stint.compound ?: "")
+        val lapTime = stint.lapTime
+        val lapNumber = stint.lapNumber
+        val isNew = stint.newTires
+        val tiresAge = stint.tiresAge
+        val currentPos = stint.position
+        timingAppDatas.add(TimingAppData(driver, pitstopCount, Tires(compound, isNew, tiresAge), currentPos, lapNumber, lapTime))
+    }
+    return timingAppDatas
+}
+
+fun PositionDataDto.toPositionDataList(): List<PositionData> {
+    return entries.map { entry -> PositionData(entry.time, entry.cars.entries.map { PositionOnTrack(
+        F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition) })
     }
 }
