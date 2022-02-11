@@ -35,6 +35,6 @@ object Constants {
     )
 
     val offsetMap = mapOf(
-        "russia" to listOf(16715, 1654, 10799, 1063)
+        "russia" to listOf(-16715, 1654, -10799, 1063)
     )
 }

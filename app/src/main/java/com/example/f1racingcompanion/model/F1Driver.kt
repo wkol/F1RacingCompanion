@@ -18,10 +18,5 @@ data class F1Driver(
         if (sector.contains("1")) {
             lastSectors.clear()
         }
-        lastSectors.plus(sector)
-    }
-
-    fun updateLapTime(lastLap: SectorValue) {
-        lapTime = lastLap.value!!
     }
 }
