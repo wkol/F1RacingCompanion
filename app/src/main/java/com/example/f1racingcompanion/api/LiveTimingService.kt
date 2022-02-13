@@ -60,7 +60,6 @@ interface LiveTimingService {
         fun create(
             token: String,
             cookie: Cookie,
-            app: Application,
             moshi: Moshi
         ): LiveTimingService {
             val okHttpClient = OkHttpClient.Builder()
@@ -92,7 +91,6 @@ interface LiveTimingService {
             val config = Scarlet.Configuration(
                 messageAdapterFactories = listOf(MoshiMessageAdapter.Factory(moshi)),
                 streamAdapterFactories = listOf(com.example.f1racingcompanion.utils.FlowStreamAdapter.Factory()),
-                lifecycle = AndroidLifecycle.ofApplicationForeground(app)
             )
             val scarletInstance = Scarlet(protocol, config)
             return scarletInstance.create<LiveTimingService>()

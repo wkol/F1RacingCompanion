@@ -2,8 +2,13 @@ package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.Formula1Repository
 import com.example.f1racingcompanion.utils.Constants
+import com.example.f1racingcompanion.utils.DateParser
+import com.example.f1racingcompanion.utils.LiveTimingDataParser
+import com.example.f1racingcompanion.utils.NegotiateCookieJar
+import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -38,11 +43,13 @@ class NetworkModule {
     @Singleton
     @Provides
     fun providesMoshi(): Moshi =
-        Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(KotlinJsonAdapterFactory()).build()
+        Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
+        .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
 
     @Provides
-    fun provideOkHTTPClient(): OkHttpClient {
+    fun provideOkHTTPClient(cookieJar: NegotiateCookieJar): OkHttpClient {
         return OkHttpClient.Builder()
+            .cookieJar(cookieJar)
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
                     level = if (BuildConfig.DEBUG) {
@@ -53,5 +60,11 @@ class NetworkModule {
                 }
             )
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCookieJar(): NegotiateCookieJar {
+        return NegotiateCookieJar()
     }
 }
