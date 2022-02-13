@@ -158,7 +158,7 @@ class LiveTimingRepositoryTest {
 
         val element = repository.getPositions().first()
 
-        assertEquals(element.data!!.entries[0].cars[33]!!.xPosition, 13705)
+        assertEquals(element.data!!.entries[0].cars[33]!!.xPosition, 13705.0F)
 
     }
 }
