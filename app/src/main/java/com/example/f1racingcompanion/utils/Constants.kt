@@ -1,5 +1,9 @@
 package com.example.f1racingcompanion.utils
 
+import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.model.F1Driver
+import com.example.f1racingcompanion.model.TeamColor
+
 object Constants {
     val CHANNELS_MAP = hashMapOf(
         "0" to "RPM",
@@ -34,7 +38,13 @@ object Constants {
         "SessionData", "LapCount", "TimingData"
     )
 
-    val offsetMap = mapOf(
+    val OFFSETMAP = mapOf(
         "russia" to listOf(-16715, 1654, -10799, 1063)
     )
+
+    val CIRCIUTS = mapOf(
+        "russia" to R.drawable.russia
+    )
+
+    val DRIVERS = mapOf(33 to F1Driver("Max", "Verstapen", 33, "VER", "Red Bull Racing", TeamColor.RED_BULL))
 }

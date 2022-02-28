@@ -4,13 +4,7 @@ import android.util.Base64
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
-import com.example.f1racingcompanion.model.Compound
-import com.example.f1racingcompanion.model.F1Driver
-import com.example.f1racingcompanion.model.PositionData
-import com.example.f1racingcompanion.model.PositionOnTrack
-import com.example.f1racingcompanion.model.TimingAppData
-import com.example.f1racingcompanion.model.TimingData
-import com.example.f1racingcompanion.model.Tires
+import com.example.f1racingcompanion.model.*
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater
@@ -39,6 +33,22 @@ object LiveTimingUtils {
             .build().toUrl()
         return url.toString().replace("https", "wss")
     }
+
+    fun getColorFromSector(sectorValue: SectorValue?): Color = when {
+        sectorValue == null -> Color.Transparent
+        sectorValue.overallFastest == true -> Color(0xFF5A2477)
+        sectorValue.personalFastest == true -> Color(0xFF247739)
+        else -> Color(0x8DFFFFFF)
+    }
+
+    fun getTiresIcon(compound: Compound): Int = when(compound) {
+        Compound.SOFT -> R.drawable.ic_soft_tires
+        Compound.MEDIUM -> R.drawable.ic_medium_tires
+        Compound.HARD -> R.drawable.ic_hard_tires
+        Compound.INTER -> R.drawable.ic_inter_tires
+        Compound.WET -> R.drawable.ic_wet_tires
+        Compound.UNKNOWN -> R.drawable.ic_unknown_tires
+    }
 }
 
 fun ByteArray.zlibDecompress(): String {
@@ -64,6 +74,7 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
+
 fun TimingDataDto.toListTimingData(): List<TimingData> {
     val timingAppDatas = mutableListOf<TimingData>()
     for ((key, value) in this.lines) {
@@ -77,6 +88,7 @@ fun TimingDataDto.toListTimingData(): List<TimingData> {
     }
     return timingAppDatas
 }
+
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
     val timingAppDatas = mutableListOf<TimingAppData>()
