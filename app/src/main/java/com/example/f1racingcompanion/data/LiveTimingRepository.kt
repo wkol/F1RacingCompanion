@@ -50,8 +50,7 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
     fun getTimingData() = webSocketService.observeTimingData().onEach {
         Timber.d("Received TimingData")
-    }
-        .flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)
 
     fun getDriverTelemetry(number: Int) = flow {
         webSocketService.observeTelemetry().flowOn(Dispatchers.IO).collect { data ->
