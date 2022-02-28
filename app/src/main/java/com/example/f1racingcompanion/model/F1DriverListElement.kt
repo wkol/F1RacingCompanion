@@ -4,9 +4,16 @@ import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 
 class F1DriverListElement(
     var lapTime: String,
-    val lastSectors: MutableMap<String, SectorValue>,
-    val tires: Tires
-) : F1Driver() {
+    var lastSectors: MutableMap<String, SectorValue>,
+    var tires: Tires,
+    var position: Int,
+    var interval: String,
+    var toFirst: String,
+    var inPit: Boolean,
+    num: Int
+) : F1Driver(getDriverByNumber(num)) {
+
+
     fun updateLastSectors(sector: Map<String, SectorValue>) {
         if (sector.contains("1")) {
             lastSectors.clear()

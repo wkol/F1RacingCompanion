@@ -9,4 +9,5 @@ data class TimingData(
     val lastLapTime: String?,
     val fastestLap: Boolean?,
     val sector: Map<String, SectorValue>?,
+    val position: Int?,
 )
