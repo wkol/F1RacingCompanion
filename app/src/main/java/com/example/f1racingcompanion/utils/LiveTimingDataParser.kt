@@ -3,6 +3,7 @@ package com.example.f1racingcompanion.utils
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
 import com.squareup.moshi.FromJson
@@ -20,6 +21,7 @@ import java.util.Locale
 class LiveTimingDataParser(
     private val timingStatsAdapter: JsonAdapter<TimingStatsDto>,
     private val timingDataAdapter: JsonAdapter<TimingDataDto>,
+    private val timingAppDataAdapter: JsonAdapter<TimingAppDataDto>,
     private val carDataAdapter: JsonAdapter<CarDataDto>,
     private val positionDataAdapter: JsonAdapter<PositionDataDto>
 ) : JsonAdapter<LiveTimingData<*>>() {
@@ -61,6 +63,11 @@ class LiveTimingDataParser(
                                 timingDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
+                            "TimingAppData" -> LiveTimingData<TimingAppDataDto>(
+                                name,
+                                timingAppDataAdapter.lenient().fromJsonValue(data),
+                                date
+                            )
                             "CarData.z" -> LiveTimingData<CarDataDto>(
                                 name,
                                 carDataAdapter.lenient()
@@ -98,11 +105,13 @@ class LiveTimingDataParser(
                 val dataAdapter = moshi.adapter<TimingDataDto>(TimingDataDto::class.java)
                 val statsAdapter = moshi.adapter<TimingStatsDto>(TimingStatsDto::class.java)
                 val carDataAdapter = moshi.adapter<CarDataDto>(CarDataDto::class.java)
+                val timingAppDataAdapter = moshi.adapter<TimingAppDataDto>(TimingAppDataDto::class.java)
                 val positionDataAdapter =
                     moshi.adapter<PositionDataDto>(PositionDataDto::class.java)
                 return LiveTimingDataParser(
                     statsAdapter,
                     dataAdapter,
+                    timingAppDataAdapter,
                     carDataAdapter,
                     positionDataAdapter
                 )

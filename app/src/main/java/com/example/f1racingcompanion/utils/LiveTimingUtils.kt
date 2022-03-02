@@ -1,8 +1,12 @@
 package com.example.f1racingcompanion.utils
 
 import android.util.Base64
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
+import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.*
 import okhttp3.HttpUrl
@@ -36,9 +40,9 @@ object LiveTimingUtils {
 
     fun getColorFromSector(sectorValue: SectorValue?): Color = when {
         sectorValue == null -> Color.Transparent
-        sectorValue.overallFastest == true -> Color(0xFF5A2477)
-        sectorValue.personalFastest == true -> Color(0xFF247739)
-        else -> Color(0x8DFFFFFF)
+        sectorValue.overallFastest == true -> Color(0xFF7A30A2)
+        sectorValue.personalFastest == true -> Color(0xFF33B353)
+        else -> Color(0xC8FFFFFF)
     }
 
     fun getTiresIcon(compound: Compound): Int = when(compound) {
@@ -89,6 +93,7 @@ fun TimingDataDto.toListTimingData(): List<TimingData> {
     return timingAppDatas
 }
 
+fun Offset.times(operand: Offset): Offset = Offset(x * operand.x, y * operand.y)
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
     val timingAppDatas = mutableListOf<TimingAppData>()
