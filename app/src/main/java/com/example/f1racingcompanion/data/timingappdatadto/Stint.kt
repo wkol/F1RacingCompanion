@@ -16,7 +16,7 @@ data class Stint(
     @Json(name = "New")
     val newTires: Boolean?,
     @Json(name = "TotalLaps")
-    val tiresAge: Int,
+    val tiresAge: Int?,
 )
 
 //        Compound: HARD
