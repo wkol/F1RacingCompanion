@@ -64,7 +64,7 @@ fun TimingDataDto.toListTimingData(): List<TimingData> {
     for ((key, value) in this.lines) {
         val driver = F1Driver.getDriverByNumber(key)
         val gapToLoader = value.gap
-        val gapToNext = value.interval
+        val gapToNext = value.interval?.value
         val lastLapTime = value.lastLap?.value
         val fastestLap = value.lastLap?.overallFastest
         val sector = value.sector
@@ -85,7 +85,7 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
         val lapNumber = stint.lapNumber
         val isNew = stint.newTires
         val tiresAge = stint.tiresAge
-        val currentPos = stint.position
+        val currentPos = value.position
         timingAppDatas.add(TimingAppData(driver, pitstopCount, Tires(compound, isNew, tiresAge), currentPos, lapNumber, lapTime))
     }
     return timingAppDatas

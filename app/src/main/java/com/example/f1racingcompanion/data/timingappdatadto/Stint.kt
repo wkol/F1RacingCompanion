@@ -17,8 +17,6 @@ data class Stint(
     val newTires: Boolean?,
     @Json(name = "TotalLaps")
     val tiresAge: Int,
-    @Json(name = "Line")
-    val position: Int?
 )
 
 //        Compound: HARD
