@@ -12,7 +12,7 @@ class DateParser {
     fun fromJson(reader: JsonReader): LocalDateTime = LocalDateTime.parse(
         reader.nextString(),
         DateTimeFormatter.ofPattern(
-            "\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             Locale.US
         )
     )
