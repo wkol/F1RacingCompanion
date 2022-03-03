@@ -4,7 +4,13 @@ import android.util.Base64
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
-import com.example.f1racingcompanion.model.*
+import com.example.f1racingcompanion.model.Compound
+import com.example.f1racingcompanion.model.F1Driver
+import com.example.f1racingcompanion.model.PositionData
+import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.TimingAppData
+import com.example.f1racingcompanion.model.TimingData
+import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater

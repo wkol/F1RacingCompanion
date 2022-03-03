@@ -28,7 +28,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-
 @ExperimentalCoroutinesApi
 class LiveTimingRepositoryTest {
     private lateinit var moshi: Moshi
@@ -92,8 +91,8 @@ class LiveTimingRepositoryTest {
     fun getTimingStats() = runBlocking {
         val repository = LiveTimingRepository(service)
         val message = "{\"C\":\"7,1299\",\"M\":[{\"H\":\"Streaming\",\"M\":\"feed\",\"A\":" +
-                "[\"TimingStats\", {\"Lines\": {\"5\": {\"BestSpeeds\": {\"ST\": {\"Value\": \"260\"}}}," +
-                "\"16\": {\"BestSpeeds\": {\"ST\": {\"Position\": 2, \"Value\": \"293\"}}}}}, \"2021-10-08T08:34:53.943Z\"]}]}"
+            "[\"TimingStats\", {\"Lines\": {\"5\": {\"BestSpeeds\": {\"ST\": {\"Value\": \"260\"}}}," +
+            "\"16\": {\"BestSpeeds\": {\"ST\": {\"Position\": 2, \"Value\": \"293\"}}}}}, \"2021-10-08T08:34:53.943Z\"]}]}"
         server.expect().get().withPath("/test")
             .andUpgradeToWebSocket()
             .open()
@@ -105,7 +104,6 @@ class LiveTimingRepositoryTest {
 
         assertEquals(element.date.toString(), "Fri Oct 08 08:34:53 CEST 2021")
         assertEquals(element.data!!.lines[5]!!.bestSpeeds!!["ST"]!!.value, "260")
-
     }
 
     @Test
@@ -159,6 +157,5 @@ class LiveTimingRepositoryTest {
         val element = repository.getPositions().first()
 
         assertEquals(element.data!!.entries[0].cars[33]!!.xPosition, 13705.0F)
-
     }
 }
