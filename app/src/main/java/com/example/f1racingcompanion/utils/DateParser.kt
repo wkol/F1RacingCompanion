@@ -5,18 +5,17 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.ToJson
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-
+import java.util.Locale
 
 class DateParser {
     @FromJson
     fun fromJson(reader: JsonReader): LocalDateTime = LocalDateTime.parse(
-        reader.nextString(), DateTimeFormatter.ofPattern(
+        reader.nextString(),
+        DateTimeFormatter.ofPattern(
             "\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
             Locale.US
         )
     )
-
 
     @ToJson
     fun toJson(date: LocalDateTime): String = date.toString()
