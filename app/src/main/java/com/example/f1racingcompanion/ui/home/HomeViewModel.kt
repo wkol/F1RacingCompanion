@@ -5,17 +5,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.Formula1Repository
-import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.Result
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(private val repository: Formula1Repository): ViewModel() {
+class HomeViewModel @Inject constructor(private val repository: Formula1Repository) : ViewModel() {
 
     private val _isActive: MutableState<RaceStatusState> = mutableStateOf(RaceStatusState())
     val isActive: State<RaceStatusState> = _isActive
@@ -28,7 +24,7 @@ class HomeViewModel @Inject constructor(private val repository: Formula1Reposito
 
     private fun checkRacingStatus() {
         repository.checkForActiveSession().onEach {
-            when(it) {
+            when (it) {
                 is Result.Loading -> _isActive.value = RaceStatusState(null, true)
                 is Result.Success -> _isActive.value = RaceStatusState(it.data, false)
                 is Result.Error -> _isActive.value = RaceStatusState(null, false, it.msg)
@@ -38,7 +34,7 @@ class HomeViewModel @Inject constructor(private val repository: Formula1Reposito
 
     private fun negotiateConnection() {
         repository.getConnectionToken().onEach {
-            connectionToken = when(it) {
+            connectionToken = when (it) {
                 is Result.Loading -> null
                 is Result.Success -> it.data
                 is Result.Error -> null
