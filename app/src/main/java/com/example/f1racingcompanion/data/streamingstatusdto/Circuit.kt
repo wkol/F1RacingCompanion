@@ -5,8 +5,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Circuit(
-    @Json(name="Key")
+    @Json(name = "Key")
     val key: Int,
-    @Json(name="ShortName")
+    @Json(name = "ShortName")
     val shortName: String
 )

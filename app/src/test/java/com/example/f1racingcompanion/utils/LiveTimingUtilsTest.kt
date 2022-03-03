@@ -2,7 +2,9 @@ package com.example.f1racingcompanion.utils
 
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
 import com.example.f1racingcompanion.utils.LiveTimingUtils.decodeMessage
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LiveTimingUtilsTest {

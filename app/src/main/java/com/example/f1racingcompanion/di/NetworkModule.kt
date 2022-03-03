@@ -2,7 +2,6 @@ package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.api.Formula1Service
-import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.Formula1Repository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
@@ -44,7 +43,7 @@ class NetworkModule {
     @Provides
     fun providesMoshi(): Moshi =
         Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
-        .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
+            .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
 
     @Provides
     fun provideOkHTTPClient(cookieJar: NegotiateCookieJar): OkHttpClient {

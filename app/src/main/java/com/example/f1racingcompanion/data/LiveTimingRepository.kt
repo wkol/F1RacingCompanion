@@ -14,13 +14,15 @@ import javax.inject.Singleton
 @Singleton
 class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
-    fun subscribe()  {
-        webSocketService.subscribeToTopics(Subscribe(
-            "Streaming",
-            "Subscribe",
-            listOf(Constants.SUBSRIBED_STREAMS),
-            0
-        ))
+    fun subscribe() {
+        webSocketService.subscribeToTopics(
+            Subscribe(
+                "Streaming",
+                "Subscribe",
+                listOf(Constants.SUBSRIBED_STREAMS),
+                0
+            )
+        )
     }
 
     fun startWebSocket() =
@@ -63,6 +65,4 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
     fun getPositions() = webSocketService.observeCarPosition().onEach {
         Timber.d("Received PositionData")
     }.flowOn(Dispatchers.IO)
-
 }
-

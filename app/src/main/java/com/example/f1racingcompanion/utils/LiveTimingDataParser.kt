@@ -10,7 +10,6 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 // In the future refactor the method fromJson
 class LiveTimingDataParser(
     private val timingStatsAdapter: JsonAdapter<TimingStatsDto>,
@@ -74,7 +73,6 @@ class LiveTimingDataParser(
         reader.endObject()
         return null
     }
-
 
     override fun toJson(writer: JsonWriter, value: LiveTimingData<*>?) {
         return

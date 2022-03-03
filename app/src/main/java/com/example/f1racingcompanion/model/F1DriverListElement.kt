@@ -6,7 +6,7 @@ class F1DriverListElement(
     var lapTime: String,
     val lastSectors: MutableMap<String, SectorValue>,
     val tires: Tires
-): F1Driver() {
+) : F1Driver() {
     fun updateLastSectors(sector: Map<String, SectorValue>) {
         if (sector.contains("1")) {
             lastSectors.clear()

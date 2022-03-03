@@ -92,6 +92,7 @@ interface LiveTimingService {
                 messageAdapterFactories = listOf(MoshiMessageAdapter.Factory(moshi)),
                 streamAdapterFactories = listOf(com.example.f1racingcompanion.utils.FlowStreamAdapter.Factory()),
             )
+
             val scarletInstance = Scarlet(protocol, config)
             return scarletInstance.create<LiveTimingService>()
         }

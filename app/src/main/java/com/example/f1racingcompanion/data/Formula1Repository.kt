@@ -1,12 +1,10 @@
 package com.example.f1racingcompanion.data
 
-import androidx.compose.runtime.collectAsState
 import com.example.f1racingcompanion.api.Formula1Service
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okio.IOException
@@ -38,12 +36,12 @@ class Formula1Repository @Inject constructor(
             emit(
                 Result.Success<Boolean>(
                     data = (
-                            when (response.endDate) {
-                                "Offline" -> false
-                                "Online" -> true
-                                else -> null
-                            }
-                            )
+                        when (response.endDate) {
+                            "Offline" -> false
+                            "Online" -> true
+                            else -> null
+                        }
+                        )
                 )
             )
         } catch (e: IOException) {

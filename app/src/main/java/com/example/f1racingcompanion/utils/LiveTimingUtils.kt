@@ -58,7 +58,6 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
-
 fun TimingDataDto.toListTimingData(): List<TimingData> {
     val timingAppDatas = mutableListOf<TimingData>()
     for ((key, value) in this.lines) {
@@ -72,7 +71,6 @@ fun TimingDataDto.toListTimingData(): List<TimingData> {
     }
     return timingAppDatas
 }
-
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
     val timingAppDatas = mutableListOf<TimingAppData>()
@@ -92,7 +90,14 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
 }
 
 fun PositionDataDto.toPositionDataList(): List<PositionData> {
-    return entries.map { entry -> PositionData(entry.time, entry.cars.entries.map { PositionOnTrack(
-        F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition) })
+    return entries.map { entry ->
+        PositionData(
+            entry.time,
+            entry.cars.entries.map {
+                PositionOnTrack(
+                    F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition
+                )
+            }
+        )
     }
 }

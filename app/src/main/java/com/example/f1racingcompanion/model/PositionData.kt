@@ -4,5 +4,3 @@ data class PositionData(
     val timeStamp: String,
     val position: List<PositionOnTrack>
 )
-
-

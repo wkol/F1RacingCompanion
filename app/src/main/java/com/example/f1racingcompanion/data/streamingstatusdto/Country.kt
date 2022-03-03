@@ -5,10 +5,10 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class Country(
-    @Json(name="Code")
+    @Json(name = "Code")
     val code: String,
-    @Json(name="Key")
+    @Json(name = "Key")
     val key: Int,
-    @Json(name="Name")
+    @Json(name = "Name")
     val name: String
 )
