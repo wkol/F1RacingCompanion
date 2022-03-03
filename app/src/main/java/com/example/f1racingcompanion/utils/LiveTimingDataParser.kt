@@ -11,9 +11,10 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import java.time.LocalDateTime
 import java.lang.reflect.Type
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 // In the future refactor the method fromJson
 class LiveTimingDataParser(
@@ -40,10 +41,8 @@ class LiveTimingDataParser(
                         reader.beginArray()
                         val name = reader.nextString()
                         val data = reader.readJsonValue()
-                        val date = SimpleDateFormat(
-                            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                            Locale.US
-                        ).parse(reader.nextString())
+                        val date = LocalDateTime.parse(reader.nextString(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                            Locale.US))
                         reader.endArray()
                         reader.endObject()
                         return when (name) {

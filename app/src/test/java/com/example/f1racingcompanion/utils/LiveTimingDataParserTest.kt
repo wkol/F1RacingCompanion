@@ -40,7 +40,9 @@ class LiveTimingDataParserTest {
         val liveTimingData: LiveTimingData<TimingStatsDto>? = adapter.fromJson(jsonReader)
 
         Assert.assertEquals(liveTimingData!!.name, "TimingStats")
-        Assert.assertEquals(liveTimingData.date.toString(), "Fri Oct 08 08:30:51 CEST 2021")
+        Assert.assertEquals(liveTimingData.date!!.dayOfMonth, 8)
+        Assert.assertEquals(liveTimingData.date!!.second, 51)
+        Assert.assertEquals(liveTimingData.date!!.minute, 30)
         Assert.assertEquals(liveTimingData.data!!.lines[7]!!.bestSpeeds!!["I1"]!!.position, 2)
     }
 
@@ -59,10 +61,11 @@ class LiveTimingDataParserTest {
 
         // When parsing data using the moshi custom adapter
         val liveTimingData: LiveTimingData<TimingDataDto>? = adapter.fromJson(jsonReader)
-
         // Then parse data is correct
         Assert.assertEquals(liveTimingData!!.name, "TimingData")
-        Assert.assertEquals(liveTimingData.date.toString(), "Fri Oct 08 08:34:53 CEST 2021")
+        Assert.assertEquals(liveTimingData.date!!.dayOfMonth, 8)
+        Assert.assertEquals(liveTimingData.date!!.second, 53)
+        Assert.assertEquals(liveTimingData.date!!.minute, 34)
         Assert.assertEquals(liveTimingData.data!!.lines[4]!!.gap, "+5.804")
     }
 }
