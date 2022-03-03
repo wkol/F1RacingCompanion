@@ -10,6 +10,3 @@ data class TimingData(
     val fastestLap: Boolean?,
     val sector: Map<String, SectorValue>?,
 )
-
-
-

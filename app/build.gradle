@@ -32,8 +32,9 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -66,7 +67,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
     // Dagger(Hilt) packages
     implementation "com.google.dagger:hilt-android:$dagger_version"
     kapt "com.google.dagger:hilt-compiler:$dagger_version"
@@ -83,7 +84,6 @@ dependencies {
     implementation "com.github.tinder.scarlet:scarlet-lifecycle-android:$scarlet_version"
     implementation "com.github.tinder.scarlet:scarlet-protocol-websocket-okhttp:$scarlet_version"
     implementation "com.github.tinder.scarlet:scarlet-message-adapter-moshi:$scarlet_version"
-
     // Timber log package
     implementation "com.jakewharton.timber:timber:$timber_version"
 

@@ -5,24 +5,24 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class SessionStatusDto(
-    @Json(name="EndDate")
+    @Json(name = "EndDate")
     val endDate: String?,
-    @Json(name="GmtOffset")
+    @Json(name = "GmtOffset")
     val gmtOffset: String?,
-    @Json(name="Key")
+    @Json(name = "Key")
     val key: Int?,
-    @Json(name="Meeting")
+    @Json(name = "Meeting")
     val meeting: Meeting?,
-    @Json(name="Name")
+    @Json(name = "Name")
     val name: String?,
-    @Json(name="Number")
+    @Json(name = "Number")
     val number: Int?,
-    @Json(name="Path")
+    @Json(name = "Path")
     val path: String?,
-    @Json(name="StartDate")
+    @Json(name = "StartDate")
     val startDate: String?,
-    @Json(name="Type")
+    @Json(name = "Type")
     val type: String?,
-    @Json(name="Status")
+    @Json(name = "Status")
     val status: String?
 )

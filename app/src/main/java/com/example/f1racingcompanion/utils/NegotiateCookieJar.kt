@@ -13,4 +13,6 @@ class NegotiateCookieJar : CookieJar {
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> = cookies
+
+    fun getCookies() = cookies
 }

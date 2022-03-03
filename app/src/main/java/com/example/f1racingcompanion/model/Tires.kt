@@ -6,7 +6,6 @@ data class Tires(
     val tyreAge: Int?
 )
 
-
 //        Compound: HARD
 //        LapFlags: 0
 //        New: 'true'

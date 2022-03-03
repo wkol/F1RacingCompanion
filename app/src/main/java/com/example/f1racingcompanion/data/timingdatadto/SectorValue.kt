@@ -7,8 +7,12 @@ import com.squareup.moshi.JsonClass
 data class SectorValue(
     @Json(name = "Value")
     val value: String?,
+    @Json(name = "PreviousValue")
+    val previousValue: String?,
     @Json(name = "PersonalFastest")
     val personalFastest: Boolean?,
     @Json(name = "OverallFastest")
-    val overallFastest: Boolean?
+    val overallFastest: Boolean?,
+    @Json(name = "Segments")
+    val segments: Map<String, Int>?
 )

@@ -4,7 +4,13 @@ import android.util.Base64
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
-import com.example.f1racingcompanion.model.*
+import com.example.f1racingcompanion.model.Compound
+import com.example.f1racingcompanion.model.F1Driver
+import com.example.f1racingcompanion.model.PositionData
+import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.TimingAppData
+import com.example.f1racingcompanion.model.TimingData
+import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater
@@ -58,13 +64,12 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
-
 fun TimingDataDto.toListTimingData(): List<TimingData> {
     val timingAppDatas = mutableListOf<TimingData>()
     for ((key, value) in this.lines) {
         val driver = F1Driver.getDriverByNumber(key)
         val gapToLoader = value.gap
-        val gapToNext = value.interval
+        val gapToNext = value.interval?.value
         val lastLapTime = value.lastLap?.value
         val fastestLap = value.lastLap?.overallFastest
         val sector = value.sector
@@ -72,7 +77,6 @@ fun TimingDataDto.toListTimingData(): List<TimingData> {
     }
     return timingAppDatas
 }
-
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
     val timingAppDatas = mutableListOf<TimingAppData>()
@@ -85,14 +89,21 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
         val lapNumber = stint.lapNumber
         val isNew = stint.newTires
         val tiresAge = stint.tiresAge
-        val currentPos = stint.position
+        val currentPos = value.position
         timingAppDatas.add(TimingAppData(driver, pitstopCount, Tires(compound, isNew, tiresAge), currentPos, lapNumber, lapTime))
     }
     return timingAppDatas
 }
 
 fun PositionDataDto.toPositionDataList(): List<PositionData> {
-    return entries.map { entry -> PositionData(entry.time, entry.cars.entries.map { PositionOnTrack(
-        F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition) })
+    return entries.map { entry ->
+        PositionData(
+            entry.time,
+            entry.cars.entries.map {
+                PositionOnTrack(
+                    F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition
+                )
+            }
+        )
     }
 }
