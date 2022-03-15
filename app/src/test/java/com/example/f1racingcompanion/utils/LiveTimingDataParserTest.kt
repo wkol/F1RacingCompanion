@@ -67,8 +67,8 @@ class LiveTimingDataParserTest {
 
         // Then parse data is correct
         Assert.assertEquals(liveTimingData!!.name, "TimingAppData")
-        Assert.assertEquals(liveTimingData.date.toString(), "Fri Oct 08 08:34:53 CEST 2021")
-        Assert.assertEquals(liveTimingData.data!!.cars[11]!!.stints[1]!!.compound, "MEDIUM")
+        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
+        Assert.assertEquals(liveTimingData.data!!.lapInfo[11]!!.stints[1]!!.compound, "MEDIUM")
     }
 
 
@@ -113,7 +113,7 @@ class LiveTimingDataParserTest {
 
         // Then parse data is correct
         Assert.assertEquals(liveTimingData!!.name, "CarData.z")
-        Assert.assertEquals(liveTimingData.date.toString(), "Fri Oct 08 08:34:53 CEST 2021")
+        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
         Assert.assertEquals(liveTimingData.data!!.entries[2].cars[7]!!.telemetry.rmpValue, 8887)
     }
 
@@ -135,7 +135,7 @@ class LiveTimingDataParserTest {
 
         // Then parse data is correct
         Assert.assertEquals(liveTimingData!!.name, "Position.z")
-        Assert.assertEquals(liveTimingData.date.toString(), "Fri Oct 08 08:34:53 CEST 2021")
+        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
         Assert.assertEquals(liveTimingData.data!!.entries[3].cars[31]!!.xPosition, -14077F)
     }
 

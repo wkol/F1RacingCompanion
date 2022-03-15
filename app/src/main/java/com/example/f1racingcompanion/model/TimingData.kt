@@ -1,13 +1,18 @@
 package com.example.f1racingcompanion.model
 
+import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 
 data class TimingData(
-    val driver: F1Driver,
+    val driverNum: Int,
     val gapToLeader: String?,
     val gapToNext: String?,
     val lastLapTime: String?,
-    val fastestLap: Boolean?,
+    val fastestLap: BestLap?,
     val sector: Map<String, SectorValue>?,
     val position: Int?,
+    val inPit: Boolean?,
+    val retired: Boolean?,
+    val pits: Int?,
+    val overallFastest: Boolean?
 )

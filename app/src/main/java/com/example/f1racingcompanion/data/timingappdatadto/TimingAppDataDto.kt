@@ -6,5 +6,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class TimingAppDataDto(
     @Json(name = "Lines")
-    val cars: Map<Int, DriverTimingDto>
+    val lapInfo: Map<Int, DriverTimingDto>
 )

@@ -1,26 +1,17 @@
 package com.example.f1racingcompanion.model
 
-import com.example.f1racingcompanion.utils.Constants
+import com.example.f1racingcompanion.data.f1driverlistelementdto.F1DriverListElementDto
 
-open class F1Driver (
+open class F1Driver(
     val firstName: String,
     val lastName: String,
     val carNumber: Int,
     val shortcut: String,
     val team: String,
-    val teamColor: TeamColor,
+    val teamColor: Long,
 ) {
 
-    constructor(driver: F1Driver): this(driver.firstName, driver.lastName, driver.carNumber, driver.shortcut, driver.team, driver.teamColor)
-
-
-
-
-    companion object {
-        fun getDriverByNumber(num: Int): F1Driver {
-            return Constants.DRIVERS[num] ?: F1Driver("", "", -1, "", "", TeamColor.WILLIAMS)
-        }
-    }
+    constructor(driverInfo: F1DriverListElementDto): this(driverInfo.firstName, driverInfo.lastName, driverInfo.carNumber, driverInfo.shortcut, driverInfo.team, driverInfo.teamColor)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

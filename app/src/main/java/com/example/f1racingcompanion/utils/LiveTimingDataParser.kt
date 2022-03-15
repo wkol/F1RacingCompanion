@@ -53,28 +53,28 @@ class LiveTimingDataParser(
                         reader.endArray()
                         reader.endObject()
                         return when (name) {
-                            "TimingStats" -> LiveTimingData<TimingStatsDto>(
+                            "TimingStats" -> LiveTimingData(
                                 name,
                                 timingStatsAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "TimingData" -> LiveTimingData<TimingDataDto>(
+                            "TimingData" -> LiveTimingData(
                                 name,
                                 timingDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "TimingAppData" -> LiveTimingData<TimingAppDataDto>(
+                            "TimingAppData" -> LiveTimingData(
                                 name,
                                 timingAppDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "CarData.z" -> LiveTimingData<CarDataDto>(
+                            "CarData.z" -> LiveTimingData(
                                 name,
                                 carDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
                                 date
                             )
-                            "Position.z" -> LiveTimingData<PositionDataDto>(
+                            "Position.z" -> LiveTimingData(
                                 name,
                                 positionDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),

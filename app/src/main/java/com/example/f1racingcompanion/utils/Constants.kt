@@ -2,7 +2,6 @@ package com.example.f1racingcompanion.utils
 
 import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.model.F1Driver
-import com.example.f1racingcompanion.model.TeamColor
 
 object Constants {
     val CHANNELS_MAP = hashMapOf(
@@ -45,6 +44,4 @@ object Constants {
     val CIRCIUTS = mapOf(
         "russia" to R.drawable.russia
     )
-
-    val DRIVERS = mapOf(33 to F1Driver("Max", "Verstapen", 33, "VER", "Red Bull Racing", TeamColor.RED_BULL))
 }
