@@ -1,7 +1,6 @@
 package com.example.f1racingcompanion.utils
 
 import com.example.f1racingcompanion.R
-import com.example.f1racingcompanion.model.F1Driver
 
 object Constants {
     val CHANNELS_MAP = hashMapOf(

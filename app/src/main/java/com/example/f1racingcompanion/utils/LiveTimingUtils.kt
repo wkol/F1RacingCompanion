@@ -4,11 +4,18 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.data.f1driverlistelementdto.F1DriverListElementDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
-import com.example.f1racingcompanion.model.*
+import com.example.f1racingcompanion.model.Compound
+import com.example.f1racingcompanion.model.TimingAppData
+import com.example.f1racingcompanion.model.TimingData
+import com.example.f1racingcompanion.model.F1DriverListElement
+import com.example.f1racingcompanion.model.PositionData
+import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.util.zip.Inflater
@@ -45,7 +52,7 @@ object LiveTimingUtils {
         else -> Color(0xC8FFFFFF)
     }
 
-    fun getTiresIcon(compound: Compound): Int = when(compound) {
+    fun getTiresIcon(compound: Compound): Int = when (compound) {
         Compound.SOFT -> R.drawable.ic_soft_tires
         Compound.MEDIUM -> R.drawable.ic_medium_tires
         Compound.HARD -> R.drawable.ic_hard_tires
@@ -78,39 +85,75 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
-
 fun TimingDataDto.toListTimingData(): List<TimingData> {
     val timingAppDatas = mutableListOf<TimingData>()
     for ((key, value) in this.lines) {
-        val driver = F1Driver.getDriverByNumber(key)
+        if (value.sector?.values?.any { it.segments != null } == true) continue
         val gapToLoader = value.gap
         val gapToNext = value.interval?.value
         val lastLapTime = value.lastLap?.value
         val fastestLap = value.lastLap?.overallFastest
         val sector = value.sector
-        timingAppDatas.add(TimingData(driver, gapToLoader, gapToNext, lastLapTime, fastestLap, sector))
+        val retired = value.retired
+        val inPit = value.inPit
+        val pits = value.pitsNum
+        val bestLap = value.bestLapTime
+        val position = value.position
+        timingAppDatas.add(
+            TimingData(
+                key,
+                gapToLoader,
+                gapToNext,
+                lastLapTime,
+                bestLap,
+                sector,
+                position,
+                inPit,
+                retired,
+                pits,
+                fastestLap
+            )
+        )
     }
     return timingAppDatas
 }
+
+fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.map {
+    val stint = it.value.stints.entries.first().value
+    TimingAppData(
+        driverNum = it.key,
+        currentTires = Tires(
+            currentCompound = Compound.valueOf(stint.compound ?: ""),
+            isNew = stint.newTires.toBoolean(),
+            tyreAge = stint.tiresAge
+        ),
+        startingGridPos = it.value.gridPos?.toInt(),
+        lapNumber = stint.lapNumber,
+        lapTime = stint.lapTime
+    )
+}
+
+fun F1DriverListElement.toDto() = F1DriverListElementDto(
+    lastLapTime,
+    lastSectors,
+    tires,
+    position,
+    interval,
+    toFirst,
+    bestLap,
+    inPit,
+    retired,
+    pitstopCount,
+    startingGridPos,
+    firstName,
+    lastName,
+    carNumber,
+    shortcut,
+    team,
+    teamColor
+)
 
 fun Offset.times(operand: Offset): Offset = Offset(x * operand.x, y * operand.y)
-
-fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> {
-    val timingAppDatas = mutableListOf<TimingAppData>()
-    for ((key, value) in this.lapInfo) {
-        val driver = F1Driver.getDriverByNumber(key)
-        val pitstopCount = value.stints.keys.first()
-        val stint = value.stints[pitstopCount]!!
-        val compound = Compound.valueOf(stint.compound ?: "")
-        val lapTime = stint.lapTime
-        val lapNumber = stint.lapNumber
-        val isNew = stint.newTires
-        val tiresAge = stint.tiresAge
-        val currentPos = value.position
-        timingAppDatas.add(TimingAppData(driver, pitstopCount, Tires(compound, isNew, tiresAge), currentPos, lapNumber, lapTime))
-    }
-    return timingAppDatas
-}
 
 fun PositionDataDto.toPositionDataList(): List<PositionData> {
     return entries.map { entry ->
@@ -118,9 +161,29 @@ fun PositionDataDto.toPositionDataList(): List<PositionData> {
             entry.time,
             entry.cars.entries.map {
                 PositionOnTrack(
-                    F1Driver.getDriverByNumber(it.key), it.value.xPosition, it.value.yPosition
+                    it.key, it.value.xPosition, it.value.yPosition
                 )
             }
         )
     }
 }
+
+fun F1DriverListElementDto.toF1DriverElement(): F1DriverListElement = F1DriverListElement(
+    lastLapTime,
+    lastSectors.toMutableMap(),
+    tires,
+    position,
+    interval,
+    toFirst,
+    bestLap,
+    inPit,
+    retired,
+    pitstopCount,
+    startingGridPos,
+    firstName,
+    lastName,
+    carNumber,
+    shortcut,
+    team,
+    teamColor
+)

@@ -11,7 +11,7 @@ open class F1Driver(
     val teamColor: Long,
 ) {
 
-    constructor(driverInfo: F1DriverListElementDto): this(driverInfo.firstName, driverInfo.lastName, driverInfo.carNumber, driverInfo.shortcut, driverInfo.team, driverInfo.teamColor)
+    constructor(driverInfo: F1DriverListElementDto) : this(driverInfo.firstName, driverInfo.lastName, driverInfo.carNumber, driverInfo.shortcut, driverInfo.team, driverInfo.teamColor)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

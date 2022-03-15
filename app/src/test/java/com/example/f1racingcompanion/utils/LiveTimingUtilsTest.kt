@@ -8,7 +8,9 @@ import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
 import com.example.f1racingcompanion.utils.LiveTimingUtils.decodeMessage
 import com.example.f1racingcompanion.utils.LiveTimingUtils.getColorFromSector
 import com.example.f1racingcompanion.utils.LiveTimingUtils.getTiresIcon
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LiveTimingUtilsTest {
@@ -69,7 +71,7 @@ class LiveTimingUtilsTest {
     @Test
     fun getCorrectColorFromSectorValue() {
         // Given three different Sector Values
-        val sectors = listOf(SectorValue("23.12", true, false, null), SectorValue("23.12", false, false, null), SectorValue("23.12", true, true, null))
+        val sectors = listOf(SectorValue("23.12", null, true, false, null), SectorValue("23.12", null, false, false, null), SectorValue("23.12", null, true, true, null))
 
         // When converting them to corresponding colors
         val colorsConverted = sectors.map { getColorFromSector(it) }

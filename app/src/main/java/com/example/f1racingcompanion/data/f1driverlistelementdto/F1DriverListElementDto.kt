@@ -25,4 +25,3 @@ data class F1DriverListElementDto(
     val team: String,
     val teamColor: Long
 )
-
