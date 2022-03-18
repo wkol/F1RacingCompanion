@@ -46,7 +46,11 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
         }.flowOn(Dispatchers.IO)
 
     fun getTimingStats() = webSocketService.observeTimingStats().onEach {
-        Timber.d("Received TimingStatsData")
+        Timber.d("Received TimingStats")
+    }.flowOn(Dispatchers.IO)
+
+    fun getTimingAppData() = webSocketService.observeTimingAppData().onEach {
+        Timber.d("Received TimingAppData")
     }.flowOn(Dispatchers.IO)
 
     fun getTimingData() = webSocketService.observeTimingData().onEach {

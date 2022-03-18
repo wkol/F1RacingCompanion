@@ -102,12 +102,12 @@ class LiveTimingDataParser(
         ): JsonAdapter<*>? {
             if (annotations.isNotEmpty()) return null
             if (Types.getRawType(type) == LiveTimingData::class.java) {
-                val dataAdapter = moshi.adapter<TimingDataDto>(TimingDataDto::class.java)
-                val statsAdapter = moshi.adapter<TimingStatsDto>(TimingStatsDto::class.java)
-                val carDataAdapter = moshi.adapter<CarDataDto>(CarDataDto::class.java)
-                val timingAppDataAdapter = moshi.adapter<TimingAppDataDto>(TimingAppDataDto::class.java)
+                val dataAdapter = moshi.adapter(TimingDataDto::class.java)
+                val statsAdapter = moshi.adapter(TimingStatsDto::class.java)
+                val carDataAdapter = moshi.adapter(CarDataDto::class.java)
+                val timingAppDataAdapter = moshi.adapter(TimingAppDataDto::class.java)
                 val positionDataAdapter =
-                    moshi.adapter<PositionDataDto>(PositionDataDto::class.java)
+                    moshi.adapter(PositionDataDto::class.java)
                 return LiveTimingDataParser(
                     statsAdapter,
                     dataAdapter,

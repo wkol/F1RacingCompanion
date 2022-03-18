@@ -5,6 +5,7 @@ import com.example.f1racingcompanion.data.Subscribe
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
@@ -33,6 +34,11 @@ interface LiveTimingService {
     @Wrapped(path = ["M"])
     @FirstElement
     fun observeTelemetry(): Flow<LiveTimingData<CarDataDto>>
+
+    @Receive
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeTimingAppData(): Flow<LiveTimingData<TimingAppDataDto>>
 
     @Receive
     @Wrapped(path = ["M"])
@@ -91,7 +97,7 @@ interface LiveTimingService {
                 streamAdapterFactories = listOf(com.example.f1racingcompanion.utils.FlowStreamAdapter.Factory()),
             )
             val scarletInstance = Scarlet(protocol, config)
-            return scarletInstance.create<LiveTimingService>()
+            return scarletInstance.create()
         }
     }
 }

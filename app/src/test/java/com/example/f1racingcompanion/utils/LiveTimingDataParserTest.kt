@@ -71,7 +71,6 @@ class LiveTimingDataParserTest {
         Assert.assertEquals(liveTimingData.data!!.lapInfo[11]!!.stints[1]!!.compound, "MEDIUM")
     }
 
-
     @Test
     fun jsonToLiveTimingData() {
         // Given json string containing LiveTimingData add proper adapter
@@ -138,6 +137,4 @@ class LiveTimingDataParserTest {
         Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
         Assert.assertEquals(liveTimingData.data!!.entries[3].cars[31]!!.xPosition, -14077F)
     }
-
-
 }

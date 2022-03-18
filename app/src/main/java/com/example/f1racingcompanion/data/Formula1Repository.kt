@@ -19,22 +19,22 @@ class Formula1Repository @Inject constructor(
 
     fun getConnectionToken(hubData: String = Constants.HUB_DATA): Flow<Result<String>> = flow {
         try {
-            emit(Result.Loading<String>())
+            emit(Result.Loading())
             val response = api.negotiate(hubData)
-            emit(Result.Success<String>(response.connectionToken))
+            emit(Result.Success(response.connectionToken))
         } catch (e: IOException) {
-            emit(Result.Error<String>(msg = e.localizedMessage ?: "Unknown error"))
+            emit(Result.Error(msg = e.localizedMessage ?: "Unknown error"))
         } catch (e: HttpException) {
-            emit(Result.Error<String>("Unable to connect to the server"))
+            emit(Result.Error("Unable to connect to the server"))
         }
     }.flowOn(Dispatchers.IO)
 
     fun checkForActiveSession(): Flow<Result<Boolean>> = flow {
         try {
-            emit(Result.Loading<Boolean>())
+            emit(Result.Loading())
             val response = api.streamingStatus()
             emit(
-                Result.Success<Boolean>(
+                Result.Success(
                     data = (
                         when (response.endDate) {
                             "Offline" -> false
@@ -45,9 +45,9 @@ class Formula1Repository @Inject constructor(
                 )
             )
         } catch (e: IOException) {
-            emit(Result.Error<Boolean>(msg = e.localizedMessage ?: "Unknown error"))
+            emit(Result.Error(msg = e.localizedMessage ?: "Unknown error"))
         } catch (e: HttpException) {
-            emit(Result.Error<Boolean>("Unable to connect to the server"))
+            emit(Result.Error("Unable to connect to the server"))
         }
     }.flowOn(Dispatchers.IO)
 }
