@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.ui.home
+package com.example.f1racingcompanion.home
 
 data class RaceStatusState(
     val isActive: Boolean? = null,
