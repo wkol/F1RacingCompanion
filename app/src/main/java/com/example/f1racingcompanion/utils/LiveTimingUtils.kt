@@ -10,11 +10,11 @@ import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.Compound
-import com.example.f1racingcompanion.model.TimingAppData
-import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.model.PositionData
 import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.TimingAppData
+import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
@@ -85,37 +85,22 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
-fun TimingDataDto.toListTimingData(): List<TimingData> {
-    val timingAppDatas = mutableListOf<TimingData>()
-    for ((key, value) in this.lines) {
-        if (value.sector?.values?.any { it.segments != null } == true) continue
-        val gapToLoader = value.gap
-        val gapToNext = value.interval?.value
-        val lastLapTime = value.lastLap?.value
-        val fastestLap = value.lastLap?.overallFastest
-        val sector = value.sector
-        val retired = value.retired
-        val inPit = value.inPit
-        val pits = value.pitsNum
-        val bestLap = value.bestLapTime
-        val position = value.position
-        timingAppDatas.add(
-            TimingData(
-                key,
-                gapToLoader,
-                gapToNext,
-                lastLapTime,
-                bestLap,
-                sector,
-                position,
-                inPit,
-                retired,
-                pits,
-                fastestLap
-            )
-        )
-    }
-    return timingAppDatas
+fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filter { entry ->
+    entry.value.sector?.values?.any { it.segments != null } == false
+}.map {
+    TimingData(
+        driverNum = it.key,
+        gapToLeader = it.value.gap,
+        gapToNext = it.value.interval?.value,
+        lastLapTime = it.value.lastLap?.value,
+        fastestLap = it.value.bestLapTime,
+        sector = it.value.sector,
+        position = it.value.position,
+        inPit = it.value.inPit,
+        retired = it.value.retired,
+        pits = it.value.pitsNum,
+        overallFastest = it.value.lastLap?.overallFastest
+    )
 }
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.map {

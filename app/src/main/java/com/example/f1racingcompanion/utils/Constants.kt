@@ -1,6 +1,7 @@
 package com.example.f1racingcompanion.utils
 
 import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.model.CircuitOffset
 
 object Constants {
     val CHANNELS_MAP = hashMapOf(
@@ -37,7 +38,7 @@ object Constants {
     )
 
     val OFFSETMAP = mapOf(
-        "russia" to listOf(-16715, 1654, -10799, 1063)
+        "russia" to CircuitOffset(xOffset = -16715F, yOffset = 1063F, xAbs = 18369F, yAbs = 11862F)
     )
 
     val CIRCIUTS = mapOf(

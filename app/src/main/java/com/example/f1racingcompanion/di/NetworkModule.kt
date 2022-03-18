@@ -41,7 +41,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providesMoshi(): Moshi =
+    fun provideMoshi(): Moshi =
         Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
             .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
 
