@@ -49,7 +49,7 @@ object LiveTimingUtils {
         sectorValue == null -> Color.Transparent
         sectorValue.overallFastest == true -> Color(0xFF7A30A2)
         sectorValue.personalFastest == true -> Color(0xFF33B353)
-        else -> Color(0xC8FFFFFF)
+        else -> Color(0x97FFFFFF)
     }
 
     fun getTiresIcon(compound: Compound): Int = when (compound) {

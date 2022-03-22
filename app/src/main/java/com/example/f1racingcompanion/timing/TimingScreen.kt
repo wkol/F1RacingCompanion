@@ -2,7 +2,6 @@ package com.example.f1racingcompanion.timing
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,35 +24,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
-import com.example.f1racingcompanion.model.CircuitOffset
 import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.model.Tires
 import com.example.f1racingcompanion.ui.theme.TitilliumWeb
 import com.example.f1racingcompanion.utils.Constants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlin.random.Random
 
 @Composable
 fun DriverElement(
@@ -68,36 +60,15 @@ fun DriverElement(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
-        Box(
+        PositionBox(
+            position = driverListElement.position,
+            modifier =
             Modifier
                 .padding(start = 8.dp, top = 3.dp, end = 3.dp, bottom = 3.dp)
                 .size(25.dp)
-                .clip(RoundedCornerShape(10))
-                .background(Color.White)
-        ) {
-            Text(
-                text = driverListElement.position.toString(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.TopCenter)
-                    .offset(y = (-2).dp),
-                fontFamily = TitilliumWeb,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Spacer(Modifier.width(10.dp))
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .fillMaxHeight(0.9f)
-                .width(8.dp)
-                .background(
-                    Color(driverListElement.teamColor),
-                    RoundedCornerShape(5)
-                )
-                .padding(horizontal = 10.dp)
         )
+        Spacer(Modifier.width(10.dp))
+        TeamColorBox(driverListElement.teamColor)
         Text(
             text = "${driverListElement.firstName[0]}.${driverListElement.lastName}",
             modifier = Modifier
@@ -125,30 +96,25 @@ fun DriverElement(
 }
 
 @Composable
-fun CircuitPlot(modifier: Modifier = Modifier, circuitName: String) {
-    Constants.CIRCIUTS[circuitName]?.let {
-        val painter = painterResource(id = it)
-        Canvas(modifier = modifier) {
-            with(painter) {
-                draw(size)
-            }
-        }
-    }
-}
-
-@Composable
-fun DriverPlot(modifier: Modifier = Modifier, driversPosition: State<Map<Int, Offset>>, offset: CircuitOffset) {
-    Canvas(modifier) {
-        val xScale: Float = size.width / offset.xAbs
-        val yScale: Float = size.height / offset.yAbs
-        driversPosition.value.forEach { (f1Driver, position) ->
-            val color = 0x111111
-            drawCircle(
-                color = Color(color),
-                radius = 20F,
-                center = Offset(position.x * xScale, position.y * yScale)
-            )
-        }
+fun CircuitDriverPlot(
+    circuitInfo: CircuitInfo,
+    driversPostitions: Map<Int, Position>,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier) {
+        CircuitPlot(
+            circuitName = circuitInfo.circuitName,
+            modifier = Modifier
+                .fillMaxSize(0.9F)
+                .align(Alignment.Center)
+        )
+        DriverPlot(
+            driversPosition = driversPostitions,
+            offset = circuitInfo.circuitOffset,
+            modifier = Modifier
+                .fillMaxSize(0.9F)
+                .align(Alignment.Center)
+        )
     }
 }
 
@@ -177,86 +143,31 @@ fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement, co
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun TimingScreen(viewModel: TimingViewModel) {
-    var isInterval by remember { mutableStateOf(true) }
-    Column(modifier = Modifier.fillMaxSize()) {
-        StandingHeader(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(25.dp)
-                .clip(
-                    RoundedCornerShape(
-                        topStartPercent = 50,
-                        topEndPercent = 50,
-                        bottomStartPercent = 0,
-                        bottomEndPercent = 0
-                    )
-                )
-                .background(Color.DarkGray),
-            isInterval
-        ) { isInterval = !isInterval }
-        val expandedStates = remember(viewModel.standing) {
-            viewModel.standing.value.map { false }.toMutableStateList()
-        }
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxSize(0.8F)
-                .padding(2.dp)
+    val standing = viewModel.standing.collectAsState()
+    val positions = viewModel.driversPosition.collectAsState()
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.DarkGray) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            viewModel.standing.value.forEachIndexed { idx, element ->
-                val expandedState = expandedStates[idx]
-                item(key = element.carNumber) {
-                    DriverElement(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .clip(
-                                RoundedCornerShape(
-                                    topStartPercent = 0,
-                                    topEndPercent = 20,
-                                    bottomEndPercent = 20,
-                                    bottomStartPercent = 0
-                                )
-                            )
-                            .background(Color(0x60151735)),
-                        driverListElement = element,
-                        isInterval = isInterval
-                    ) {
-                        expandedStates[idx] = !expandedState
-                    }
-                    AnimatedVisibility(expandedState) {
-                        DriverDetails(
-                            driver = element,
-                            modifier = Modifier
-                                .height(60.dp)
-                                .fillMaxWidth(),
-                            color = Color(0x57141330)
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(Modifier.height(20.dp))
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.3F)
-                .clip(RoundedCornerShape(80F))
-                .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
-                .background(Color(0x57141330))
-        ) {
-            CircuitPlot(
-                modifier = Modifier
-                    .fillMaxSize(0.95F)
-                    .align(Alignment.Center),
-                circuitName = "russia"
+            RaceNameText(
+                raceName = viewModel.circuitInfo.fullName,
+                modifier = Modifier.align(Alignment.Start)
             )
-            DriverPlot(
+            StandingLazyList(
+                standing = standing.value.values.toList(),
+                fastestLap = FastestRaceLap(1, "1:11")
+            )
+            Spacer(Modifier.height(10.dp))
+            CircuitDriverPlot(
                 modifier = Modifier
-                    .fillMaxSize(0.95F)
-                    .align(Alignment.Center),
-                driversPosition = viewModel.driversPosition.collectAsState(),
-                offset = viewModel.offsets
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(80F))
+                    .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
+                    .background(Color(0x57141330)),
+                circuitInfo = viewModel.circuitInfo,
+                driversPostitions = positions.value
             )
         }
     }
@@ -264,7 +175,7 @@ fun TimingScreen(viewModel: TimingViewModel) {
 
 @Composable
 fun StandingLazyList(
-    standing: SnapshotStateList<F1DriverListElement>,
+    standing: List<F1DriverListElement>,
     fastestLap: FastestRaceLap,
 ) {
     var isInterval by remember { mutableStateOf(false) }
@@ -288,7 +199,7 @@ fun StandingLazyList(
     ) { isInterval = !isInterval }
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(0.95F)
             .fillMaxSize(0.65F)
             .padding(2.dp)
     ) {
@@ -360,19 +271,9 @@ fun DriverElementPreview() {
                         overallFastest = false,
                         segments = null,
                         previousValue = null
-                    ),
-                    "3" to SectorValue(
-                        "13.78",
-                        personalFastest = true,
-                        overallFastest = false,
-                        previousValue = null,
-                        segments = null
                     )
                 ),
-                Tires(Compound.HARD, false, 2),
-                1,
-                "+1,4",
-                "+9.0",
+                Tires(Compound.HARD, false, 2), 1, "+1,4", "+9.0",
                 BestLap("1:11:11", 11),
                 false,
                 false,
@@ -387,37 +288,33 @@ fun DriverElementPreview() {
             )
         }.toMutableStateList()
     }
+    val ci = CircuitInfo("bahrain", Constants.OFFSETMAP["bahrain"]!!, "Bahrain")
     Surface(modifier = Modifier.fillMaxSize(), color = Color.DarkGray) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            RaceNameText(raceName = "Russia")
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            RaceNameText(raceName = ci.fullName, modifier = Modifier.align(Alignment.Start))
             StandingLazyList(standing = elements, fastestLap = FastestRaceLap(1, "1:11"))
             Spacer(Modifier.height(10.dp))
-            Box(
-                Modifier
+            CircuitDriverPlot(
+                modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(80F))
                     .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
-                    .background(Color(0x57141330))
-                    .clickable {
-                        elements[0].toFirst = "${Random.nextInt(0, 10)}"
-                        elements[0] = elements[0].copy()
-                    }
-            ) {
-                CircuitPlot(
-                    modifier = Modifier
-                        .fillMaxSize(0.9F)
-                        .align(Alignment.Center),
-                    circuitName = "russia"
+                    .background(Color(0x57141330)),
+                circuitInfo = ci,
+                driversPostitions = mapOf(
+                    33 to Position(
+                        0xFFFFFFFF,
+                        Offset(
+                            -2980 - Constants.OFFSETMAP["russia"]!!.xOffset,
+                            5058 + Constants.OFFSETMAP["russia"]!!.yOffset
+                        )
+                    )
                 )
-                DriverPlot(
-                    modifier = Modifier
-                        .fillMaxSize(0.9F)
-                        .align(Alignment.Center),
-                    driversPosition = MutableSharedFlow<Map<Int, Offset>>().collectAsState(emptyMap()),
-                    offset = Constants.OFFSETMAP["russia"]!!
-                )
-            }
+            )
         }
     }
 }

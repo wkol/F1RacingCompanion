@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.timing
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,24 +25,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
+import com.example.f1racingcompanion.model.CircuitOffset
 import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.Tires
 import com.example.f1racingcompanion.ui.theme.TitilliumWeb
+import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.LiveTimingUtils
 
 @Composable
 fun SectorIndicator(
     modifier: Modifier = Modifier,
-    sectors: Map<String, SectorValue> = remember { emptyMap() }
+    sectors: Map<String, SectorValue>
 ) {
     Column(
         modifier,
@@ -229,6 +236,67 @@ fun StandingHeader(
                 fontSize = 15.sp,
                 fontFamily = TitilliumWeb,
                 fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun TeamColorBox(color: Long) {
+    Box(
+        modifier = Modifier
+            .wrapContentSize(Alignment.Center)
+            .fillMaxHeight(0.9f)
+            .width(8.dp)
+            .background(
+                Color(color),
+                RoundedCornerShape(5)
+            )
+            .padding(horizontal = 10.dp)
+    )
+}
+@Composable
+fun PositionBox(position: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .clip(RoundedCornerShape(10))
+            .background(Color.White)
+    ) {
+        Text(
+            text = position.toString(),
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.TopCenter)
+                .offset(y = (-2).dp),
+            fontFamily = TitilliumWeb,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CircuitPlot(modifier: Modifier = Modifier, circuitName: String) {
+    Constants.CIRCIUTS[circuitName]?.let {
+        val painter = painterResource(id = it)
+        Canvas(modifier = modifier) {
+            with(painter) {
+                draw(size)
+            }
+        }
+    }
+}
+
+@Composable
+fun DriverPlot(modifier: Modifier = Modifier, driversPosition: Map<Int, Position>, offset: CircuitOffset) {
+    Canvas(modifier) {
+        val xScale: Float = size.width / offset.xAbs
+        val yScale: Float = size.height / offset.yAbs
+        driversPosition.values.forEach { (color, position) ->
+            drawCircle(
+                color = Color(color),
+                radius = 20F,
+                center = Offset(position.x * xScale, position.y * yScale)
             )
         }
     }
