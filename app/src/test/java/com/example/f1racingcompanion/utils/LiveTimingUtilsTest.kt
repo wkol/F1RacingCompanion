@@ -77,7 +77,7 @@ class LiveTimingUtilsTest {
         val colorsConverted = sectors.map { getColorFromSector(it) }
 
         // Then each sector should have a different, corresponding color
-        assertEquals(colorsConverted, listOf(Color(0xFF33B353), Color(0xC8FFFFFF), Color(0xFF7A30A2)))
+        assertEquals(colorsConverted, listOf(Color(0xFF33B353), Color(0x97FFFFFF), Color(0xFF7A30A2)))
     }
 
     @Test
