@@ -85,8 +85,8 @@ fun ByteArray.zlibDecompress(): String {
     }
 }
 
-fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filter { entry ->
-    entry.value.sector?.values?.any { it.segments != null } == false
+fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { entry ->
+    entry.value.sector?.values?.any { it.segments != null } == true
 }.map {
     TimingData(
         driverNum = it.key,
@@ -108,7 +108,7 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.m
     TimingAppData(
         driverNum = it.key,
         currentTires = Tires(
-            currentCompound = Compound.valueOf(stint.compound ?: ""),
+            currentCompound = Compound.valueOf(stint.compound ?: "UNKNOWN"),
             isNew = stint.newTires.toBoolean(),
             tyreAge = stint.tiresAge
         ),
@@ -118,9 +118,9 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.m
     )
 }
 
-fun F1DriverListElement.toDto() = F1DriverListElementDto(
+fun F1DriverListElementDto.toF1DriverListElement() = F1DriverListElement(
     lastLapTime,
-    lastSectors,
+    lastSectors.toMutableMap(),
     tires,
     position,
     interval,
