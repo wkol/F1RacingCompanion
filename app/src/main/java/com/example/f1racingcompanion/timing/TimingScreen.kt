@@ -145,6 +145,7 @@ fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement, co
 fun TimingScreen(viewModel: TimingViewModel) {
     val standing = viewModel.standing.collectAsState()
     val positions = viewModel.driversPosition.collectAsState()
+    val fastestLap = viewModel.fastestLap.collectAsState()
     Surface(modifier = Modifier.fillMaxSize(), color = Color.DarkGray) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -155,8 +156,8 @@ fun TimingScreen(viewModel: TimingViewModel) {
                 modifier = Modifier.align(Alignment.Start)
             )
             StandingLazyList(
-                standing = standing.value.values.toList(),
-                fastestLap = FastestRaceLap(1, "1:11")
+                standing = standing.value.values.filter{ it.position != 0 }.sortedBy { it.position }.toList(),
+                fastestLap = fastestLap.value
             )
             Spacer(Modifier.height(10.dp))
             CircuitDriverPlot(
@@ -180,7 +181,7 @@ fun StandingLazyList(
 ) {
     var isInterval by remember { mutableStateOf(false) }
     val expandedStates = remember(standing) {
-        standing.map { false }.toMutableStateList()
+        List(20) { false }.toMutableStateList()
     }
     StandingHeader(
         modifier = Modifier
@@ -241,7 +242,8 @@ fun StandingLazyList(
                     driver = element,
                     modifier = Modifier
                         .height(60.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(2.dp),
                     color = Color(0x57141330)
                 )
             }
