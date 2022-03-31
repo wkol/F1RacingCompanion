@@ -156,7 +156,7 @@ fun TimingScreen(viewModel: TimingViewModel) {
                 modifier = Modifier.align(Alignment.Start)
             )
             StandingLazyList(
-                standing = standing.value.values.filter{ it.position != 0 }.sortedBy { it.position }.toList(),
+                standing = standing.value.values.filter { it.position != 0 }.sortedBy { it.position }.toList(),
                 fastestLap = fastestLap.value
             )
             Spacer(Modifier.height(10.dp))
