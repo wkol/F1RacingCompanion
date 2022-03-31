@@ -18,7 +18,6 @@ import io.fabric8.mockwebserver.DefaultMockServer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -80,13 +79,11 @@ class LiveTimingRepositoryTest {
             .once()
 
         // When starting a webSocketConnection
-        val events =
-            repository.startWebSocket().take(3).toList()
+        val events = repository.startWebSocket().take(2).toList()
 
         // Then the repository opens and closes connection
         assertTrue(events[0] is WebSocketEvent.OnConnectionOpened)
         assertTrue(events[1] is WebSocketEvent.OnConnectionClosing)
-        assertTrue(events[2] is WebSocketEvent.OnConnectionClosed)
     }
 
     @Test
