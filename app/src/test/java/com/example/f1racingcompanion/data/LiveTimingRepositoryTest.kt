@@ -17,6 +17,7 @@ import com.tinder.scarlet.websocket.okhttp.OkHttpWebSocket
 import io.fabric8.mockwebserver.DefaultMockServer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -24,6 +25,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -79,12 +81,12 @@ class LiveTimingRepositoryTest {
 
         // When starting a webSocketConnection
         val events =
-            repository.startWebSocket().takeWhile { it !is WebSocketEvent.OnConnectionClosed }
-                .toList()
+            repository.startWebSocket().take(3).toList()
 
         // Then the repository opens and closes connection
-        assert(events[0] is WebSocketEvent.OnConnectionOpened)
-        assert(events[1] is WebSocketEvent.OnConnectionClosing)
+        assertTrue(events[0] is WebSocketEvent.OnConnectionOpened)
+        assertTrue(events[1] is WebSocketEvent.OnConnectionClosing)
+        assertTrue(events[2] is WebSocketEvent.OnConnectionClosed)
     }
 
     @Test
