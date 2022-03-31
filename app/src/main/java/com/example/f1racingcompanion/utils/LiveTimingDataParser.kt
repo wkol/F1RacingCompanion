@@ -3,6 +3,7 @@ package com.example.f1racingcompanion.utils
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
 import com.squareup.moshi.FromJson
@@ -20,6 +21,7 @@ import java.util.Locale
 class LiveTimingDataParser(
     private val timingStatsAdapter: JsonAdapter<TimingStatsDto>,
     private val timingDataAdapter: JsonAdapter<TimingDataDto>,
+    private val timingAppDataAdapter: JsonAdapter<TimingAppDataDto>,
     private val carDataAdapter: JsonAdapter<CarDataDto>,
     private val positionDataAdapter: JsonAdapter<PositionDataDto>
 ) : JsonAdapter<LiveTimingData<*>>() {
@@ -51,23 +53,28 @@ class LiveTimingDataParser(
                         reader.endArray()
                         reader.endObject()
                         return when (name) {
-                            "TimingStats" -> LiveTimingData<TimingStatsDto>(
+                            "TimingStats" -> LiveTimingData(
                                 name,
                                 timingStatsAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "TimingData" -> LiveTimingData<TimingDataDto>(
+                            "TimingData" -> LiveTimingData(
                                 name,
                                 timingDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "CarData.z" -> LiveTimingData<CarDataDto>(
+                            "TimingAppData" -> LiveTimingData(
+                                name,
+                                timingAppDataAdapter.lenient().fromJsonValue(data),
+                                date
+                            )
+                            "CarData.z" -> LiveTimingData(
                                 name,
                                 carDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
                                 date
                             )
-                            "Position.z" -> LiveTimingData<PositionDataDto>(
+                            "Position.z" -> LiveTimingData(
                                 name,
                                 positionDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
@@ -95,14 +102,16 @@ class LiveTimingDataParser(
         ): JsonAdapter<*>? {
             if (annotations.isNotEmpty()) return null
             if (Types.getRawType(type) == LiveTimingData::class.java) {
-                val dataAdapter = moshi.adapter<TimingDataDto>(TimingDataDto::class.java)
-                val statsAdapter = moshi.adapter<TimingStatsDto>(TimingStatsDto::class.java)
-                val carDataAdapter = moshi.adapter<CarDataDto>(CarDataDto::class.java)
+                val dataAdapter = moshi.adapter(TimingDataDto::class.java)
+                val statsAdapter = moshi.adapter(TimingStatsDto::class.java)
+                val carDataAdapter = moshi.adapter(CarDataDto::class.java)
+                val timingAppDataAdapter = moshi.adapter(TimingAppDataDto::class.java)
                 val positionDataAdapter =
-                    moshi.adapter<PositionDataDto>(PositionDataDto::class.java)
+                    moshi.adapter(PositionDataDto::class.java)
                 return LiveTimingDataParser(
                     statsAdapter,
                     dataAdapter,
+                    timingAppDataAdapter,
                     carDataAdapter,
                     positionDataAdapter
                 )

@@ -1,5 +1,8 @@
 package com.example.f1racingcompanion.utils
 
+import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.model.CircuitOffset
+
 object Constants {
     val CHANNELS_MAP = hashMapOf(
         "0" to "RPM",
@@ -9,6 +12,9 @@ object Constants {
         "5" to "Brake",
         "45" to "DRS"
     )
+
+    const val LIVETIMING_PROXY_URL = "http://192.168.200.109:8080/"
+
     const val HUB_NAME = "Streaming"
 
     const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
@@ -26,15 +32,17 @@ object Constants {
     const val WEBSCOKET_PROTOCOL = "1.5"
 
     val SUBSRIBED_STREAMS = listOf(
-        "Heartbeat", "CarData.z", "Position.z",
-        "ExtrapolatedClock", "TopThree", "RcmSeries",
-        "TimingStats", "TimingAppData",
-        "WeatherData", "TrackStatus", "DriverList",
-        "RaceControlMessages", "SessionInfo",
-        "SessionData", "LapCount", "TimingData"
+        "CarData.z", "Position.z",
+        "TimingAppData", "TimingData"
     )
 
-    val offsetMap = mapOf(
-        "russia" to listOf(-16715, 1654, -10799, 1063)
+    val OFFSETMAP = mapOf(
+        "russia" to CircuitOffset(xOffset = -16715F, yOffset = 1063F, xAbs = 18369F, yAbs = 11862F),
+        "bahrain" to CircuitOffset(xOffset = -580F, yOffset = 8358F, xAbs = 8088F, yAbs = 11863F)
+    )
+
+    val CIRCIUTS = mapOf(
+        "russia" to R.drawable.russia,
+        "bahrain" to R.drawable.bahrain
     )
 }

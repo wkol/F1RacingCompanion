@@ -1,9 +1,11 @@
 package com.example.f1racingcompanion.api
 
+import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.Subscribe
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
 import com.example.f1racingcompanion.utils.LiveTimingUtils.createWebSocketUrl
@@ -11,7 +13,6 @@ import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Scarlet
-import com.tinder.scarlet.lifecycle.android.BuildConfig
 import com.tinder.scarlet.messageadapter.moshi.MoshiMessageAdapter
 import com.tinder.scarlet.websocket.ShutdownReason
 import com.tinder.scarlet.websocket.WebSocketEvent
@@ -33,6 +34,11 @@ interface LiveTimingService {
     @Wrapped(path = ["M"])
     @FirstElement
     fun observeTelemetry(): Flow<LiveTimingData<CarDataDto>>
+
+    @Receive
+    @Wrapped(path = ["M"])
+    @FirstElement
+    fun observeTimingAppData(): Flow<LiveTimingData<TimingAppDataDto>>
 
     @Receive
     @Wrapped(path = ["M"])
@@ -90,9 +96,8 @@ interface LiveTimingService {
                 messageAdapterFactories = listOf(MoshiMessageAdapter.Factory(moshi)),
                 streamAdapterFactories = listOf(com.example.f1racingcompanion.utils.FlowStreamAdapter.Factory()),
             )
-
             val scarletInstance = Scarlet(protocol, config)
-            return scarletInstance.create<LiveTimingService>()
+            return scarletInstance.create()
         }
     }
 }

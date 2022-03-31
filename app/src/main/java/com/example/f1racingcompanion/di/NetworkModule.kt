@@ -2,7 +2,9 @@ package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.api.LiveTimingProxyService
 import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.data.LiveTimingProxyRepository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
 import com.example.f1racingcompanion.utils.LiveTimingDataParser
@@ -37,11 +39,26 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    fun provideLiveTimingProxyService(okHttpClient: OkHttpClient, moshi: Moshi): LiveTimingProxyService {
+        return Retrofit.Builder()
+            .baseUrl(Constants.LIVETIMING_PROXY_URL)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(LiveTimingProxyService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideProxyRepository(api: LiveTimingProxyService): LiveTimingProxyRepository = LiveTimingProxyRepository(api)
+
+    @Singleton
+    @Provides
     fun provideRepository(api: Formula1Service): Formula1Repository = Formula1Repository(api)
 
     @Singleton
     @Provides
-    fun providesMoshi(): Moshi =
+    fun provideMoshi(): Moshi =
         Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
             .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
 

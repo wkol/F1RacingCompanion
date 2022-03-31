@@ -1,7 +1,7 @@
 package com.example.f1racingcompanion.model
 
 data class Tires(
-    val currentCompound: Compound?,
+    var currentCompound: Compound?,
     val isNew: Boolean?,
     val tyreAge: Int?
 )

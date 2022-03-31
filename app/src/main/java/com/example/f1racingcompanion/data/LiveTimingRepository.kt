@@ -4,7 +4,7 @@ import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.utils.Constants
 import com.tinder.scarlet.websocket.WebSocketEvent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
@@ -12,6 +12,7 @@ import timber.log.Timber
 import javax.inject.Singleton
 
 @Singleton
+@OptIn(InternalCoroutinesApi::class)
 class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
     fun subscribe() {
@@ -45,13 +46,16 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
         }.flowOn(Dispatchers.IO)
 
     fun getTimingStats() = webSocketService.observeTimingStats().onEach {
-        Timber.d("Received TimingStatsData")
+        Timber.d("Received TimingStats")
+    }.flowOn(Dispatchers.IO)
+
+    fun getTimingAppData() = webSocketService.observeTimingAppData().onEach {
+        Timber.d("Received TimingAppData")
     }.flowOn(Dispatchers.IO)
 
     fun getTimingData() = webSocketService.observeTimingData().onEach {
         Timber.d("Received TimingData")
-    }
-        .flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)
 
     fun getDriverTelemetry(number: Int) = flow {
         webSocketService.observeTelemetry().flowOn(Dispatchers.IO).collect { data ->

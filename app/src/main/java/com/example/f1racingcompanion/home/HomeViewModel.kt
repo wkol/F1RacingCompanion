@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.ui.home
+package com.example.f1racingcompanion.home
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State

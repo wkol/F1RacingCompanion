@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.lang.reflect.Type
 
-@ExperimentalCoroutinesApi
 class FlowStreamAdapter<T> : StreamAdapter<T, Flow<T>> {
-    override fun adapt(stream: Stream<T>) = callbackFlow<T> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun adapt(stream: Stream<T>) = callbackFlow {
         stream.start(object : Stream.Observer<T> {
             override fun onComplete() {
                 close()

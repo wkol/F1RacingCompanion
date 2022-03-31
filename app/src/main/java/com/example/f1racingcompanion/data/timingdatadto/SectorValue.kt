@@ -14,5 +14,5 @@ data class SectorValue(
     @Json(name = "OverallFastest")
     val overallFastest: Boolean?,
     @Json(name = "Segments")
-    val segments: Map<String, Int>?
+    val segments: Any?
 )
