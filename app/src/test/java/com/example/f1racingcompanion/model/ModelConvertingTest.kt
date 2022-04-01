@@ -1,12 +1,20 @@
 package com.example.f1racingcompanion.model
 
+import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
+import com.example.f1racingcompanion.data.previousdata.PreviousData
+import com.example.f1racingcompanion.data.previousdata.PreviousDriverTimingDto
+import com.example.f1racingcompanion.data.previousdata.PreviousTiming
+import com.example.f1racingcompanion.data.previousdata.PreviousTimingAppDataDto
+import com.example.f1racingcompanion.data.previousdata.PreviousTimingDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.DriverTimingDto
 import com.example.f1racingcompanion.data.timingappdatadto.Stint
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
+import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.Interval
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.Timing
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
+import com.example.f1racingcompanion.utils.toF1DriverListElementList
 import com.example.f1racingcompanion.utils.toListTimingAppData
 import com.example.f1racingcompanion.utils.toListTimingData
 import org.junit.Assert.assertEquals
@@ -113,5 +121,78 @@ class ModelConvertingTest {
         assertEquals(timingAppData[0].lapTime, "1:12:11.1")
         assertEquals(timingAppData[0].startingGridPos, 12)
         assertEquals(timingAppData[0].currentTires, Tires(Compound.MEDIUM, false, 2))
+    }
+
+    @Test
+    fun convertPreviousDataSuccesfullyToF1DriverListElemetns() {
+        val previousData = PreviousData(
+            PreviousTimingAppDataDto(
+                mapOf(
+                    31 to PreviousDriverTimingDto(
+                        listOf(
+                            Stint(
+                                null,
+                                "1:13:11.1",
+                                21,
+                                "SOFT",
+                                "true",
+                                3
+                            )
+                        ),
+                        11,
+                        "12"
+                    )
+                )
+            ),
+            PreviousTimingDataDto(
+                mapOf(
+                    31 to PreviousTiming(
+                        listOf(
+                            SectorValue(
+                                "34.165",
+                                null,
+                                false,
+                                false,
+                                mapOf("Status" to 2048)
+                            )
+                        ),
+                        "+1.0", Interval("+12.0", false), SectorValue("1:12:00", null, true, true, null),
+                        BestLap("1:12:00", 21),
+                        false, false, false, false, 10, 20, 0
+                    )
+                )
+            ),
+            mapOf(
+                31 to DriverInfoDto(
+                    "Max Verstappen",
+                    "NED",
+                    "Max",
+                    "Max Verstappen",
+                    "Verstappen",
+                    31,
+                    "-",
+                    "ffffff",
+                    "Red Bull",
+                    "VER"
+                ),
+                33 to DriverInfoDto(
+                    "Lewis Hamilton",
+                    "ENG",
+                    "Lewis",
+                    "Lewis Hamilton",
+                    "Hamilton",
+                    33,
+                    "-",
+                    "6cd3bf",
+                    "McLaren",
+                    "HAM"
+                )
+            )
+        )
+        val f1DriverList = previousData.toF1DriverListElementList()
+        assertEquals(f1DriverList.size, 2)
+        assertEquals(f1DriverList[0].carNumber, 31)
+        assertEquals(f1DriverList[0].position, 10)
+        assertEquals(f1DriverList[1].position, -1)
     }
 }

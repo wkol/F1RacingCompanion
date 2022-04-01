@@ -4,9 +4,11 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
-import com.example.f1racingcompanion.data.f1driverlistelementdto.F1DriverListElementDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
+import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
+import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.Compound
@@ -119,26 +121,6 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.m
     )
 }
 
-fun F1DriverListElementDto.toF1DriverListElement() = F1DriverListElement(
-    lastLapTime,
-    lastSectors.toMutableMap(),
-    tires,
-    position,
-    interval,
-    toFirst,
-    bestLap,
-    inPit,
-    retired,
-    pitstopCount,
-    startingGridPos,
-    firstName,
-    lastName,
-    carNumber,
-    shortcut,
-    team,
-    teamColor
-)
-
 fun Offset.times(operand: Offset): Offset = Offset(x * operand.x, y * operand.y)
 
 fun PositionDataDto.toPositionDataList(): List<PositionData> {
@@ -154,22 +136,53 @@ fun PositionDataDto.toPositionDataList(): List<PositionData> {
     }
 }
 
-fun F1DriverListElementDto.toF1DriverElement(): F1DriverListElement = F1DriverListElement(
-    lastLapTime,
-    lastSectors.toMutableMap(),
-    tires,
-    position,
-    interval,
-    toFirst,
-    bestLap,
-    inPit,
-    retired,
-    pitstopCount,
-    startingGridPos,
-    firstName,
-    lastName,
-    carNumber,
-    shortcut,
-    team,
-    teamColor
+fun DriverInfoDto.toF1DriverListElement() = F1DriverListElement(
+    "-",
+    mutableMapOf(),
+    Tires(Compound.UNKNOWN, false, 0),
+    0,
+    "-",
+    "-",
+    BestLap("", 0),
+    false,
+    false,
+    0,
+    0,
+    this.firstName,
+    this.lastName,
+    this.racingNumber,
+    this.tla,
+    this.teamName,
+    this.teamColour.toLong()
 )
+
+fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
+    val timing = this.timingDataDto?.lines?.get(driver.key)
+    val timingAppData = this.timingAppDataDto?.lapInfo?.get(driver.key)
+    F1DriverListElement(
+        lastLapTime = timing?.lastLap?.value ?: "-",
+        lastSectors = timing?.sector?.withIndex()?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
+        tires = timingAppData?.stints?.last()?.let {
+            Tires(
+                currentCompound = Compound.valueOf(it.compound ?: "UNKNOWN"),
+                isNew = it.newTires.toBoolean(),
+                tyreAge = it.tiresAge
+            )
+        } ?: Tires(Compound.UNKNOWN, false, 0),
+        position = timing?.position ?: -1,
+        interval = timing?.interval?.value ?: "-",
+        toFirst = timing?.gap ?: "-",
+        bestLap = timing?.bestLapTime ?: BestLap("-", 0),
+        inPit = timing?.inPit ?: false,
+        retired = timing?.retired ?: false,
+        pitstopCount = timing?.pitsNum ?: 0,
+        startingGridPos = timingAppData?.gridPos?.toInt() ?: -1,
+        firstName = driver.value.firstName,
+        lastName = driver.value.lastName,
+        carNumber = driver.value.racingNumber,
+        shortcut = driver.value.tla,
+        team = driver.value.teamName,
+        teamColor = driver.value.teamColour.toLong(16),
+        isExpanded = false
+    )
+}
