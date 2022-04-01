@@ -66,6 +66,10 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
         }
     }.flowOn(Dispatchers.IO)
 
+    fun getPreviousData() = webSocketService.observePreviousData().onEach {
+        Timber.d("Recieved PreviousData")
+    }.flowOn(Dispatchers.IO)
+
     fun getPositions() = webSocketService.observeCarPosition().onEach {
         Timber.d("Received PositionData")
     }.flowOn(Dispatchers.IO)

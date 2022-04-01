@@ -5,6 +5,7 @@ import com.example.f1racingcompanion.data.Subscribe
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
+import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.data.timingstatsdto.TimingStatsDto
@@ -29,6 +30,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 interface LiveTimingService {
     @Receive
     fun observeEvents(): Flow<WebSocketEvent>
+
+    @Receive
+    @Wrapped(path = ["R"])
+    fun observePreviousData(): Flow<PreviousData>
 
     @Receive
     @Wrapped(path = ["M"])
