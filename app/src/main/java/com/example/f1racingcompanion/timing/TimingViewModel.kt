@@ -4,7 +4,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.Formula1Repository
-import com.example.f1racingcompanion.data.LiveTimingProxyRepository
 import com.example.f1racingcompanion.data.LiveTimingRepository
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
@@ -13,8 +12,7 @@ import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.NegotiateCookieJar
-import com.example.f1racingcompanion.utils.Result
-import com.example.f1racingcompanion.utils.toF1DriverElement
+import com.example.f1racingcompanion.utils.toF1DriverListElementList
 import com.example.f1racingcompanion.utils.toListTimingAppData
 import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toPositionDataList
@@ -23,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
@@ -34,15 +33,15 @@ typealias Position = Pair<Long, Offset> // Temporary solution to store colors wi
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class TimingViewModel @Inject constructor(
-    private val proxyRepository: LiveTimingProxyRepository,
     formula1Repository: Formula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
     moshi: Moshi
 ) : ViewModel() {
 
-    private var _standing: MutableStateFlow<MutableMap<Int, F1DriverListElement>> = MutableStateFlow(
-        mutableMapOf()
-    )
+    private var _standing: MutableStateFlow<MutableMap<Int, F1DriverListElement>> =
+        MutableStateFlow(
+            mutableMapOf()
+        )
 
     private var liveTimingRepository: LiveTimingRepository
 
@@ -58,7 +57,7 @@ class TimingViewModel @Inject constructor(
     val driversPosition: StateFlow<Map<Int, Position>>
         get() = _driversPositions
 
-    val circuitInfo = CircuitInfo("bahrain", Constants.OFFSETMAP["bahrain"]!!, "Bahrain")
+    val circuitInfo = CircuitInfo("bahrain", Constants.OFFSETMAP["saudi"]!!, "Saudi arabia")
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean>
@@ -76,25 +75,14 @@ class TimingViewModel @Inject constructor(
         }
     }
 
-    suspend fun openWebSocket() {
-        liveTimingRepository.subscribe()
-        startUpdatingData()
-    }
-
     suspend fun syncData() {
-        proxyRepository.getSyncedData().collect { result ->
-            when (result) {
-                is Result.Loading -> _isLoading.value = true
-                is Result.Success -> {
-                    _standing.value = result.data!!.associateBy({ it.carNumber }, { it.toF1DriverElement() }).toMutableMap()
-                    _isLoading.value = false
-                }
-                is Result.Error -> {
-                    _standing.value = mutableMapOf()
-                    _isLoading.value = false
-                }
-            }
-        }
+        liveTimingRepository.subscribe()
+        val previousData = liveTimingRepository.getPreviousData().take(1).first()
+        _standing = MutableStateFlow(
+            previousData.toF1DriverListElementList().associateBy(
+                { it.carNumber }, { it }
+            ).toMutableMap()
+        )
     }
 
     private suspend fun startUpdatingData() {
@@ -134,7 +122,10 @@ class TimingViewModel @Inject constructor(
                 _driversPositions.value[driver.driverNum] =
                     Position(
                         _standing.value[driver.driverNum]?.teamColor ?: 0,
-                        Offset(driver.xPos - circuitInfo.circuitOffset.xOffset, -circuitInfo.circuitOffset.yOffset + driver.yPos)
+                        Offset(
+                            driver.xPos - circuitInfo.circuitOffset.xOffset,
+                            -circuitInfo.circuitOffset.yOffset + driver.yPos
+                        )
                     )
             }
         }

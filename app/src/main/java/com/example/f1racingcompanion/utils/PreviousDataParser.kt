@@ -34,6 +34,7 @@ class PreviousDataParser(
                         if (el == "_kf") {
                             reader.skipValue()
                         } else {
+                            @Suppress("UNCHECKED_CAST")
                             val json = reader.readJsonValue() as Map<String, String>
                             driverInfoMap[json["RacingNumber"]!!.toInt()] = DriverInfoDto(
                                 json["BroadcastName"].toString(),
