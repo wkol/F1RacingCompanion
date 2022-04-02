@@ -23,7 +23,7 @@ class LiveTimingDataParser(
     private val timingDataAdapter: JsonAdapter<TimingDataDto>,
     private val timingAppDataAdapter: JsonAdapter<TimingAppDataDto>,
     private val carDataAdapter: JsonAdapter<CarDataDto>,
-    private val positionDataAdapter: JsonAdapter<PositionDataDto>
+    private val positionDataAdapter: JsonAdapter<PositionDataDto>,
 ) : JsonAdapter<LiveTimingData<*>>() {
     @FromJson
     override fun fromJson(reader: JsonReader): LiveTimingData<*>? {

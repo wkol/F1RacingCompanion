@@ -28,17 +28,6 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
     fun startWebSocket() =
         webSocketService.observeEvents().onEach { event ->
-            if (event is WebSocketEvent.OnConnectionOpened) {
-                webSocketService.subscribeToTopics(
-                    Subscribe(
-                        "Streaming",
-                        "Subscribe",
-                        listOf(Constants.SUBSRIBED_STREAMS),
-                        0
-                    )
-                )
-                Timber.d("Sent subscribe request")
-            }
             if (event is WebSocketEvent.OnMessageReceived) {
                 Timber.d(event.message.toString())
             }
@@ -64,6 +53,10 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
                 emit(entry.cars[number])
             }
         }
+    }.flowOn(Dispatchers.IO)
+
+    fun getPreviousData() = webSocketService.observePreviousData().onEach {
+        Timber.d("Recieved PreviousData")
     }.flowOn(Dispatchers.IO)
 
     fun getPositions() = webSocketService.observeCarPosition().onEach {

@@ -13,8 +13,6 @@ object Constants {
         "45" to "DRS"
     )
 
-    const val LIVETIMING_PROXY_URL = "http://192.168.200.109:8080/"
-
     const val HUB_NAME = "Streaming"
 
     const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
@@ -32,13 +30,14 @@ object Constants {
     const val WEBSCOKET_PROTOCOL = "1.5"
 
     val SUBSRIBED_STREAMS = listOf(
-        "CarData.z", "Position.z",
+        "CarData.z", "Position.z", "DriverList",
         "TimingAppData", "TimingData"
     )
 
     val OFFSETMAP = mapOf(
         "russia" to CircuitOffset(xOffset = -16715F, yOffset = 1063F, xAbs = 18369F, yAbs = 11862F),
-        "bahrain" to CircuitOffset(xOffset = -580F, yOffset = 8358F, xAbs = 8088F, yAbs = 11863F)
+        "bahrain" to CircuitOffset(xOffset = -580F, yOffset = 8358F, xAbs = 8088F, yAbs = 11863F),
+        "saudi" to CircuitOffset(xOffset = -5795F, yOffset = 21801F, xAbs = 5821F, yAbs = 27443F)
     )
 
     val CIRCIUTS = mapOf(
