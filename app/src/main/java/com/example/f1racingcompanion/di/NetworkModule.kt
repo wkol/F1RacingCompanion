@@ -1,8 +1,8 @@
 package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
-import com.example.f1racingcompanion.api.Formula1Service
-import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.api.LiveTimingFormula1Service
+import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
 import com.example.f1racingcompanion.utils.LiveTimingDataParser
@@ -27,18 +27,18 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideFormula1LService(okHttpClient: OkHttpClient, moshi: Moshi): Formula1Service {
+    fun provideFormula1LService(okHttpClient: OkHttpClient, moshi: Moshi): LiveTimingFormula1Service {
         return Retrofit.Builder()
             .baseUrl(Constants.LIVETIMING_NEGOTIATE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(Formula1Service::class.java)
+            .create(LiveTimingFormula1Service::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideRepository(api: Formula1Service): Formula1Repository = Formula1Repository(api)
+    fun provideRepository(api: LiveTimingFormula1Service): LiveTimingFormula1Repository = LiveTimingFormula1Repository(api)
 
     @Singleton
     @Provides

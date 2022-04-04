@@ -1,6 +1,6 @@
 package com.example.f1racingcompanion.data
 
-import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.api.LiveTimingFormula1Service
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.Result
 import kotlinx.coroutines.Dispatchers
@@ -13,8 +13,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Formula1Repository @Inject constructor(
-    private val api: Formula1Service
+class LiveTimingFormula1Repository @Inject constructor(
+    private val api: LiveTimingFormula1Service
 ) {
 
     fun getConnectionToken(hubData: String = Constants.HUB_DATA): Flow<Result<String>> = flow {
@@ -35,13 +35,11 @@ class Formula1Repository @Inject constructor(
             val response = api.streamingStatus()
             emit(
                 Result.Success(
-                    data = (
-                        when (response.endDate) {
-                            "Offline" -> false
-                            "Online" -> true
-                            else -> null
-                        }
-                        )
+                    data = when (response.endDate) {
+                        "Offline" -> false
+                        "Online" -> true
+                        else -> null
+                    }
                 )
             )
         } catch (e: IOException) {
