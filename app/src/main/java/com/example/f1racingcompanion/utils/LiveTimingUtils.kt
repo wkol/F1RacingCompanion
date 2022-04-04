@@ -4,8 +4,8 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.data.nextsessiondto.EventTrackerDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
-import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
 import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
@@ -13,13 +13,18 @@ import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.F1DriverListElement
+import com.example.f1racingcompanion.model.NextSession
 import com.example.f1racingcompanion.model.PositionData
 import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.RaceScheduleItem
 import com.example.f1racingcompanion.model.TimingAppData
 import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Locale
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
@@ -136,26 +141,6 @@ fun PositionDataDto.toPositionDataList(): List<PositionData> {
     }
 }
 
-fun DriverInfoDto.toF1DriverListElement() = F1DriverListElement(
-    "-",
-    mutableMapOf(),
-    Tires(Compound.UNKNOWN, false, 0),
-    0,
-    "-",
-    "-",
-    BestLap("", 0),
-    false,
-    false,
-    0,
-    0,
-    this.firstName,
-    this.lastName,
-    this.racingNumber,
-    this.tla,
-    this.teamName,
-    this.teamColour.toLong()
-)
-
 fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
     val timing = this.timingDataDto?.lines?.get(driver.key)
     val timingAppData = this.timingAppDataDto?.lapInfo?.get(driver.key)
@@ -186,3 +171,17 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
         isExpanded = false
     )
 }
+
+fun EventTrackerDto.toNextSession() = NextSession(
+    this.raceInfo.meetingOfficialName, this.raceInfo.meetingCountryName,
+    this.timetable.map {
+        RaceScheduleItem(
+            RaceScheduleItem.SessionState.valueOf(
+                it.state.uppercase(
+                    Locale.getDefault()
+                )
+            ),
+            it.description, ZonedDateTime.of(it.startTime, ZoneId.of(it.gmtOffset))
+        )
+    }
+)

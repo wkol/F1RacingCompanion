@@ -1,5 +1,8 @@
 package com.example.f1racingcompanion.model
 
+import com.example.f1racingcompanion.data.nextsessiondto.EventTrackerDto
+import com.example.f1racingcompanion.data.nextsessiondto.NextSessionDto
+import com.example.f1racingcompanion.data.nextsessiondto.RaceInfoDto
 import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
 import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.previousdata.PreviousDriverTimingDto
@@ -17,8 +20,12 @@ import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.utils.toF1DriverListElementList
 import com.example.f1racingcompanion.utils.toListTimingAppData
 import com.example.f1racingcompanion.utils.toListTimingData
+import com.example.f1racingcompanion.utils.toNextSession
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class ModelConvertingTest {
 
@@ -156,9 +163,17 @@ class ModelConvertingTest {
                                 mapOf("Status" to 2048)
                             )
                         ),
-                        "+1.0", Interval("+12.0", false), SectorValue("1:12:00", null, true, true, null),
+                        "+1.0",
+                        Interval("+12.0", false),
+                        SectorValue("1:12:00", null, true, true, null),
                         BestLap("1:12:00", 21),
-                        false, false, false, false, 10, 20, 0
+                        false,
+                        false,
+                        false,
+                        false,
+                        10,
+                        20,
+                        0
                     )
                 )
             ),
@@ -194,5 +209,32 @@ class ModelConvertingTest {
         assertEquals(f1DriverList[0].carNumber, 31)
         assertEquals(f1DriverList[0].position, 10)
         assertEquals(f1DriverList[1].position, -1)
+    }
+
+    @Test
+    fun convertEventTrackerDtoToNextSession() {
+        val eventTracker = EventTrackerDto(
+            RaceInfoDto(
+                "Australia",
+                "FORMULA 1 HEINEKEN AUSTRALIAN GRAND PRIX 2022"
+            ),
+            listOf(
+                NextSessionDto(
+                    "Upcoming",
+                    "+10",
+                    "Race",
+                    LocalDateTime.parse("2022-04-10T15:00:00")
+                )
+            )
+        )
+
+        val nextSession = eventTracker.toNextSession()
+
+        assertEquals(nextSession.circuitcountry, "Australia")
+        assertEquals(nextSession.circuitName, "FORMULA 1 HEINEKEN AUSTRALIAN GRAND PRIX 2022")
+        assertEquals(
+            nextSession.schedule[0].zonedStartTime.withZoneSameInstant(ZoneId.of("UTC")),
+            ZonedDateTime.of(2022, 4, 10, 5, 0, 0, 0, ZoneId.of("UTC"))
+        )
     }
 }
