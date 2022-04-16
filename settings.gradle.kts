@@ -3,8 +3,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        maven { url = uri("https://jitpack.io") }
     }
 }
-rootProject.name = "F1RacingCompanion"
-include ':app'
+include (":app")
+enableFeaturePreview("VERSION_CATALOGS")
