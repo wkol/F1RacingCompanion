@@ -1,8 +1,8 @@
 package com.example.f1racingcompanion.model
 
-import com.example.f1racingcompanion.data.nextsessiondto.EventTrackerDto
-import com.example.f1racingcompanion.data.nextsessiondto.NextSessionDto
-import com.example.f1racingcompanion.data.nextsessiondto.RaceInfoDto
+import com.example.f1racingcompanion.data.nextsessiondto.CircuitDto
+import com.example.f1racingcompanion.data.nextsessiondto.EventSessionDto
+import com.example.f1racingcompanion.data.nextsessiondto.F1EventDto
 import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
 import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.previousdata.PreviousDriverTimingDto
@@ -23,7 +23,8 @@ import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toNextSession
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -213,28 +214,27 @@ class ModelConvertingTest {
 
     @Test
     fun convertEventTrackerDtoToNextSession() {
-        val eventTracker = EventTrackerDto(
-            RaceInfoDto(
-                "Australia",
-                "FORMULA 1 HEINEKEN AUSTRALIAN GRAND PRIX 2022"
-            ),
-            listOf(
-                NextSessionDto(
-                    "Upcoming",
-                    "+10",
-                    "Race",
-                    LocalDateTime.parse("2022-04-10T15:00:00")
-                )
-            )
+        val eventSession = EventSessionDto(
+            CircuitDto("Albert Park Grand Prix Circuit", "albert_park"),
+            F1EventDto(date = LocalDate.of(2022, 4, 8), time = LocalTime.of(3, 0, 0)),
+            F1EventDto(date = LocalDate.of(2022, 4, 8), time = LocalTime.of(6, 0, 0)),
+            F1EventDto(date = LocalDate.of(2022, 4, 9), time = LocalTime.of(3, 0, 0)),
+            F1EventDto(date = LocalDate.of(2022, 4, 9), time = LocalTime.of(6, 0, 0)),
+            null,
+            "Australian Grand Prix",
+            LocalDate.of(2022, 4, 10),
+            LocalTime.of(6, 0, 0),
+
         )
 
-        val nextSession = eventTracker.toNextSession()
+        val nextSession = eventSession.toNextSession()
 
-        assertEquals(nextSession.circuitcountry, "Australia")
-        assertEquals(nextSession.circuitName, "FORMULA 1 HEINEKEN AUSTRALIAN GRAND PRIX 2022")
+        assertEquals(nextSession.raceName, "Australian Grand Prix")
+        assertEquals(nextSession.circuitName, "Albert Park Grand Prix Circuit")
         assertEquals(
-            nextSession.schedule[0].zonedStartTime.withZoneSameInstant(ZoneId.of("UTC")),
-            ZonedDateTime.of(2022, 4, 10, 5, 0, 0, 0, ZoneId.of("UTC"))
+            nextSession.schedule[0].zonedStartTime.toInstant(),
+            ZonedDateTime.of(LocalDate.of(2022, 4, 8), LocalTime.of(3, 0, 0), ZoneId.of("UTC")).toInstant()
         )
+        assertEquals(nextSession.schedule[1].isUpcoming, false)
     }
 }

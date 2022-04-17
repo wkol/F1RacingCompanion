@@ -4,7 +4,8 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
-import com.example.f1racingcompanion.data.nextsessiondto.EventTrackerDto
+import com.example.f1racingcompanion.data.nextsessiondto.EventSessionDto
+import com.example.f1racingcompanion.data.nextsessiondto.F1EventDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
@@ -24,7 +25,6 @@ import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Locale
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
@@ -146,7 +146,8 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
     val timingAppData = this.timingAppDataDto?.lapInfo?.get(driver.key)
     F1DriverListElement(
         lastLapTime = timing?.lastLap?.value ?: "-",
-        lastSectors = timing?.sector?.withIndex()?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
+        lastSectors = timing?.sector?.withIndex()
+            ?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
         tires = timingAppData?.stints?.last()?.let {
             Tires(
                 currentCompound = Compound.valueOf(it.compound ?: "UNKNOWN"),
@@ -172,16 +173,19 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
     )
 }
 
-fun EventTrackerDto.toNextSession() = NextSession(
-    this.raceInfo.meetingOfficialName, this.raceInfo.meetingCountryName,
-    this.timetable.map {
-        RaceScheduleItem(
-            RaceScheduleItem.SessionState.valueOf(
-                it.state.uppercase(
-                    Locale.getDefault()
-                )
-            ),
-            it.description, ZonedDateTime.of(it.startTime, ZoneId.of(it.gmtOffset))
-        )
+fun EventSessionDto.toNextSession(): NextSession {
+    val currentDate = ZonedDateTime.now()
+    val names = listOf("First practice", "Second practice", "Third practice", "Qualifying", "Sprint", "Race")
+    val schedule = listOf(firstPractice, secondPractice, thirdPractice, qualifying, sprint, F1EventDto(raceDate, raceTime)).mapIndexed { idx, session ->
+        session?.let {
+            val dateTime = ZonedDateTime.of(it.date, it.time, ZoneId.of("UTC"))
+            RaceScheduleItem(currentDate.isBefore(dateTime), names[idx], dateTime)
+        }
     }
-)
+    return NextSession(
+        circuitId = this.circuitInfo.circuitId,
+        circuitName = this.circuitInfo.circuitName,
+        raceName = this.raceName,
+        schedule = schedule.filterNotNull()
+    )
+}

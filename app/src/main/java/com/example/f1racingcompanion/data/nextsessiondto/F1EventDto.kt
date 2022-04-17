@@ -4,9 +4,9 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class EventTrackerDto(
-    @Json(name = "race")
-    val raceInfo: RaceInfoDto,
-    @Json(name = "timetable")
-    val timetable: List<NextSessionDto>
+data class F1EventDto(
+    @Json(name = "date")
+    val date: String,
+    @Json(name = "time")
+    val time: String
 )

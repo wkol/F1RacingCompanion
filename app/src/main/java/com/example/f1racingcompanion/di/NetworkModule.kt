@@ -1,9 +1,9 @@
 package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
-import com.example.f1racingcompanion.api.Formula1Service
+import com.example.f1racingcompanion.api.ErgastService
 import com.example.f1racingcompanion.api.LiveTimingFormula1Service
-import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.data.ErgastRepository
 import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
@@ -41,15 +41,15 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideFormula1Service(okHttpClient: OkHttpClient, moshi: Moshi): Formula1Service =
-        Retrofit.Builder().baseUrl(Constants.FORMULA1_API_URL).client(okHttpClient)
+    fun provideErgastService(okHttpClient: OkHttpClient, moshi: Moshi): ErgastService =
+        Retrofit.Builder().baseUrl(Constants.ERGAST_API_URL).client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi)).build()
-            .create(Formula1Service::class.java)
+            .create(ErgastService::class.java)
 
     @Singleton
     @Provides
-    fun provideFormula1Repository(api: Formula1Service): Formula1Repository =
-        Formula1Repository(api)
+    fun provideFormula1Repository(api: ErgastService): ErgastRepository =
+        ErgastRepository(api)
 
     @Singleton
     @Provides

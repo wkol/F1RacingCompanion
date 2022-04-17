@@ -13,17 +13,11 @@ object Constants {
         "45" to "DRS"
     )
 
-    const val API_KEY = "RNoNDmjJGUFSu1Re9GfMVzJfDClaUV47"
-
-    const val FORMULA1_API_URL = "https://api.formula1.com/v1/"
-
-    const val API_LOCALE = "en"
-
-    const val HUB_NAME = "Streaming"
+    const val ERGAST_API_URL = "https://ergast.com/api/f1/"
 
     const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
 
-    const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
+    const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/"
 
     const val WEBSCOKET_HOST = "livetiming.formula1.com"
 
