@@ -9,12 +9,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.f1racingcompanion.R
 
+val TitilliumWeb = FontFamily(
+    Font(R.font.titilliumweb_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.titilliumweb_bold, FontWeight.Bold, FontStyle.Normal),
+    Font(R.font.titilliumweb_light, FontWeight.Light, FontStyle.Normal),
+    Font(R.font.titilliumweb_semibold, FontWeight.SemiBold, FontStyle.Normal),
+    Font(R.font.titilliumweb_bolditalic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.titilliumweb_italic, FontWeight.Normal, FontStyle.Italic),
+)
 // Set of Material typography styles to start with
 val Typography = Typography(
     body1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontFamily = TitilliumWeb,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
     )
     /* Other default text styles to override
     button = TextStyle(
@@ -29,13 +37,4 @@ val Typography = Typography(
     )
     */
 
-)
-
-val TitilliumWeb = FontFamily(
-    Font(R.font.titilliumweb_regular, FontWeight.Normal, FontStyle.Normal),
-    Font(R.font.titilliumweb_bold, FontWeight.Bold, FontStyle.Normal),
-    Font(R.font.titilliumweb_light, FontWeight.Light, FontStyle.Normal),
-    Font(R.font.titilliumweb_semibold, FontWeight.SemiBold, FontStyle.Normal),
-    Font(R.font.titilliumweb_bolditalic, FontWeight.Bold, FontStyle.Italic),
-    Font(R.font.titilliumweb_italic, FontWeight.Normal, FontStyle.Italic),
 )
