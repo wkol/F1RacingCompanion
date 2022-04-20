@@ -216,15 +216,14 @@ class ModelConvertingTest {
     fun convertEventTrackerDtoToNextSession() {
         val eventSession = EventSessionDto(
             CircuitDto("Albert Park Grand Prix Circuit", "albert_park"),
-            F1EventDto(date = LocalDate.of(2022, 4, 8), time = LocalTime.of(3, 0, 0)),
-            F1EventDto(date = LocalDate.of(2022, 4, 8), time = LocalTime.of(6, 0, 0)),
-            F1EventDto(date = LocalDate.of(2022, 4, 9), time = LocalTime.of(3, 0, 0)),
-            F1EventDto(date = LocalDate.of(2022, 4, 9), time = LocalTime.of(6, 0, 0)),
+            F1EventDto(date = "2022-04-08", time = "03:00:00Z"),
+            F1EventDto(date = "2022-04-08", time = "06:00:00Z"),
+            F1EventDto(date = "2022-04-09", time = "03:00:00Z"),
+            F1EventDto(date = "2022-04-09", time = "06:00:00Z"),
             null,
             "Australian Grand Prix",
-            LocalDate.of(2022, 4, 10),
-            LocalTime.of(6, 0, 0),
-
+            "2022-04-10",
+            "06:00:00Z"
         )
 
         val nextSession = eventSession.toNextSession()
