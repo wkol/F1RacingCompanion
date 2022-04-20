@@ -64,6 +64,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.material.material)
     implementation(libs.compose.ui.tooling)
+
     implementation(libs.compose.navigation)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewmodel)
