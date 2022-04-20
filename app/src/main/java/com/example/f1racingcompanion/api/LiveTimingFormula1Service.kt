@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface LiveTimingFormula1Service {
-    @GET("negotiate")
+    @GET("signalr/negotiate")
     suspend fun negotiate(
         @Query("connectionData", encoded = false) hubName: String,
         @Query("clientProtocol", encoded = false) clientProtocol: String = "1.5"

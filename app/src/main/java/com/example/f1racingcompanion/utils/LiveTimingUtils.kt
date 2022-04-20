@@ -23,8 +23,11 @@ import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
@@ -175,10 +178,30 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
 
 fun EventSessionDto.toNextSession(): NextSession {
     val currentDate = ZonedDateTime.now()
-    val names = listOf("First practice", "Second practice", "Third practice", "Qualifying", "Sprint", "Race")
-    val schedule = listOf(firstPractice, secondPractice, thirdPractice, qualifying, sprint, F1EventDto(raceDate, raceTime)).mapIndexed { idx, session ->
+    val names = listOf(
+        "First practice",
+        "Second practice",
+        "Third practice",
+        "Qualifying",
+        "Sprint",
+        "Race"
+    )
+    val schedule = listOf(
+        firstPractice, secondPractice, thirdPractice, qualifying, sprint,
+        F1EventDto(
+            raceDate,
+            raceTime,
+        )
+    ).mapIndexed { idx, session ->
         session?.let {
-            val dateTime = ZonedDateTime.of(it.date, it.time, ZoneId.of("UTC"))
+            val dateTime = ZonedDateTime.of(
+                LocalDate.parse(
+                    it.date,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                ),
+                LocalTime.parse(it.time, DateTimeFormatter.ofPattern("HH:mm:ss'Z'")),
+                ZoneId.of("UTC")
+            )
             RaceScheduleItem(currentDate.isBefore(dateTime), names[idx], dateTime)
         }
     }

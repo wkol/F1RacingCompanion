@@ -35,7 +35,7 @@ class LiveTimingFormula1Repository @Inject constructor(
             val response = api.streamingStatus()
             emit(
                 Result.Success(
-                    data = when (response.endDate) {
+                    data = when (response.status) {
                         "Offline" -> false
                         "Online" -> true
                         else -> null
