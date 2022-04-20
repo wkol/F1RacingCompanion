@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,11 +33,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.model.CircuitOffset
 import com.example.f1racingcompanion.model.Compound
+import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.model.Tires
 import com.example.f1racingcompanion.ui.theme.TitilliumWeb
 import com.example.f1racingcompanion.utils.Constants
@@ -204,23 +207,22 @@ fun StandingHeader(
                 text = "Pos",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.13f)
-                    .wrapContentSize(Alignment.Center)
-                    .padding(horizontal = 10.dp),
+                    .padding(start = 10.dp, end = 5.dp),
                 color = Color.White, fontSize = 15.sp,
                 fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
                 text = "Driver",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .wrapContentSize(Alignment.CenterStart)
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 7.dp),
                 color = Color.White, fontSize = 15.sp,
                 fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
@@ -228,13 +230,13 @@ fun StandingHeader(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth()
-                    .wrapContentSize(Alignment.CenterEnd)
                     .padding(horizontal = 10.dp)
                     .clickable { onIntervalChanged() },
                 color = Color.White,
                 fontSize = 15.sp,
                 fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.End
             )
         }
     }
@@ -259,17 +261,19 @@ fun PositionBox(position: Int, modifier: Modifier = Modifier) {
     Box(
         modifier
             .clip(RoundedCornerShape(10))
-            .background(Color.White)
+            .background(Color.White),
+        contentAlignment = Alignment.CenterStart
     ) {
         Text(
             text = position.toString(),
             modifier = Modifier
                 .fillMaxSize()
-                .wrapContentSize(Alignment.TopCenter)
                 .offset(y = (-2).dp),
             fontFamily = TitilliumWeb,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -297,6 +301,75 @@ fun DriverPlot(modifier: Modifier = Modifier, driversPosition: Map<Int, Position
                 radius = 20F,
                 center = Offset(position.x * xScale, position.y * yScale)
             )
+        }
+    }
+}
+
+@Composable
+fun DriverElement(
+    modifier: Modifier = Modifier,
+    driverListElement: F1DriverListElement,
+    isInterval: Boolean = true,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier.clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        PositionBox(
+            position = driverListElement.position,
+            modifier =
+            Modifier
+                .padding(start = 8.dp, top = 3.dp, end = 3.dp, bottom = 3.dp)
+                .size(25.dp)
+        )
+        Spacer(Modifier.width(10.dp))
+        TeamColorBox(driverListElement.teamColor)
+        Text(
+            text = "${driverListElement.firstName[0]}.${driverListElement.lastName}",
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 10.dp),
+            color = Color.White,
+            fontSize = 25.sp,
+            fontFamily = TitilliumWeb,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Start
+        )
+        Text(
+            text = if (isInterval) driverListElement.interval else driverListElement.toFirst,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .wrapContentSize(Alignment.CenterEnd)
+                .padding(horizontal = 10.dp),
+            color = Color.White,
+            fontSize = 25.sp,
+            fontFamily = TitilliumWeb,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement, color: Color) {
+    Box(
+        modifier
+            .clip(
+                RoundedCornerShape(
+                    topStartPercent = 0,
+                    topEndPercent = 20,
+                    bottomEndPercent = 20,
+                    bottomStartPercent = 0
+                )
+            )
+            .background(color)
+    ) {
+        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceAround) {
+            TiresIndicator(modifier = Modifier.fillMaxHeight(), tires = driver.tires)
+            LapTimeIndicator(modifier = Modifier.fillMaxHeight(), lapTime = driver.lastLapTime)
+            SectorIndicator(modifier = Modifier.fillMaxHeight(), sectors = driver.lastSectors)
         }
     }
 }

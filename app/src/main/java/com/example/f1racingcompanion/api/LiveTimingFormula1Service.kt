@@ -5,8 +5,8 @@ import com.example.f1racingcompanion.data.streamingstatusdto.SessionStatusDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface Formula1Service {
-    @GET("negotiate")
+interface LiveTimingFormula1Service {
+    @GET("signalr/negotiate")
     suspend fun negotiate(
         @Query("connectionData", encoded = false) hubName: String,
         @Query("clientProtocol", encoded = false) clientProtocol: String = "1.5"

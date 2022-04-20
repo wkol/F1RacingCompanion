@@ -1,8 +1,10 @@
 package com.example.f1racingcompanion.di
 
 import com.example.f1racingcompanion.BuildConfig
-import com.example.f1racingcompanion.api.Formula1Service
-import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.api.ErgastService
+import com.example.f1racingcompanion.api.LiveTimingFormula1Service
+import com.example.f1racingcompanion.data.ErgastRepository
+import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
 import com.example.f1racingcompanion.utils.LiveTimingDataParser
@@ -27,24 +29,40 @@ import javax.inject.Singleton
 class NetworkModule {
     @Singleton
     @Provides
-    fun provideFormula1LService(okHttpClient: OkHttpClient, moshi: Moshi): Formula1Service {
-        return Retrofit.Builder()
-            .baseUrl(Constants.LIVETIMING_NEGOTIATE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-            .create(Formula1Service::class.java)
-    }
+    fun provideLiveTimingFormula1Service(
+        okHttpClient: OkHttpClient,
+        moshi: Moshi
+    ): LiveTimingFormula1Service = Retrofit.Builder()
+        .baseUrl(Constants.LIVETIMING_NEGOTIATE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .build()
+        .create(LiveTimingFormula1Service::class.java)
 
     @Singleton
     @Provides
-    fun provideRepository(api: Formula1Service): Formula1Repository = Formula1Repository(api)
+    fun provideErgastService(okHttpClient: OkHttpClient, moshi: Moshi): ErgastService =
+        Retrofit.Builder().baseUrl(Constants.ERGAST_API_URL).client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi)).build()
+            .create(ErgastService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFormula1Repository(api: ErgastService): ErgastRepository =
+        ErgastRepository(api)
+
+    @Singleton
+    @Provides
+    fun provideLiveTimingFormula1Repository(api: LiveTimingFormula1Service): LiveTimingFormula1Repository =
+        LiveTimingFormula1Repository(api)
 
     @Singleton
     @Provides
     fun provideMoshi(): Moshi =
-        Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY).add(PreviousDataParser.Factory)
-            .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory()).build()
+        Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
+            .add(PreviousDataParser.Factory)
+            .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory())
+            .build()
 
     @Provides
     fun provideOkHTTPClient(cookieJar: NegotiateCookieJar): OkHttpClient {

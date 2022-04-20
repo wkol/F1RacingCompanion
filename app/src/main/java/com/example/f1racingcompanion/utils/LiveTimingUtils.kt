@@ -4,8 +4,9 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.data.nextsessiondto.EventSessionDto
+import com.example.f1racingcompanion.data.nextsessiondto.F1EventDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
-import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
 import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
@@ -13,13 +14,20 @@ import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.F1DriverListElement
+import com.example.f1racingcompanion.model.NextSession
 import com.example.f1racingcompanion.model.PositionData
 import com.example.f1racingcompanion.model.PositionOnTrack
+import com.example.f1racingcompanion.model.RaceScheduleItem
 import com.example.f1racingcompanion.model.TimingAppData
 import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.Tires
 import okhttp3.HttpUrl
 import java.io.ByteArrayOutputStream
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
@@ -136,32 +144,13 @@ fun PositionDataDto.toPositionDataList(): List<PositionData> {
     }
 }
 
-fun DriverInfoDto.toF1DriverListElement() = F1DriverListElement(
-    "-",
-    mutableMapOf(),
-    Tires(Compound.UNKNOWN, false, 0),
-    0,
-    "-",
-    "-",
-    BestLap("", 0),
-    false,
-    false,
-    0,
-    0,
-    this.firstName,
-    this.lastName,
-    this.racingNumber,
-    this.tla,
-    this.teamName,
-    this.teamColour.toLong()
-)
-
 fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
     val timing = this.timingDataDto?.lines?.get(driver.key)
     val timingAppData = this.timingAppDataDto?.lapInfo?.get(driver.key)
     F1DriverListElement(
         lastLapTime = timing?.lastLap?.value ?: "-",
-        lastSectors = timing?.sector?.withIndex()?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
+        lastSectors = timing?.sector?.withIndex()
+            ?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
         tires = timingAppData?.stints?.last()?.let {
             Tires(
                 currentCompound = Compound.valueOf(it.compound ?: "UNKNOWN"),
@@ -184,5 +173,42 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
         team = driver.value.teamName,
         teamColor = driver.value.teamColour.toLong(16),
         isExpanded = false
+    )
+}
+
+fun EventSessionDto.toNextSession(): NextSession {
+    val currentDate = ZonedDateTime.now()
+    val names = listOf(
+        "First practice",
+        "Second practice",
+        "Third practice",
+        "Qualifying",
+        "Sprint",
+        "Race"
+    )
+    val schedule = listOf(
+        firstPractice, secondPractice, thirdPractice, qualifying, sprint,
+        F1EventDto(
+            raceDate,
+            raceTime,
+        )
+    ).mapIndexed { idx, session ->
+        session?.let {
+            val dateTime = ZonedDateTime.of(
+                LocalDate.parse(
+                    it.date,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                ),
+                LocalTime.parse(it.time, DateTimeFormatter.ofPattern("HH:mm:ss'Z'")),
+                ZoneId.of("UTC")
+            )
+            RaceScheduleItem(currentDate.isBefore(dateTime), names[idx], dateTime)
+        }
+    }
+    return NextSession(
+        circuitId = this.circuitInfo.circuitId,
+        circuitName = this.circuitInfo.circuitName,
+        raceName = this.raceName,
+        schedule = schedule.filterNotNull()
     )
 }

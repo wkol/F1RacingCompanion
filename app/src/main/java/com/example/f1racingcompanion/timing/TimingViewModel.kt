@@ -3,7 +3,7 @@ package com.example.f1racingcompanion.timing
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import com.example.f1racingcompanion.api.LiveTimingService
-import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.data.LiveTimingRepository
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
@@ -33,7 +33,7 @@ typealias Position = Pair<Long, Offset> // Temporary solution to store colors wi
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class TimingViewModel @Inject constructor(
-    formula1Repository: Formula1Repository,
+    liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
     moshi: Moshi
 ) : ViewModel() {
@@ -65,7 +65,7 @@ class TimingViewModel @Inject constructor(
 
     init {
         runBlocking {
-            val token = formula1Repository.getConnectionToken().take(2).toList()[1]
+            val token = liveTimingFormula1Repository.getConnectionToken().take(2).toList()[1]
             val service = LiveTimingService.create(
                 token.data!!,
                 negotiateCookieJar.getCookies().first(),

@@ -1,43 +1,70 @@
 package com.example.f1racingcompanion.home
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.f1racingcompanion.data.Formula1Repository
+import com.example.f1racingcompanion.data.ErgastRepository
+import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.utils.Result
+import com.example.f1racingcompanion.utils.toNextSession
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(private val repository: Formula1Repository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repositoryLiveTiming: LiveTimingFormula1Repository,
+    private val ergastRepository: ErgastRepository
+) : ViewModel() {
 
-    private val _isActive: MutableState<RaceStatusState> = mutableStateOf(RaceStatusState())
-    val isActive: State<RaceStatusState> = _isActive
-
-    private var connectionToken: String? = ""
+    private val _uiState: MutableStateFlow<RaceStatusState> =
+        MutableStateFlow(RaceStatusState(null, true))
+    val uiState: StateFlow<RaceStatusState>
+        get() = _uiState
 
     init {
         checkRacingStatus()
     }
 
     private fun checkRacingStatus() {
-        repository.checkForActiveSession().onEach {
+        repositoryLiveTiming.checkForActiveSession().onEach {
             when (it) {
-                is Result.Loading -> _isActive.value = RaceStatusState(null, true)
-                is Result.Success -> _isActive.value = RaceStatusState(it.data, false)
-                is Result.Error -> _isActive.value = RaceStatusState(null, false, it.msg)
+                is Result.Loading -> _uiState.value = RaceStatusState(isActive = null, isLoading = true)
+                is Result.Success -> {
+                    if (it.data == false) {
+                        retrieveNextSession()
+                    }
+                }
+                is Result.Error -> _uiState.value = RaceStatusState(isActive = null, isLoading = false, error = it.msg)
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun negotiateConnection() {
-        repository.getConnectionToken().onEach {
-            connectionToken = when (it) {
-                is Result.Loading -> null
-                is Result.Success -> it.data
-                is Result.Error -> null
+    private fun retrieveNextSession() {
+        ergastRepository.getNextSession().onEach {
+            when (it) {
+                is Result.Loading -> _uiState.value = RaceStatusState(null, true)
+                is Result.Success -> {
+                    val session = it.data!!.toNextSession()
+                    _uiState.value = RaceStatusState(
+                        isActive = false, isLoading = false,
+                        nextSession = session.copy(
+                            schedule = session.schedule.sortedBy { item ->
+                                ChronoUnit.MINUTES.between(
+                                    ZonedDateTime.now(),
+                                    item.zonedStartTime
+                                )
+                            }
+                        )
+                    )
+                }
+                is Result.Error ->
+                    _uiState.value =
+                        _uiState.value.copy(error = it.msg, isLoading = false)
             }
         }.launchIn(viewModelScope)
     }

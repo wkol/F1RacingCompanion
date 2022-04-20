@@ -13,11 +13,11 @@ object Constants {
         "45" to "DRS"
     )
 
-    const val HUB_NAME = "Streaming"
+    const val ERGAST_API_URL = "https://ergast.com/api/f1/"
 
     const val HUB_DATA = "[{\"name\": \"Streaming\"}]"
 
-    const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/signalr/"
+    const val LIVETIMING_NEGOTIATE_URL = "https://livetiming.formula1.com/"
 
     const val WEBSCOKET_HOST = "livetiming.formula1.com"
 
