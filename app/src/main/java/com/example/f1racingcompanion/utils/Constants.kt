@@ -2,6 +2,7 @@ package com.example.f1racingcompanion.utils
 
 import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.model.CircuitOffset
+import com.example.f1racingcompanion.timing.CircuitInfo
 
 object Constants {
     val CHANNELS_MAP = hashMapOf(
@@ -30,18 +31,30 @@ object Constants {
     const val WEBSCOKET_PROTOCOL = "1.5"
 
     val SUBSRIBED_STREAMS = listOf(
-        "CarData.z", "Position.z", "DriverList",
+        "Position.z", "DriverList",
         "TimingAppData", "TimingData"
     )
 
-    val OFFSETMAP = mapOf(
-        "russia" to CircuitOffset(xOffset = -16715F, yOffset = 1063F, xAbs = 18369F, yAbs = 11862F),
-        "bahrain" to CircuitOffset(xOffset = -580F, yOffset = 8358F, xAbs = 8088F, yAbs = 11863F),
-        "saudi" to CircuitOffset(xOffset = -5795F, yOffset = 21801F, xAbs = 5821F, yAbs = 27443F)
-    )
-
-    val CIRCIUTS = mapOf(
-        "russia" to R.drawable.russia,
-        "bahrain" to R.drawable.bahrain
+    val CIRCUITS = mapOf(
+        "bahrain" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -580F,
+                yOffset = 8358F,
+                xAbs = 8088F,
+                yAbs = 11863F
+            ),
+            grandPrixName = "Bahrain",
+            circuitMap = R.drawable.bahrain
+        ),
+        "imola" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -14901F,
+                yOffset = -323F,
+                xAbs = 18112F,
+                yAbs = 10102F
+            ),
+            grandPrixName = "Emilia Romagna",
+            circuitMap = R.drawable.imola
+        )
     )
 }

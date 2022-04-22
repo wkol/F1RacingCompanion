@@ -4,7 +4,7 @@ enum class Compound(val tyreName: String) {
     SOFT("SOFT"),
     MEDIUM("MEDIUM"),
     HARD("HARD"),
-    INTER("INTER"),
+    INTERMEDIATE("INTERMEDIATE"),
     WET("WET"),
     UNKNOWN("UNKNOWN")
 }
