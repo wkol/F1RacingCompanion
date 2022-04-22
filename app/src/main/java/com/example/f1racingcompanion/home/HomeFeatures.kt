@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.home
 
+import android.content.res.Configuration
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
@@ -7,16 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -71,62 +71,12 @@ fun DateTextInsideTire(value: Long, label: String, imageID: Int, modifier: Modif
 }
 
 @Composable
-fun ActiveStatusText(activeStatus: RaceStatusState, modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        Text(
-            text = "Session status is " + if (activeStatus.isActive == false) "offline" else if (activeStatus.isActive == true) "online" else "",
-            modifier = Modifier.fillMaxSize(),
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp
-        )
-    }
-}
-
-@Composable
-fun FetchingDataIndicator(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Fetching data...",
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    color = Color.Black
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun NetworkError(modifier: Modifier, errorMsg: String) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(
-            text = "An error while fetching data occured: $errorMsg",
-            style = TextStyle(
-                fontFamily = TitilliumWeb,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W500,
-                color = Color.Black
-            ),
-            modifier = Modifier.wrapContentSize(Alignment.Center),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
 fun SessionDate(countdown: MeetingCountdown, sessionName: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .background(Color(0x72000000))
     ) {
+
         Column(
             Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -143,26 +93,40 @@ fun SessionDate(countdown: MeetingCountdown, sessionName: String, modifier: Modi
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp
             )
-            DateTextInsideTire(
-                value = countdown.days,
-                label = if (countdown.days != 1L) "days" else "day",
-                imageID = R.drawable.days_tires,
-                modifier = Modifier.padding(20.dp)
-            )
-            DateTextInsideTire(
-                value = countdown.hours,
-                label = if (countdown.hours != 1L) "hours" else "hour",
-                imageID = R.drawable.hours_tires,
-                modifier = Modifier.padding(20.dp)
-            )
-            DateTextInsideTire(
-                value = countdown.minutes,
-                label = if (countdown.minutes != 1L) "minutes" else "minutes",
-                imageID = R.drawable.minutes_tires,
-                modifier = Modifier.padding(20.dp)
-            )
+            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                TiresCountdown(countdown = countdown)
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TiresCountdown(countdown = countdown)
+                }
+            }
         }
     }
+}
+
+@Composable
+fun TiresCountdown(countdown: MeetingCountdown) {
+    DateTextInsideTire(
+        value = countdown.days,
+        label = if (countdown.days != 1L) "days" else "day",
+        imageID = R.drawable.days_tires,
+        modifier = Modifier.padding(20.dp)
+    )
+    DateTextInsideTire(
+        value = countdown.hours,
+        label = if (countdown.hours != 1L) "hours" else "hour",
+        imageID = R.drawable.hours_tires,
+        modifier = Modifier.padding(20.dp)
+    )
+    DateTextInsideTire(
+        value = countdown.minutes,
+        label = if (countdown.minutes != 1L) "minutes" else "minutes",
+        imageID = R.drawable.minutes_tires,
+        modifier = Modifier.padding(20.dp)
+    )
 }
 
 @Composable

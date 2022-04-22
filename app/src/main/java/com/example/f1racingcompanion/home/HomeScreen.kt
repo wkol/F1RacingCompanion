@@ -27,10 +27,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.f1racingcompanion.ui.FetchingDataIndicator
+import com.example.f1racingcompanion.ui.NetworkError
+import com.example.f1racingcompanion.ui.Screen
 import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavController) {
     val uiState by homeViewModel.uiState.collectAsState()
     val scaffoldState = rememberScaffoldState()
     F1RacingCompanionTheme(darkTheme = true) {
@@ -53,14 +57,16 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel()) {
                 uiState,
                 Modifier
                     .fillMaxSize()
-                    .padding(paddingValue)
-            )
+                    .padding(paddingValue),
+            ) {
+                navController.navigate(Screen.Timing.withArgs(uiState.nextSession?.circuitId ?: "unknown"))
+            }
         }
     }
 }
 
 @Composable
-fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier) {
+fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiveSession: () -> Unit) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -94,7 +100,7 @@ fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier) {
                 true -> {
                     Button(
                         modifier = Modifier.size(100.dp),
-                        onClick = { println("Got TO IVE") }
+                        onClick = { onActiveSession() }
                     ) {
                         Text(
                             text = "CONTINUE TO LIVE",
@@ -140,7 +146,7 @@ fun HomeScreenPreview(@PreviewParameter(SampleRaceStatusStateDataProvider::class
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValue)
-            )
+            ) {}
         }
     }
 }
