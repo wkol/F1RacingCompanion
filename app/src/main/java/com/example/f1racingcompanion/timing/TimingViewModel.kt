@@ -1,7 +1,9 @@
 package com.example.f1racingcompanion.timing
 
 import androidx.compose.ui.geometry.Offset
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.data.LiveTimingRepository
@@ -21,8 +23,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -33,6 +38,7 @@ typealias Position = Pair<Long, Offset> // Temporary solution to store colors wi
 @ExperimentalCoroutinesApi
 @HiltViewModel
 class TimingViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
     moshi: Moshi
@@ -45,8 +51,8 @@ class TimingViewModel @Inject constructor(
 
     private var liveTimingRepository: LiveTimingRepository
 
-    val standing: StateFlow<Map<Int, F1DriverListElement>>
-        get() = _standing
+    val standing: StateFlow<List<F1DriverListElement>>
+        get() = MutableStateFlow(_standing.value.values.sortedBy { it.position }.toList()).asStateFlow()
 
     private val _fastestLap: MutableStateFlow<FastestRaceLap> =
         MutableStateFlow(FastestRaceLap(0, "-"))
@@ -57,9 +63,9 @@ class TimingViewModel @Inject constructor(
     val driversPosition: StateFlow<Map<Int, Position>>
         get() = _driversPositions
 
-    val circuitInfo = CircuitInfo("bahrain", Constants.OFFSETMAP["saudi"]!!, "Saudi arabia")
+    val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")] ?: CircuitInfo.getUnknownCircuitInfo()
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean>
         get() = _isLoading
 
@@ -72,10 +78,13 @@ class TimingViewModel @Inject constructor(
                 moshi
             )
             liveTimingRepository = LiveTimingRepository(service)
+            syncData()
+            startUpdatingData()
+            _isLoading.value = false
         }
     }
 
-    suspend fun syncData() {
+    private suspend fun syncData() {
         liveTimingRepository.subscribe()
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
         _standing = MutableStateFlow(
@@ -85,14 +94,14 @@ class TimingViewModel @Inject constructor(
         )
     }
 
-    private suspend fun startUpdatingData() {
+    private fun startUpdatingData() {
         merge(
             liveTimingRepository.getTimingData(),
             liveTimingRepository.getTimingAppData(),
             liveTimingRepository.getPositions()
-        ).collect {
+        ).onEach {
             updateStandings(it)
-        }
+        }.launchIn(viewModelScope)
     }
 
     private fun updateStandings(newData: LiveTimingData<*>) {
