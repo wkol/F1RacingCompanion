@@ -151,7 +151,7 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
         lastLapTime = timing?.lastLap?.value ?: "-",
         lastSectors = timing?.sector?.withIndex()
             ?.associateBy({ it.index.toString() }, { it.value })?.toMutableMap() ?: mutableMapOf(),
-        tires = timingAppData?.stints?.last()?.let {
+        tires = timingAppData?.stints?.lastOrNull()?.let {
             Tires(
                 currentCompound = Compound.valueOf(it.compound ?: "UNKNOWN"),
                 isNew = it.newTires.toBoolean(),
