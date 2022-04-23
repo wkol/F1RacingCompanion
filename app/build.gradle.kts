@@ -57,6 +57,7 @@ android {
 dependencies {
     implementation(libs.google.hilt.library)
     implementation(libs.google.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)

@@ -1,8 +1,11 @@
 package com.example.f1racingcompanion.timing
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,10 +21,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +51,6 @@ import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.model.Tires
 import com.example.f1racingcompanion.ui.theme.TitilliumWeb
-import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.LiveTimingUtils
 
 @Composable
@@ -256,6 +264,7 @@ fun TeamColorBox(color: Long) {
             .padding(horizontal = 10.dp)
     )
 }
+
 @Composable
 fun PositionBox(position: Int, modifier: Modifier = Modifier) {
     Box(
@@ -279,19 +288,21 @@ fun PositionBox(position: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CircuitPlot(modifier: Modifier = Modifier, circuitName: String) {
-    Constants.CIRCIUTS[circuitName]?.let {
-        val painter = painterResource(id = it)
-        Canvas(modifier = modifier) {
-            with(painter) {
-                draw(size)
-            }
+fun CircuitPlot(modifier: Modifier = Modifier, circuitMapId: Int) {
+    val painter = painterResource(id = circuitMapId)
+    Canvas(modifier = modifier) {
+        with(painter) {
+            draw(size)
         }
     }
 }
 
 @Composable
-fun DriverPlot(modifier: Modifier = Modifier, driversPosition: Map<Int, Position>, offset: CircuitOffset) {
+fun DriverPlot(
+    modifier: Modifier = Modifier,
+    driversPosition: Map<Int, Position>,
+    offset: CircuitOffset
+) {
     Canvas(modifier) {
         val xScale: Float = size.width / offset.xAbs
         val yScale: Float = size.height / offset.yAbs
@@ -353,23 +364,98 @@ fun DriverElement(
 }
 
 @Composable
-fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement, color: Color) {
-    Box(
-        modifier
-            .clip(
-                RoundedCornerShape(
-                    topStartPercent = 0,
-                    topEndPercent = 20,
-                    bottomEndPercent = 20,
-                    bottomStartPercent = 0
-                )
-            )
-            .background(color)
-    ) {
+fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement) {
+    Box(modifier = modifier) {
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceAround) {
             TiresIndicator(modifier = Modifier.fillMaxHeight(), tires = driver.tires)
             LapTimeIndicator(modifier = Modifier.fillMaxHeight(), lapTime = driver.lastLapTime)
             SectorIndicator(modifier = Modifier.fillMaxHeight(), sectors = driver.lastSectors)
+        }
+    }
+}
+
+@Composable
+fun StandingLazyList(
+    standing: List<F1DriverListElement>,
+    fastestLap: FastestRaceLap,
+    modifier: Modifier = Modifier
+) {
+    var isInterval by remember { mutableStateOf(false) }
+    val expandedStates = remember(standing) {
+        List(20) { false }.toMutableStateList()
+    }
+
+    Column(modifier = modifier) {
+        StandingHeader(
+            modifier = Modifier
+                .height(25.dp)
+                .clip(
+                    RoundedCornerShape(
+                        topStartPercent = 50,
+                        topEndPercent = 50,
+                        bottomStartPercent = 0,
+                        bottomEndPercent = 0
+                    )
+                )
+                .background(Color.DarkGray),
+            isInterval
+        ) { isInterval = !isInterval }
+        LazyColumn(
+            modifier = Modifier
+                .padding(2.dp),
+        ) {
+            itemsIndexed(standing, { _, it -> it.carNumber }) { idx, element ->
+                DriverElement(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .clip(
+                            RoundedCornerShape(
+                                topStartPercent = 0,
+                                topEndPercent = 20,
+                                bottomEndPercent = 20,
+                                bottomStartPercent = 0
+                            )
+                        )
+                        .border(
+                            BorderStroke(
+                                2.dp,
+                                if (fastestLap.driverNum == element.carNumber) Color(0xFFB124D5) else Color(
+                                    0xFF474747
+                                )
+                            ),
+                            RoundedCornerShape(
+                                topStartPercent = 0,
+                                topEndPercent = 20,
+                                bottomEndPercent = 20,
+                                bottomStartPercent = 0
+                            )
+                        )
+                        .background(Color(0x60151735)),
+                    driverListElement = element,
+                    isInterval = isInterval
+                ) {
+                    expandedStates[idx] = !expandedStates[idx]
+                }
+                AnimatedVisibility(expandedStates[idx]) {
+                    DriverDetails(
+                        driver = element,
+                        modifier = Modifier
+                            .height(60.dp)
+                            .fillMaxWidth()
+                            .padding(2.dp)
+                            .clip(
+                                RoundedCornerShape(
+                                    topStartPercent = 0,
+                                    topEndPercent = 0,
+                                    bottomEndPercent = 20,
+                                    bottomStartPercent = 0
+                                )
+                            )
+                            .background(Color(0x60151735))
+                    )
+                }
+            }
         }
     }
 }

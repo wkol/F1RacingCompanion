@@ -35,8 +35,8 @@ class HomeViewModel @Inject constructor(
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(isActive = null, isLoading = true)
                 is Result.Success -> {
-                    if (it.data == false) {
-                        retrieveNextSession()
+                    it.data?.let { isActive ->
+                        retrieveNextSession(isActive = isActive)
                     }
                 }
                 is Result.Error -> _uiState.value = RaceStatusState(isActive = null, isLoading = false, error = it.msg)
@@ -44,14 +44,14 @@ class HomeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun retrieveNextSession() {
+    private fun retrieveNextSession(isActive: Boolean) {
         ergastRepository.getNextSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(null, true)
                 is Result.Success -> {
                     val session = it.data!!.toNextSession()
                     _uiState.value = RaceStatusState(
-                        isActive = false, isLoading = false,
+                        isActive = isActive, isLoading = false,
                         nextSession = session.copy(
                             schedule = session.schedule.sortedBy { item ->
                                 ChronoUnit.MINUTES.between(

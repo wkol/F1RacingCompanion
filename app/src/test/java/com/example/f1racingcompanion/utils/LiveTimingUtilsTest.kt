@@ -83,7 +83,7 @@ class LiveTimingUtilsTest {
     @Test
     fun getCorrectTiresIcons() {
         // Given each type of a compound
-        val tires = listOf(Compound.UNKNOWN, Compound.HARD, Compound.MEDIUM, Compound.SOFT, Compound.INTER, Compound.WET)
+        val tires = listOf(Compound.UNKNOWN, Compound.HARD, Compound.MEDIUM, Compound.SOFT, Compound.INTERMEDIATE, Compound.WET)
 
         // When converting them to corresponding tires icons
         val tiresConverted = tires.map { getTiresIcon(it) }
