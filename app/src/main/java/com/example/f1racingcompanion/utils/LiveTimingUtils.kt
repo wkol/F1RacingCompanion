@@ -101,8 +101,8 @@ fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { 
 }.map {
     TimingData(
         driverNum = it.key,
-        gapToLeader = it.value.gap,
-        gapToNext = it.value.interval?.value,
+        gapToLeader = it.value.gap ?: it.value.timeDiffToFastest,
+        gapToNext = it.value.interval?.value ?: it.value.timeDiffToNext,
         lastLapTime = it.value.lastLap?.value,
         fastestLap = it.value.bestLapTime,
         sector = it.value.sector,
@@ -123,9 +123,9 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.m
             isNew = stint.newTires.toBoolean(),
             tyreAge = stint.tiresAge
         ),
-        startingGridPos = it.value.gridPos?.toInt(),
         lapNumber = stint.lapNumber,
-        lapTime = stint.lapTime
+        lapTime = stint.lapTime,
+        position = it.value.position
     )
 }
 

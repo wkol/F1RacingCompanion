@@ -48,6 +48,8 @@ class ModelConvertingTest {
                     mapOf(),
                     "+12.99",
                     Interval("3.24", false),
+                    null,
+                    null,
                     SectorValue("1:18:10.1", null, true, false, null),
                     null,
                     true,
@@ -73,6 +75,50 @@ class ModelConvertingTest {
     }
 
     @Test
+    fun convertDifferentStructureTimingData() {
+        // Given a timingData object
+        val timingData = TimingDataDto(
+            mapOf(
+                33 to Timing(
+                    mapOf(
+                        "1" to SectorValue(
+                            "22.13",
+                            null,
+                            true,
+                            null,
+                            null
+                        )
+                    ),
+                    mapOf(),
+                    null,
+                    null,
+                    "+3.1",
+                    "+10.99",
+                    SectorValue("1:18:10.1", null, true, false, null),
+                    null,
+                    true,
+                    false,
+                    false,
+                    false,
+                    15,
+                    12,
+                    1
+                )
+            )
+        )
+
+        // When converting it to Timing
+        val timing = timingData.toListTimingData()
+
+        // Then Timing consits of correctly parsed timingDataDto
+        assertEquals(timing[0].driverNum, 33)
+        assertEquals(timing[0].lastLapTime, "1:18:10.1")
+        assertEquals(timing[0].gapToLeader, "+10.99")
+        assertEquals(timing[0].gapToNext, "+3.1")
+        assertEquals(timing[0].position, 15)
+    }
+
+    @Test
     fun convertIgnoreTimingData() {
         // Given a timingData object with is nothing but segment value
         val timingData = TimingDataDto(
@@ -87,7 +133,7 @@ class ModelConvertingTest {
                             mapOf("Status" to 2048)
                         )
                     ),
-                    null, null, null, null, null, null, null, null, null, null, null, null
+                    null, null, null, null, null, null, null, null, null, null, null, null, null, null
                 )
             )
         )
@@ -116,7 +162,6 @@ class ModelConvertingTest {
                         )
                     ),
                     11,
-                    "12"
                 )
             )
         )
@@ -127,8 +172,8 @@ class ModelConvertingTest {
         // Then converter should ignore useless data
         assertEquals(timingAppData[0].driverNum, 33)
         assertEquals(timingAppData[0].lapTime, "1:12:11.1")
-        assertEquals(timingAppData[0].startingGridPos, 12)
         assertEquals(timingAppData[0].currentTires, Tires(Compound.MEDIUM, false, 2))
+        assertEquals(timingAppData[0].position, 11)
     }
 
     @Test

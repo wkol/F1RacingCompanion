@@ -13,6 +13,10 @@ data class Timing(
     val gap: String?,
     @Json(name = "IntervalToPositionAhead")
     val interval: Interval?,
+    @Json(name = "TimeDiffToPositionAhead")
+    val timeDiffToNext: String?,
+    @Json(name = "TimeDiffToFastest")
+    val timeDiffToFastest: String?,
     @Json(name = "LastLapTime")
     val lastLap: SectorValue?,
     @Json(name = "BestLapTime")
