@@ -3,6 +3,7 @@ package com.example.f1racingcompanion.timing
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -300,13 +301,13 @@ fun CircuitPlot(modifier: Modifier = Modifier, circuitMapId: Int) {
 @Composable
 fun DriverPlot(
     modifier: Modifier = Modifier,
-    driversPosition: Map<Int, Position>,
+    driversPosition: List<Position>,
     offset: CircuitOffset
 ) {
     Canvas(modifier) {
         val xScale: Float = size.width / offset.xAbs
         val yScale: Float = size.height / offset.yAbs
-        driversPosition.values.forEach { (color, position) ->
+        driversPosition.forEach { (color, position) ->
             drawCircle(
                 color = Color(color),
                 radius = 20F,
@@ -374,6 +375,7 @@ fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StandingLazyList(
     standing: List<F1DriverListElement>,
@@ -404,7 +406,7 @@ fun StandingLazyList(
             modifier = Modifier
                 .padding(2.dp),
         ) {
-            itemsIndexed(standing, { _, it -> it.carNumber }) { idx, element ->
+            itemsIndexed(standing.sortedBy { it.position }, { _, it -> it.carNumber }) { idx, element ->
                 DriverElement(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -431,7 +433,8 @@ fun StandingLazyList(
                                 bottomStartPercent = 0
                             )
                         )
-                        .background(Color(0x60151735)),
+                        .background(Color(0x60151735))
+                        .animateItemPlacement(),
                     driverListElement = element,
                     isInterval = isInterval
                 ) {
