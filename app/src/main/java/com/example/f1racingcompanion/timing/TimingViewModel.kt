@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.timing
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateMap
@@ -42,7 +43,8 @@ class TimingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
-    moshi: Moshi
+    moshi: Moshi,
+    app: Application
 ) : ViewModel() {
 
     private var _standing: SnapshotStateMap<Int, F1DriverListElement> = mutableStateMapOf()
@@ -74,7 +76,8 @@ class TimingViewModel @Inject constructor(
             val service = LiveTimingService.create(
                 token.data!!,
                 negotiateCookieJar.getCookies().first(),
-                moshi
+                moshi,
+                app
             )
             liveTimingRepository = LiveTimingRepository(service)
             syncData()
