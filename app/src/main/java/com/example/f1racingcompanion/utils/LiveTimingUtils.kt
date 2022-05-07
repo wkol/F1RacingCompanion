@@ -115,16 +115,16 @@ fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { 
 }
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.map {
-    val stint = it.value.stints.entries.first().value
+    val stint = it.value.stints.entries.firstOrNull()?.value
     TimingAppData(
         driverNum = it.key,
         currentTires = Tires(
-            currentCompound = Compound.valueOf(stint.compound ?: "UNKNOWN"),
-            isNew = stint.newTires.toBoolean(),
-            tyreAge = stint.tiresAge
+            currentCompound = Compound.valueOf(stint?.compound ?: "UNKNOWN"),
+            isNew = stint?.newTires?.toBooleanStrictOrNull(),
+            tyreAge = stint?.tiresAge
         ),
-        lapNumber = stint.lapNumber,
-        lapTime = stint.lapTime,
+        lapNumber = stint?.lapNumber,
+        lapTime = stint?.lapTime,
         position = it.value.position
     )
 }

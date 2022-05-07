@@ -15,7 +15,7 @@ import com.squareup.moshi.Types
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.time.format.DateTimeFormatterBuilder
 
 // In the future refactor the method fromJson
 class LiveTimingDataParser(
@@ -25,6 +25,13 @@ class LiveTimingDataParser(
     private val carDataAdapter: JsonAdapter<CarDataDto>,
     private val positionDataAdapter: JsonAdapter<PositionDataDto>,
 ) : JsonAdapter<LiveTimingData<*>>() {
+
+    private val dateTimeFormatter =
+        DateTimeFormatterBuilder().appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+            .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'"))
+            .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))
+            .toFormatter()
+
     @FromJson
     override fun fromJson(reader: JsonReader): LiveTimingData<*>? {
         reader.beginObject()
@@ -45,37 +52,29 @@ class LiveTimingDataParser(
                         val data = reader.readJsonValue()
                         val date = LocalDateTime.parse(
                             reader.nextString(),
-                            DateTimeFormatter.ofPattern(
-                                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                                Locale.US
-                            )
+                            dateTimeFormatter
                         )
                         reader.endArray()
                         reader.endObject()
                         return when (name) {
-                            "TimingStats" -> LiveTimingData(
-                                name,
+                            "TimingStats" -> LiveTimingData.LiveTimingStatsDto(
                                 timingStatsAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "TimingData" -> LiveTimingData(
-                                name,
+                            "TimingData" -> LiveTimingData.LiveTimingDataDto(
                                 timingDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "TimingAppData" -> LiveTimingData(
-                                name,
+                            "TimingAppData" -> LiveTimingData.LiveTimingAppDataDto(
                                 timingAppDataAdapter.lenient().fromJsonValue(data),
                                 date
                             )
-                            "CarData.z" -> LiveTimingData(
-                                name,
+                            "CarData.z" -> LiveTimingData.LiveCarDataDto(
                                 carDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
                                 date
                             )
-                            "Position.z" -> LiveTimingData(
-                                name,
+                            "Position.z" -> LiveTimingData.LivePositionDataDto(
                                 positionDataAdapter.lenient()
                                     .fromJson(LiveTimingUtils.decodeMessage(data.toString())),
                                 date

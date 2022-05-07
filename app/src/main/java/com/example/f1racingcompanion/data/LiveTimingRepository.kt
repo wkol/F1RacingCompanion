@@ -24,6 +24,7 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
                 0
             )
         )
+        Timber.d("Subscribed to topics: ${Constants.SUBSRIBED_STREAMS}")
     }
 
     fun startWebSocket() =
@@ -44,6 +45,7 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
     fun getTimingData() = webSocketService.observeTimingData().onEach {
         Timber.d("Received TimingData")
+        println(it.data.toString())
     }.flowOn(Dispatchers.IO)
 
     fun getDriverTelemetry(number: Int) = flow {
