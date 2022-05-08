@@ -24,14 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.ui.FetchingDataIndicator
 import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun CircuitDriverPlot(
@@ -129,13 +130,13 @@ fun TimingContent(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val standing by timingViewModel.standing.collectAsState()
     val positions by timingViewModel.driversPosition.collectAsState()
     val fastestLap by timingViewModel.fastestLap.collectAsState()
     val isLoading by timingViewModel.isLoading.collectAsState()
+
     Scaffold(modifier = Modifier.fillMaxSize()) {
         TimingContent(
             circuitInfo = timingViewModel.circuitInfo,

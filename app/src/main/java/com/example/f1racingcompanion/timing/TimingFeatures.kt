@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -80,6 +81,14 @@ fun SectorIndicator(
                     .height(12.dp)
                     .padding(1.dp)
                     .clip(RoundedCornerShape(60))
+                    .background(LiveTimingUtils.getColorFromSector(sectors["0"]))
+            )
+            Box(
+                Modifier
+                    .width(30.dp)
+                    .height(12.dp)
+                    .padding(1.dp)
+                    .clip(RoundedCornerShape(60))
                     .background(LiveTimingUtils.getColorFromSector(sectors["1"]))
             )
             Box(
@@ -89,14 +98,6 @@ fun SectorIndicator(
                     .padding(1.dp)
                     .clip(RoundedCornerShape(60))
                     .background(LiveTimingUtils.getColorFromSector(sectors["2"]))
-            )
-            Box(
-                Modifier
-                    .width(30.dp)
-                    .height(12.dp)
-                    .padding(1.dp)
-                    .clip(RoundedCornerShape(60))
-                    .background(LiveTimingUtils.getColorFromSector(sectors["3"]))
             )
         }
     }
@@ -309,7 +310,7 @@ fun DriverPlot(
         val yScale: Float = size.height / offset.yAbs
         driversPosition.forEach { (color, position) ->
             drawCircle(
-                color = Color(color),
+                color = Color(0xFF000000 + color),
                 radius = 20F,
                 center = Offset(position.x * xScale, position.y * yScale)
             )
@@ -325,7 +326,7 @@ fun DriverElement(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() }.alpha(if (driverListElement.retired) 0.5F else 1F),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {

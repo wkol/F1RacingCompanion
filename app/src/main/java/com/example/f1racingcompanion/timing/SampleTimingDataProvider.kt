@@ -40,7 +40,7 @@ class SampleTimingDataProvider : PreviewParameterProvider<TimingPreviewData> {
                         toFirst = "+9.0",
                         bestLap = BestLap(time = "1:11:11", lapNum = 11),
                         inPit = false,
-                        retired = false,
+                        retired = it % 4 == 0,
                         pitstopCount = 0,
                         startingGridPos = 1,
                         firstName = "a",

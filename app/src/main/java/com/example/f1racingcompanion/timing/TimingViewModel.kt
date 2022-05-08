@@ -24,7 +24,6 @@ import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toPositionDataList
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +36,6 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
-@ExperimentalCoroutinesApi
 @HiltViewModel
 class TimingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -80,6 +78,14 @@ class TimingViewModel @Inject constructor(
                 app
             )
             liveTimingRepository = LiveTimingRepository(service)
+        }
+        refreshWebSocket()
+    }
+
+    fun refreshWebSocket() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            liveTimingRepository.startWebSocket().first()
             syncData()
             startUpdatingData()
             _isLoading.value = false
@@ -150,7 +156,7 @@ class TimingViewModel @Inject constructor(
                     interval = element.gapToNext ?: it.interval,
                     toFirst = element.gapToLeader ?: it.toFirst,
                     position = element.position ?: it.position,
-                    retired = element.retired ?: it.retired,
+                    retired = element.retired ?: element.knockedOut ?: it.retired,
                     inPit = element.inPit ?: it.inPit,
                     pitstopCount = element.pits ?: it.pitstopCount,
                     lastSectors = if (element.sector?.get("0")?.value.isNullOrBlank()) it.lastSectors.plus(
