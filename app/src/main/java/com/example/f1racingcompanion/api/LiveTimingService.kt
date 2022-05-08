@@ -24,7 +24,6 @@ import com.tinder.scarlet.websocket.WebSocketEvent
 import com.tinder.scarlet.websocket.okhttp.OkHttpWebSocket
 import com.tinder.scarlet.ws.Receive
 import com.tinder.scarlet.ws.Send
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import okhttp3.Cookie
 import okhttp3.OkHttpClient
@@ -75,7 +74,6 @@ interface LiveTimingService {
 
     companion object {
 
-        @ExperimentalCoroutinesApi
         fun create(
             token: String,
             cookie: Cookie,

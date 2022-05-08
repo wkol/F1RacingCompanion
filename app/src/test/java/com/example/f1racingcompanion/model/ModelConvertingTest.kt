@@ -58,9 +58,12 @@ class ModelConvertingTest {
                     false,
                     15,
                     12,
-                    1
+                    1,
+                    emptyList(),
+                    false
                 )
-            )
+            ),
+            null
         )
 
         // When converting it to Timing
@@ -102,9 +105,12 @@ class ModelConvertingTest {
                     false,
                     15,
                     12,
-                    1
+                    1,
+                    emptyList(),
+                    false
                 )
-            )
+            ),
+            null
         )
 
         // When converting it to Timing
@@ -133,9 +139,10 @@ class ModelConvertingTest {
                             mapOf("Status" to 2048)
                         )
                     ),
-                    null, null, null, null, null, null, null, null, null, null, null, null, null, null
+                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, emptyList(), null
                 )
-            )
+            ),
+            null
         )
 
         // When converting it to Timing
@@ -219,9 +226,14 @@ class ModelConvertingTest {
                         false,
                         10,
                         20,
-                        0
+                        0,
+                        null,
+                        null,
+                        emptyList(),
+                        false
                     )
-                )
+                ),
+                null
             ),
             mapOf(
                 31 to DriverInfoDto(
