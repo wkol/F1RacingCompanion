@@ -1,5 +1,9 @@
 package com.example.f1racingcompanion.timing
 
+import android.app.Application
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -20,7 +24,6 @@ import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toPositionDataList
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,40 +33,38 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
-typealias Position = Pair<Long, Offset> // Temporary solution to store colors with driver position on track
-
-@ExperimentalCoroutinesApi
 @HiltViewModel
 class TimingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
-    moshi: Moshi
+    moshi: Moshi,
+    app: Application
 ) : ViewModel() {
 
-    private var _standing: MutableStateFlow<MutableMap<Int, F1DriverListElement>> =
-        MutableStateFlow(
-            mutableMapOf()
-        )
+    private var _standing: SnapshotStateMap<Int, F1DriverListElement> = mutableStateMapOf()
 
     private var liveTimingRepository: LiveTimingRepository
 
     val standing: StateFlow<List<F1DriverListElement>>
-        get() = MutableStateFlow(_standing.value.values.sortedBy { it.position }.toList()).asStateFlow()
+        get() = MutableStateFlow(_standing.values.toList()).asStateFlow()
 
     private val _fastestLap: MutableStateFlow<FastestRaceLap> =
         MutableStateFlow(FastestRaceLap(0, "-"))
     val fastestLap: StateFlow<FastestRaceLap>
         get() = _fastestLap
 
-    private val _driversPositions = MutableStateFlow<MutableMap<Int, Position>>(mutableMapOf())
-    val driversPosition: StateFlow<Map<Int, Position>>
-        get() = _driversPositions
+    private val _driversPositions: SnapshotStateMap<Int, Position> = mutableStateMapOf()
+    val driversPosition: StateFlow<List<Position>>
+        get() = MutableStateFlow(_driversPositions.values.toList()).asStateFlow()
 
-    val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")] ?: CircuitInfo.getUnknownCircuitInfo()
+    val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")]
+        ?: CircuitInfo.getUnknownCircuitInfo()
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean>
@@ -75,9 +76,18 @@ class TimingViewModel @Inject constructor(
             val service = LiveTimingService.create(
                 token.data!!,
                 negotiateCookieJar.getCookies().first(),
-                moshi
+                moshi,
+                app
             )
             liveTimingRepository = LiveTimingRepository(service)
+        }
+        refreshWebSocket()
+    }
+
+    private fun refreshWebSocket() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            liveTimingRepository.startWebSocket().first()
             syncData()
             startUpdatingData()
             _isLoading.value = false
@@ -87,11 +97,7 @@ class TimingViewModel @Inject constructor(
     private suspend fun syncData() {
         liveTimingRepository.subscribe()
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
-        _standing = MutableStateFlow(
-            previousData.toF1DriverListElementList().associateBy(
-                { it.carNumber }, { it }
-            ).toMutableMap()
-        )
+        _standing = previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
 
     private fun startUpdatingData() {
@@ -105,21 +111,22 @@ class TimingViewModel @Inject constructor(
     }
 
     private fun updateStandings(newData: LiveTimingData<*>) {
-        when (newData.name) {
-            "TimingAppData" -> updateTimingAppData(newData.data as TimingAppDataDto)
-            "TimingData" -> updateTimingData(newData.data as TimingDataDto)
-            "Position.z" -> updatePositionData(newData.data as PositionDataDto)
+        when (newData) {
+            is LiveTimingData.LiveTimingAppDataDto -> updateTimingAppData(newData.data as TimingAppDataDto)
+            is LiveTimingData.LiveTimingDataDto -> updateTimingData(newData.data as TimingDataDto)
+            is LiveTimingData.LivePositionDataDto -> updatePositionData(newData.data as PositionDataDto)
+            else -> {}
         }
     }
 
     private fun updateTimingAppData(data: TimingAppDataDto) {
         val parsedData = data.toListTimingAppData()
         for (element in parsedData) {
-            _standing.value[element.driverNum]?.let {
-                it.lastLapTime = element.lapTime ?: it.lastLapTime
-                it.startingGridPos = element.startingGridPos ?: it.startingGridPos
-                it.tires = element.currentTires ?: it.tires
-                _standing.value[element.driverNum] = it.copy()
+            _standing[element.driverNum]?.let {
+                _standing[element.driverNum] = it.copy(
+                    lastLapTime = element.lapTime ?: it.lastLapTime,
+                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires
+                )
             }
         }
     }
@@ -128,12 +135,12 @@ class TimingViewModel @Inject constructor(
         val parsedData = data.toPositionDataList()
         for (timestamp in parsedData) {
             for (driver in timestamp.position) {
-                _driversPositions.value[driver.driverNum] =
+                _driversPositions[driver.driverNum] =
                     Position(
-                        _standing.value[driver.driverNum]?.teamColor ?: 0,
+                        _standing[driver.driverNum]?.teamColor ?: 0,
                         Offset(
                             driver.xPos - circuitInfo.circuitOffset.xOffset,
-                            -circuitInfo.circuitOffset.yOffset + driver.yPos
+                            (circuitInfo.circuitOffset.yOffset - driver.yPos.absoluteValue).absoluteValue
                         )
                     )
             }
@@ -143,24 +150,22 @@ class TimingViewModel @Inject constructor(
     private fun updateTimingData(data: TimingDataDto) {
         val parsedData = data.toListTimingData()
         for (element in parsedData) {
-            _standing.value[element.driverNum]?.let {
-                it.interval = element.gapToNext ?: it.interval
-                it.toFirst = element.gapToLeader ?: it.toFirst
-                it.position = element.position ?: it.position
-                it.retired = element.retired ?: it.retired
-                it.inPit = element.inPit ?: it.inPit
-                it.pitstopCount = element.pits ?: it.pitstopCount
-                if (element.sector != null) {
-                    it.updateLastSectors(element.sector)
+            _standing[element.driverNum]?.let {
+                if (element.overallFastest == true && element.fastestLap?.time != null) {
+                    _fastestLap.value = FastestRaceLap(element.driverNum, element.fastestLap.time)
                 }
-                if (element.fastestLap != null) {
-                    it.bestLap = element.fastestLap
-                    if (element.overallFastest == true) {
-                        _fastestLap.value =
-                            FastestRaceLap(element.driverNum, element.fastestLap.time!!)
-                    }
-                }
-                _standing.value[element.driverNum] = it.copy()
+                _standing[element.driverNum] = it.copy(
+                    interval = element.gapToNext ?: it.interval,
+                    toFirst = element.gapToLeader ?: it.toFirst,
+                    position = element.position ?: it.position,
+                    retired = element.retired ?: element.knockedOut ?: it.retired,
+                    inPit = element.inPit ?: it.inPit,
+                    pitstopCount = element.pits ?: it.pitstopCount,
+                    lastSectors = if (element.sector?.get("0")?.value.isNullOrBlank()) it.lastSectors.plus(
+                        element.sector ?: emptyMap()
+                    ).toMutableMap() else element.sector!!.toMutableMap(),
+                    bestLap = element.fastestLap ?: it.bestLap,
+                )
             }
         }
     }

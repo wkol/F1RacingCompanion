@@ -55,6 +55,16 @@ object Constants {
             ),
             grandPrixName = "Emilia Romagna",
             circuitMap = R.drawable.imola
-        )
+        ),
+        "miami" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -4370F,
+                yOffset = 1081F,
+                xAbs = 14925F,
+                yAbs = 5875F
+            ),
+            grandPrixName = "Miami",
+            circuitMap = R.drawable.miami
+        ),
     )
 }

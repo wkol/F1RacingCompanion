@@ -3,6 +3,7 @@ package com.example.f1racingcompanion.timing
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -79,6 +81,14 @@ fun SectorIndicator(
                     .height(12.dp)
                     .padding(1.dp)
                     .clip(RoundedCornerShape(60))
+                    .background(LiveTimingUtils.getColorFromSector(sectors["0"]))
+            )
+            Box(
+                Modifier
+                    .width(30.dp)
+                    .height(12.dp)
+                    .padding(1.dp)
+                    .clip(RoundedCornerShape(60))
                     .background(LiveTimingUtils.getColorFromSector(sectors["1"]))
             )
             Box(
@@ -88,14 +98,6 @@ fun SectorIndicator(
                     .padding(1.dp)
                     .clip(RoundedCornerShape(60))
                     .background(LiveTimingUtils.getColorFromSector(sectors["2"]))
-            )
-            Box(
-                Modifier
-                    .width(30.dp)
-                    .height(12.dp)
-                    .padding(1.dp)
-                    .clip(RoundedCornerShape(60))
-                    .background(LiveTimingUtils.getColorFromSector(sectors["3"]))
             )
         }
     }
@@ -300,15 +302,15 @@ fun CircuitPlot(modifier: Modifier = Modifier, circuitMapId: Int) {
 @Composable
 fun DriverPlot(
     modifier: Modifier = Modifier,
-    driversPosition: Map<Int, Position>,
+    driversPosition: List<Position>,
     offset: CircuitOffset
 ) {
     Canvas(modifier) {
         val xScale: Float = size.width / offset.xAbs
         val yScale: Float = size.height / offset.yAbs
-        driversPosition.values.forEach { (color, position) ->
+        driversPosition.forEach { (color, position) ->
             drawCircle(
-                color = Color(color),
+                color = Color(0xFF000000 + color),
                 radius = 20F,
                 center = Offset(position.x * xScale, position.y * yScale)
             )
@@ -324,7 +326,7 @@ fun DriverElement(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() }.alpha(if (driverListElement.retired) 0.5F else 1F),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -374,6 +376,7 @@ fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StandingLazyList(
     standing: List<F1DriverListElement>,
@@ -404,7 +407,7 @@ fun StandingLazyList(
             modifier = Modifier
                 .padding(2.dp),
         ) {
-            itemsIndexed(standing, { _, it -> it.carNumber }) { idx, element ->
+            itemsIndexed(standing.sortedBy { it.position }, { _, it -> it.carNumber }) { idx, element ->
                 DriverElement(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -431,7 +434,8 @@ fun StandingLazyList(
                                 bottomStartPercent = 0
                             )
                         )
-                        .background(Color(0x60151735)),
+                        .background(Color(0x60151735))
+                        .animateItemPlacement(),
                     driverListElement = element,
                     isInterval = isInterval
                 ) {

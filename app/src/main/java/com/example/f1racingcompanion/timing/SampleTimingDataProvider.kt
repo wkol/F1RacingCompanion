@@ -40,7 +40,7 @@ class SampleTimingDataProvider : PreviewParameterProvider<TimingPreviewData> {
                         toFirst = "+9.0",
                         bestLap = BestLap(time = "1:11:11", lapNum = 11),
                         inPit = false,
-                        retired = false,
+                        retired = it % 4 == 0,
                         pitstopCount = 0,
                         startingGridPos = 1,
                         firstName = "a",
@@ -52,8 +52,8 @@ class SampleTimingDataProvider : PreviewParameterProvider<TimingPreviewData> {
                     )
                 },
                 fastestLap = FastestRaceLap(1, "1:33:11"),
-                driversPositions = mapOf(
-                    33 to Position(
+                driversPositions = listOf(
+                    Position(
                         0xFFFFFFFF,
                         Offset(-2980 + 580F, 5058 + 8358F)
                     )
@@ -62,7 +62,7 @@ class SampleTimingDataProvider : PreviewParameterProvider<TimingPreviewData> {
                 isLoading = false
             ),
             TimingPreviewData(
-                emptyList(), FastestRaceLap(-1, "-"), emptyMap(),
+                emptyList(), FastestRaceLap(-1, "-"), emptyList(),
                 CircuitInfo(CircuitOffset(0F, 0F, 0F, 0F), "-", R.drawable.bahrain), true
             )
         )

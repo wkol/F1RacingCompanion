@@ -99,10 +99,20 @@ fun ByteArray.zlibDecompress(): String {
 fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { entry ->
     entry.value.sector?.values?.any { it.segments != null } == true
 }.map {
+    val qualyfingPart = this.sessionPart
+    val toFirst: String?
+    val toNext: String?
+    if (qualyfingPart != null) {
+        toFirst = it.value.qualyfingStats[qualyfingPart - 1].timeDiffToFastest
+        toNext = it.value.qualyfingStats[qualyfingPart - 1].timeDiffToNext
+    } else {
+        toFirst = it.value.gap ?: it.value.timeDiffToFastest
+        toNext = it.value.interval?.value ?: it.value.timeDiffToNext
+    }
     TimingData(
         driverNum = it.key,
-        gapToLeader = it.value.gap,
-        gapToNext = it.value.interval?.value,
+        gapToLeader = toFirst,
+        gapToNext = toNext,
         lastLapTime = it.value.lastLap?.value,
         fastestLap = it.value.bestLapTime,
         sector = it.value.sector,
@@ -110,22 +120,23 @@ fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { 
         inPit = it.value.inPit,
         retired = it.value.retired,
         pits = it.value.pitsNum,
-        overallFastest = it.value.lastLap?.overallFastest
+        overallFastest = it.value.lastLap?.overallFastest,
+        knockedOut = it.value.knockedOut,
     )
 }
 
 fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.map {
-    val stint = it.value.stints.entries.first().value
+    val stint = it.value.stints.entries.firstOrNull()?.value
     TimingAppData(
         driverNum = it.key,
         currentTires = Tires(
-            currentCompound = Compound.valueOf(stint.compound ?: "UNKNOWN"),
-            isNew = stint.newTires.toBoolean(),
-            tyreAge = stint.tiresAge
+            currentCompound = Compound.valueOf(stint?.compound ?: "UNKNOWN"),
+            isNew = stint?.newTires?.toBooleanStrictOrNull(),
+            tyreAge = stint?.tiresAge
         ),
-        startingGridPos = it.value.gridPos?.toInt(),
-        lapNumber = stint.lapNumber,
-        lapTime = stint.lapTime
+        lapNumber = stint?.lapNumber,
+        lapTime = stint?.lapTime,
+        position = it.value.position
     )
 }
 
@@ -147,6 +158,16 @@ fun PositionDataDto.toPositionDataList(): List<PositionData> {
 fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
     val timing = this.timingDataDto?.lines?.get(driver.key)
     val timingAppData = this.timingAppDataDto?.lapInfo?.get(driver.key)
+    val qualyfingPart = this.timingDataDto?.sessionPart
+    val toFirst: String?
+    val toNext: String?
+    if (qualyfingPart != null) {
+        toFirst = timing?.qualyfingStats?.get(qualyfingPart - 1)?.timeDiffToFastest
+        toNext = timing?.qualyfingStats?.get(qualyfingPart - 1)?.timeDiffToNext
+    } else {
+        toFirst = timing?.gap ?: timing?.timeDiffToFastest
+        toNext = timing?.interval?.value ?: timing?.timeDiffToNext
+    }
     F1DriverListElement(
         lastLapTime = timing?.lastLap?.value ?: "-",
         lastSectors = timing?.sector?.withIndex()
@@ -159,11 +180,11 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
             )
         } ?: Tires(Compound.UNKNOWN, false, 0),
         position = timing?.position ?: -1,
-        interval = timing?.interval?.value ?: "-",
-        toFirst = timing?.gap ?: "-",
+        interval = toNext ?: "-",
+        toFirst = toFirst ?: "-",
         bestLap = timing?.bestLapTime ?: BestLap("-", 0),
         inPit = timing?.inPit ?: false,
-        retired = timing?.retired ?: false,
+        retired = timing?.retired ?: timing?.knockedOut ?: false,
         pitstopCount = timing?.pitsNum ?: 0,
         startingGridPos = timingAppData?.gridPos?.toInt() ?: -1,
         firstName = driver.value.firstName,

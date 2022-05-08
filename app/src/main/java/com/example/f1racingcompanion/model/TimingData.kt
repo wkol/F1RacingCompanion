@@ -14,5 +14,6 @@ data class TimingData(
     val inPit: Boolean?,
     val retired: Boolean?,
     val pits: Int?,
-    val overallFastest: Boolean?
+    val overallFastest: Boolean?,
+    val knockedOut: Boolean?,
 )

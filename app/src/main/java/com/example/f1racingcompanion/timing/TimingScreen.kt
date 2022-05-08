@@ -31,12 +31,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.ui.FetchingDataIndicator
 import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Composable
 fun CircuitDriverPlot(
     circuitInfo: CircuitInfo,
-    driversPostitions: Map<Int, Position>,
+    driversPostitions: List<Position>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
@@ -61,11 +60,13 @@ fun TimingContent(
     circuitInfo: CircuitInfo,
     standing: List<F1DriverListElement>,
     fastestLap: FastestRaceLap,
-    positions: Map<Int, Position>,
+    positions: List<Position>,
     isLoading: Boolean
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().background(color = Color.Black),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.Black),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -86,7 +87,7 @@ fun TimingContent(
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     StandingLazyList(
-                        standing = standing.filter { it.position != 0 },
+                        standing = standing.sortedBy { it.position },
                         fastestLap = fastestLap,
                         modifier = Modifier
                             .fillMaxWidth(0.5F)
@@ -106,7 +107,7 @@ fun TimingContent(
                 }
             }
             StandingLazyList(
-                standing = standing.filter { it.position != 0 },
+                standing = standing.sortedBy { it.position },
                 fastestLap = fastestLap,
                 modifier = Modifier
                     .fillMaxWidth(0.95F)
@@ -127,15 +128,21 @@ fun TimingContent(
     }
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val standing by timingViewModel.standing.collectAsState()
     val positions by timingViewModel.driversPosition.collectAsState()
     val fastestLap by timingViewModel.fastestLap.collectAsState()
     val isLoading by timingViewModel.isLoading.collectAsState()
+
     Scaffold(modifier = Modifier.fillMaxSize()) {
-        TimingContent(timingViewModel.circuitInfo, standing, fastestLap, positions, isLoading)
+        TimingContent(
+            circuitInfo = timingViewModel.circuitInfo,
+            standing = standing,
+            fastestLap = fastestLap,
+            positions = positions,
+            isLoading = isLoading
+        )
     }
 }
 
