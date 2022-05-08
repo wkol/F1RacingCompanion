@@ -33,8 +33,10 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 @HiltViewModel
 class TimingViewModel @Inject constructor(
@@ -82,7 +84,7 @@ class TimingViewModel @Inject constructor(
         refreshWebSocket()
     }
 
-    fun refreshWebSocket() {
+    private fun refreshWebSocket() {
         viewModelScope.launch {
             _isLoading.value = true
             liveTimingRepository.startWebSocket().first()
@@ -95,8 +97,7 @@ class TimingViewModel @Inject constructor(
     private suspend fun syncData() {
         liveTimingRepository.subscribe()
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
-        _standing =
-            previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
+        _standing = previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
 
     private fun startUpdatingData() {
@@ -110,10 +111,11 @@ class TimingViewModel @Inject constructor(
     }
 
     private fun updateStandings(newData: LiveTimingData<*>) {
-        when (newData.name) {
-            "TimingAppData" -> updateTimingAppData(newData.data as TimingAppDataDto)
-            "TimingData" -> updateTimingData(newData.data as TimingDataDto)
-            "Position.z" -> updatePositionData(newData.data as PositionDataDto)
+        when (newData) {
+            is LiveTimingData.LiveTimingAppDataDto -> updateTimingAppData(newData.data as TimingAppDataDto)
+            is LiveTimingData.LiveTimingDataDto -> updateTimingData(newData.data as TimingDataDto)
+            is LiveTimingData.LivePositionDataDto -> updatePositionData(newData.data as PositionDataDto)
+            else -> {}
         }
     }
 
@@ -123,7 +125,7 @@ class TimingViewModel @Inject constructor(
             _standing[element.driverNum]?.let {
                 _standing[element.driverNum] = it.copy(
                     lastLapTime = element.lapTime ?: it.lastLapTime,
-                    tires = element.currentTires ?: it.tires
+                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires
                 )
             }
         }
@@ -138,7 +140,7 @@ class TimingViewModel @Inject constructor(
                         _standing[driver.driverNum]?.teamColor ?: 0,
                         Offset(
                             driver.xPos - circuitInfo.circuitOffset.xOffset,
-                            -circuitInfo.circuitOffset.yOffset + driver.yPos
+                            (circuitInfo.circuitOffset.yOffset - driver.yPos.absoluteValue).absoluteValue
                         )
                     )
             }
