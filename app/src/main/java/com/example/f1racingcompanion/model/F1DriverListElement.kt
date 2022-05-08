@@ -22,11 +22,4 @@ data class F1DriverListElement(
     var team: String,
     var teamColor: Long,
     var isExpanded: Boolean = false
-) {
-    fun updateLastSectors(sector: Map<String, SectorValue>) {
-        if (sector["1"]?.value == "") {
-            lastSectors.clear()
-        }
-        lastSectors += sector
-    }
-}
+)

@@ -2,6 +2,7 @@ package com.example.f1racingcompanion.data.previousdata
 
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.Interval
+import com.example.f1racingcompanion.data.timingdatadto.QualifyingStats
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -31,5 +32,13 @@ data class PreviousTiming(
     @Json(name = "NumberOfLaps")
     val lapsNum: Int?,
     @Json(name = "NumberOfPitstops")
-    val pitsNum: Int?
+    val pitsNum: Int?,
+    @Json(name = "TimeDiffToPositionAhead")
+    val timeDiffToNext: String?,
+    @Json(name = "TimeDiffToFastest")
+    val timeDiffToFastest: String?,
+    @Json(name = "Stats")
+    val qualyfingStats: List<QualifyingStats>? = emptyList<QualifyingStats>(),
+    @Json(name = "KnockedOut")
+    val knockedOut: Boolean?
 )
