@@ -5,7 +5,7 @@ import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 
 data class F1DriverListElement(
     var lastLapTime: String,
-    var lastSectors: MutableMap<String, SectorValue>,
+    var lastSectors: Map<String, SectorValue>,
     var tires: Tires,
     var position: Int,
     var interval: String,
