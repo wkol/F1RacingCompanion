@@ -42,11 +42,11 @@ class LiveTimingDataParserTest {
         // When parsing data using moshi custom adapter
         val liveTimingData: LiveTimingData<TimingStatsDto>? = adapter.fromJson(jsonReader)
 
-        Assert.assertEquals(liveTimingData!!.name, "TimingStats")
-        Assert.assertEquals(liveTimingData.date!!.dayOfMonth, 8)
-        Assert.assertEquals(liveTimingData.date!!.second, 51)
-        Assert.assertEquals(liveTimingData.date!!.minute, 30)
-        Assert.assertEquals(liveTimingData.data!!.lines[7]!!.bestSpeeds!!["I1"]!!.position, 2)
+        Assert.assertEquals("TimingStats", liveTimingData!!.name)
+        Assert.assertEquals(8, liveTimingData.date!!.dayOfMonth)
+        Assert.assertEquals(51, liveTimingData.date!!.second)
+        Assert.assertEquals(30, liveTimingData.date!!.minute)
+        Assert.assertEquals(2, liveTimingData.data!!.lines[7]!!.bestSpeeds!!["I1"]!!.position,)
     }
 
     @Test
@@ -66,9 +66,9 @@ class LiveTimingDataParserTest {
         val liveTimingData: LiveTimingData<TimingAppDataDto>? = adapter.fromJson(jsonReader)
 
         // Then parse data is correct
-        Assert.assertEquals(liveTimingData!!.name, "TimingAppData")
-        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
-        Assert.assertEquals(liveTimingData.data!!.lapInfo[11]!!.stints[1]!!.compound, "MEDIUM")
+        Assert.assertEquals("TimingAppData", liveTimingData!!.name)
+        Assert.assertEquals("2021-10-08T08:34:53.943", liveTimingData.date.toString())
+        Assert.assertEquals("MEDIUM", liveTimingData.data!!.lapInfo[11]!!.stints[1]!!.compound)
     }
 
     @Test
@@ -87,11 +87,11 @@ class LiveTimingDataParserTest {
         // When parsing data using the moshi custom adapter
         val liveTimingData: LiveTimingData<TimingDataDto>? = adapter.fromJson(jsonReader)
         // Then parse data is correct
-        Assert.assertEquals(liveTimingData!!.name, "TimingData")
-        Assert.assertEquals(liveTimingData.date!!.dayOfMonth, 8)
-        Assert.assertEquals(liveTimingData.date!!.second, 53)
-        Assert.assertEquals(liveTimingData.date!!.minute, 34)
-        Assert.assertEquals(liveTimingData.data!!.lines[4]!!.gap, "+5.804")
+        Assert.assertEquals("TimingData", liveTimingData!!.name)
+        Assert.assertEquals(8, liveTimingData.date!!.dayOfMonth)
+        Assert.assertEquals(53, liveTimingData.date!!.second)
+        Assert.assertEquals(34, liveTimingData.date!!.minute)
+        Assert.assertEquals("+5.804", liveTimingData.data!!.lines[4]!!.gap)
     }
 
     @Test
@@ -111,9 +111,9 @@ class LiveTimingDataParserTest {
         val liveTimingData: LiveTimingData<CarDataDto>? = adapter.fromJson(jsonReader)
 
         // Then parse data is correct
-        Assert.assertEquals(liveTimingData!!.name, "CarData.z")
-        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
-        Assert.assertEquals(liveTimingData.data!!.entries[2].cars[7]!!.telemetry.rmpValue, 8887)
+        Assert.assertEquals("CarData.z", liveTimingData!!.name)
+        Assert.assertEquals("2021-10-08T08:34:53.943", liveTimingData.date.toString())
+        Assert.assertEquals(8887, liveTimingData.data!!.entries[2].cars[7]!!.telemetry.rmpValue)
     }
 
     @Test
@@ -133,8 +133,8 @@ class LiveTimingDataParserTest {
         val liveTimingData: LiveTimingData<PositionDataDto>? = adapter.fromJson(jsonReader)
 
         // Then parse data is correct
-        Assert.assertEquals(liveTimingData!!.name, "Position.z")
-        Assert.assertEquals(liveTimingData.date.toString(), "2021-10-08T08:34:53.943")
-        Assert.assertEquals(liveTimingData.data!!.entries[3].cars[31]!!.xPosition, -14077F)
+        Assert.assertEquals("Position.z", liveTimingData!!.name)
+        Assert.assertEquals("2021-10-08T08:34:53.943", liveTimingData.date.toString())
+        Assert.assertEquals(-14077F, liveTimingData.data!!.entries[3].cars[31]!!.xPosition,)
     }
 }
