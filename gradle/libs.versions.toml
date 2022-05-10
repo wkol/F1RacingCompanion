@@ -75,6 +75,7 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp_logger" }
 okhttp-mockwebserver-extension = { module = "com.github.fabric8io:mockwebserver", version.ref = "mockwebserver"}
 
+
 scarlet = { module = "com.github.tinder.scarlet:scarlet", version.ref = "scarlet" }
 scarlet-lifecycle-android = { module = "com.github.tinder.scarlet:scarlet-lifecycle-android", version.ref = "scarlet" }
 scarlet-protocol-websocket = { module = "com.github.tinder.scarlet:scarlet-protocol-websocket-okhttp", version.ref = "scarlet" }
