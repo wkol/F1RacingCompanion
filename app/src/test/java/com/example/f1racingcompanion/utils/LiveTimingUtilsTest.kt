@@ -77,7 +77,7 @@ class LiveTimingUtilsTest {
         val colorsConverted = sectors.map { getColorFromSector(it) }
 
         // Then each sector should have a different, corresponding color
-        assertEquals(colorsConverted, listOf(Color(0xFF33B353), Color(0x97FFFFFF), Color(0xFF7A30A2)))
+        assertEquals(listOf(Color(0xFF33B353), Color(0x97FFFFFF), Color(0xFF7A30A2)), colorsConverted)
     }
 
     @Test
@@ -89,6 +89,6 @@ class LiveTimingUtilsTest {
         val tiresConverted = tires.map { getTiresIcon(it) }
 
         // Then each tyre should have a different corresponding icon
-        assertEquals(tiresConverted, listOf(R.drawable.ic_unknown_tires, R.drawable.ic_hard_tires, R.drawable.ic_medium_tires, R.drawable.ic_soft_tires, R.drawable.ic_inter_tires, R.drawable.ic_wet_tires))
+        assertEquals(listOf(R.drawable.ic_unknown_tires, R.drawable.ic_hard_tires, R.drawable.ic_medium_tires, R.drawable.ic_soft_tires, R.drawable.ic_inter_tires, R.drawable.ic_wet_tires), tiresConverted)
     }
 }
