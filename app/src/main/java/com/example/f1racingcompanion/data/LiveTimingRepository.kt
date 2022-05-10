@@ -4,7 +4,6 @@ import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.utils.Constants
 import com.tinder.scarlet.websocket.WebSocketEvent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
@@ -12,8 +11,11 @@ import timber.log.Timber
 import javax.inject.Singleton
 
 @Singleton
-@OptIn(InternalCoroutinesApi::class)
 class LiveTimingRepository(private val webSocketService: LiveTimingService) {
+
+    private var _isOpen: Boolean = false
+    val isOpen: Boolean
+        get() = _isOpen
 
     fun subscribe() {
         webSocketService.subscribeToTopics(
@@ -29,8 +31,11 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
 
     fun startWebSocket() =
         webSocketService.observeEvents().onEach { event ->
-            if (event is WebSocketEvent.OnMessageReceived) {
-                Timber.d(event.message.toString())
+            when (event) {
+                is WebSocketEvent.OnConnectionOpened -> _isOpen = true
+                is WebSocketEvent.OnConnectionFailed -> _isOpen = false
+                is WebSocketEvent.OnConnectionClosing -> _isOpen = false
+                else -> {}
             }
             Timber.d("Received event: ${event::class.java.simpleName}")
         }.flowOn(Dispatchers.IO)

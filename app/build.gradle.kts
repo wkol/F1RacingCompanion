@@ -1,7 +1,3 @@
-
-
-
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -57,7 +53,6 @@ android {
 
 dependencies {
     implementation(libs.google.hilt.library)
-    implementation(libs.google.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
@@ -88,7 +83,6 @@ dependencies {
 
     // Scarlet package
     implementation(libs.scarlet)
-    implementation(libs.scarlet.lifecycle.android)
     implementation(libs.scarlet.protocol.websocket)
     implementation(libs.scarlet.message.adapter.moshi)
     // Timber log package

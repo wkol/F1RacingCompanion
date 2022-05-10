@@ -36,7 +36,7 @@ class LiveTimingFormula1Repository @Inject constructor(
             emit(
                 Result.Success(
                     data = when (response.status) {
-                        "Unavailable" -> false
+                        "Offline" -> false
                         "Available" -> true
                         else -> null
                     }

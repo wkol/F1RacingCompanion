@@ -1,6 +1,5 @@
 package com.example.f1racingcompanion.timing
 
-import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateMap
@@ -44,7 +43,6 @@ class TimingViewModel @Inject constructor(
     liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
     moshi: Moshi,
-    app: Application
 ) : ViewModel() {
 
     private var _standing: SnapshotStateMap<Int, F1DriverListElement> = mutableStateMapOf()
@@ -52,7 +50,7 @@ class TimingViewModel @Inject constructor(
     private var liveTimingRepository: LiveTimingRepository
 
     val standing: StateFlow<List<F1DriverListElement>>
-        get() = MutableStateFlow(_standing.values.toList()).asStateFlow()
+        get() = MutableStateFlow(_standing.values.toList().sortedBy { it.position }).asStateFlow()
 
     private val _fastestLap: MutableStateFlow<FastestRaceLap> =
         MutableStateFlow(FastestRaceLap(0, "-"))
@@ -76,18 +74,18 @@ class TimingViewModel @Inject constructor(
             val service = LiveTimingService.create(
                 token.data!!,
                 negotiateCookieJar.getCookies().first(),
-                moshi,
-                app
+                moshi
             )
             liveTimingRepository = LiveTimingRepository(service)
+            liveTimingRepository.startWebSocket().launchIn(viewModelScope)
         }
         refreshWebSocket()
     }
 
-    private fun refreshWebSocket() {
+    fun refreshWebSocket() {
+        if (!isLoading.value || !liveTimingRepository.isOpen) return
         viewModelScope.launch {
             _isLoading.value = true
-            liveTimingRepository.startWebSocket().first()
             syncData()
             startUpdatingData()
             _isLoading.value = false
@@ -97,7 +95,8 @@ class TimingViewModel @Inject constructor(
     private suspend fun syncData() {
         liveTimingRepository.subscribe()
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
-        _standing = previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
+        _standing =
+            previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
 
     private fun startUpdatingData() {
@@ -139,8 +138,8 @@ class TimingViewModel @Inject constructor(
                     Position(
                         _standing[driver.driverNum]?.teamColor ?: 0,
                         Offset(
-                            driver.xPos - circuitInfo.circuitOffset.xOffset,
-                            (circuitInfo.circuitOffset.yOffset - driver.yPos.absoluteValue).absoluteValue
+                            (circuitInfo.circuitOffset.xOffset - driver.xPos).absoluteValue,
+                            (circuitInfo.circuitOffset.yOffset - driver.yPos).absoluteValue
                         )
                     )
             }
@@ -161,9 +160,11 @@ class TimingViewModel @Inject constructor(
                     retired = element.retired ?: element.knockedOut ?: it.retired,
                     inPit = element.inPit ?: it.inPit,
                     pitstopCount = element.pits ?: it.pitstopCount,
-                    lastSectors = if (element.sector?.get("0")?.value.isNullOrBlank()) it.lastSectors.plus(
-                        element.sector ?: emptyMap()
-                    ).toMutableMap() else element.sector!!.toMutableMap(),
+                    lastSectors = when {
+                        element.sector.isNullOrEmpty() -> it.lastSectors
+                        element.sector["0"]?.value.isNullOrEmpty() -> it.lastSectors.plus(element.sector.filter { sector -> !(sector.value.value.isNullOrEmpty()) })
+                        else -> element.sector
+                    },
                     bestLap = element.fastestLap ?: it.bestLap,
                 )
             }
