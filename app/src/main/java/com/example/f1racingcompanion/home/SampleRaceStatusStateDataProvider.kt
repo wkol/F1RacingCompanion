@@ -12,8 +12,8 @@ class SampleRaceStatusStateDataProvider : PreviewParameterProvider<RaceStatusSta
                 isActive = false,
                 isLoading = false,
                 nextSession = NextSession(
-                    circuitName = "VEr VERY LOGN CIRUCasdasdsdsdsdsdsdsdsdsdsdsdsdT NAM Name",
-                    raceName = "Circuit country",
+                    circuitName = "circuitName",
+                    raceName = "Very very very long long long long long long circuit name",
                     schedule = listOf(
                         RaceScheduleItem(
                             isUpcoming = true,

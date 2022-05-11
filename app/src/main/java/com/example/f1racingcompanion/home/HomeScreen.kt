@@ -32,6 +32,7 @@ import com.example.f1racingcompanion.ui.FetchingDataIndicator
 import com.example.f1racingcompanion.ui.NetworkError
 import com.example.f1racingcompanion.ui.Screen
 import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
+import com.example.f1racingcompanion.utils.Constants
 
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavController) {
@@ -59,7 +60,7 @@ fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavCon
                     .fillMaxSize()
                     .padding(paddingValue),
             ) {
-                navController.navigate(Screen.Timing.withArgs(uiState.nextSession?.circuitId ?: "unknown"))
+                navController.navigate(Screen.Timing.withArgs(uiState.nextSession?.circuitId ?: "unknown", Constants.SESSION_TYPE_SHORTCUT[uiState.nextSession?.schedule?.get(0)?.description ?: "unknown"]!!))
             }
         }
     }
