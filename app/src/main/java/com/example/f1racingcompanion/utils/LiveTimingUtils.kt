@@ -115,7 +115,7 @@ fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { 
         gapToNext = toNext,
         lastLapTime = it.value.lastLap?.value,
         fastestLap = it.value.bestLapTime,
-        sector = it.value.sector,
+        sector = it.value.sector ?: emptyMap(),
         position = it.value.position,
         inPit = it.value.inPit,
         retired = it.value.retired,
@@ -192,7 +192,7 @@ fun PreviousData.toF1DriverListElementList() = this.drivers.map { driver ->
         carNumber = driver.value.racingNumber,
         shortcut = driver.value.tla,
         team = driver.value.teamName,
-        teamColor = driver.value.teamColour.toLong(16),
+        teamColor = driver.value.teamColour.toLong(16) + 0xFF000000,
         isExpanded = false
     )
 }
@@ -232,4 +232,14 @@ fun EventSessionDto.toNextSession(): NextSession {
         raceName = this.raceName,
         schedule = schedule.filterNotNull()
     )
+}
+
+fun Map<String, SectorValue>.updateSectors(sectors: Map<String, SectorValue>?): Map<String, SectorValue> {
+    if (sectors == null) return this
+    // Check is it a new lap sectors
+    if (sectors["0"]?.value?.isNotEmpty() == true) {
+        return mutableMapOf("0" to sectors["0"]!!)
+    }
+    val validSectors = sectors.filter { it.value.value?.isNotEmpty() == true }
+    return (this + validSectors).toMutableMap()
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -135,6 +136,9 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val fastestLap by timingViewModel.fastestLap.collectAsState()
     val isLoading by timingViewModel.isLoading.collectAsState()
 
+    LaunchedEffect(key1 = Unit) {
+        timingViewModel.refreshWebSocket()
+    }
     Scaffold(modifier = Modifier.fillMaxSize()) {
         TimingContent(
             circuitInfo = timingViewModel.circuitInfo,

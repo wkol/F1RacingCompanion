@@ -310,7 +310,7 @@ fun DriverPlot(
         val yScale: Float = size.height / offset.yAbs
         driversPosition.forEach { (color, position) ->
             drawCircle(
-                color = Color(0xFF000000 + color),
+                color = Color(color),
                 radius = 20F,
                 center = Offset(position.x * xScale, position.y * yScale)
             )
@@ -384,7 +384,7 @@ fun StandingLazyList(
     modifier: Modifier = Modifier
 ) {
     var isInterval by remember { mutableStateOf(false) }
-    val expandedStates = remember(standing) {
+    val expandedStates = remember {
         List(20) { false }.toMutableStateList()
     }
 
@@ -407,7 +407,7 @@ fun StandingLazyList(
             modifier = Modifier
                 .padding(2.dp),
         ) {
-            itemsIndexed(standing.sortedBy { it.position }, { _, it -> it.carNumber }) { idx, element ->
+            itemsIndexed(standing, { _, it -> it.carNumber }) { idx, element ->
                 DriverElement(
                     modifier = Modifier
                         .fillMaxWidth()

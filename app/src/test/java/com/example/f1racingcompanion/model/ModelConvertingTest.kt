@@ -22,6 +22,7 @@ import com.example.f1racingcompanion.utils.toListTimingAppData
 import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toNextSession
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDate
 import java.time.LocalTime
@@ -70,11 +71,11 @@ class ModelConvertingTest {
         val timing = timingData.toListTimingData()
 
         // Then Timing consits of correctly parsed timingDataDto
-        assertEquals(timing[0].driverNum, 33)
-        assertEquals(timing[0].lastLapTime, "1:18:10.1")
-        assertEquals(timing[0].gapToLeader, "+12.99")
-        assertEquals(timing[0].gapToNext, "3.24")
-        assertEquals(timing[0].position, 15)
+        assertEquals(33, timing[0].driverNum)
+        assertEquals("1:18:10.1", timing[0].lastLapTime)
+        assertEquals("+12.99", timing[0].gapToLeader)
+        assertEquals("3.24", timing[0].gapToNext)
+        assertEquals(15, timing[0].position)
     }
 
     @Test
@@ -117,11 +118,11 @@ class ModelConvertingTest {
         val timing = timingData.toListTimingData()
 
         // Then Timing consits of correctly parsed timingDataDto
-        assertEquals(timing[0].driverNum, 33)
-        assertEquals(timing[0].lastLapTime, "1:18:10.1")
-        assertEquals(timing[0].gapToLeader, "+10.99")
-        assertEquals(timing[0].gapToNext, "+3.1")
-        assertEquals(timing[0].position, 15)
+        assertEquals(33, timing[0].driverNum)
+        assertEquals("1:18:10.1", timing[0].lastLapTime)
+        assertEquals("+10.99", timing[0].gapToLeader)
+        assertEquals("+3.1", timing[0].gapToNext,)
+        assertEquals(15, timing[0].position)
     }
 
     @Test
@@ -149,7 +150,7 @@ class ModelConvertingTest {
         val timing = timingData.toListTimingData()
 
         // Then converter should ignore useless data
-        assertEquals(timing.isEmpty(), true)
+        assertTrue(timing.isEmpty())
     }
 
     @Test
@@ -177,10 +178,10 @@ class ModelConvertingTest {
         val timingAppData = timingAppDataDto.toListTimingAppData()
 
         // Then converter should ignore useless data
-        assertEquals(timingAppData[0].driverNum, 33)
-        assertEquals(timingAppData[0].lapTime, "1:12:11.1")
-        assertEquals(timingAppData[0].currentTires, Tires(Compound.MEDIUM, false, 2))
-        assertEquals(timingAppData[0].position, 11)
+        assertEquals(33, timingAppData[0].driverNum)
+        assertEquals("1:12:11.1", timingAppData[0].lapTime)
+        assertEquals(Tires(Compound.MEDIUM, false, 2), timingAppData[0].currentTires)
+        assertEquals(11, timingAppData[0].position)
     }
 
     @Test
@@ -263,10 +264,10 @@ class ModelConvertingTest {
             )
         )
         val f1DriverList = previousData.toF1DriverListElementList()
-        assertEquals(f1DriverList.size, 2)
-        assertEquals(f1DriverList[0].carNumber, 31)
-        assertEquals(f1DriverList[0].position, 10)
-        assertEquals(f1DriverList[1].position, -1)
+        assertEquals(2, f1DriverList.size)
+        assertEquals(31, f1DriverList[0].carNumber)
+        assertEquals(10, f1DriverList[0].position)
+        assertEquals(-1, f1DriverList[1].position)
     }
 
     @Test
@@ -285,12 +286,12 @@ class ModelConvertingTest {
 
         val nextSession = eventSession.toNextSession()
 
-        assertEquals(nextSession.raceName, "Australian Grand Prix")
-        assertEquals(nextSession.circuitName, "Albert Park Grand Prix Circuit")
+        assertEquals("Australian Grand Prix", nextSession.raceName)
+        assertEquals("Albert Park Grand Prix Circuit", nextSession.circuitName)
         assertEquals(
-            nextSession.schedule[0].zonedStartTime.toInstant(),
-            ZonedDateTime.of(LocalDate.of(2022, 4, 8), LocalTime.of(3, 0, 0), ZoneId.of("UTC")).toInstant()
+            ZonedDateTime.of(LocalDate.of(2022, 4, 8), LocalTime.of(3, 0, 0), ZoneId.of("UTC")).toInstant(),
+            nextSession.schedule[0].zonedStartTime.toInstant()
         )
-        assertEquals(nextSession.schedule[1].isUpcoming, false)
+        assertEquals(false, nextSession.schedule[1].isUpcoming)
     }
 }
