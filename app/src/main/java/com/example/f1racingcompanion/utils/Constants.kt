@@ -66,5 +66,166 @@ object Constants {
             grandPrixName = "Miami",
             circuitMap = R.drawable.miami
         ),
+        "catalunya" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -7337F,
+                yOffset = 3734F,
+                xAbs = 9637F,
+                yAbs = 11476F
+            ),
+            grandPrixName = "Spanish",
+            circuitMap = R.drawable.catalunya
+        ),
+        "monaco" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -7681F,
+                yOffset = -192F,
+                xAbs = 7475F,
+                yAbs = 9577F
+            ),
+            grandPrixName = "Monaco",
+            circuitMap = R.drawable.monaco
+        ),
+        "BAK" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -16914F,
+                yOffset = 3701F,
+                xAbs = 20646F,
+                yAbs = 14850F
+            ),
+            grandPrixName = "Azerbaijan",
+            circuitMap = R.drawable.bak
+        ),
+        "ricard" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -11083F,
+                yOffset = 5285F,
+                xAbs = 21095F,
+                yAbs = 12215F
+            ),
+            grandPrixName = "French",
+            circuitMap = R.drawable.ricard
+        ),
+        "red_bull_ring" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -8236F,
+                yOffset = 5681F,
+                xAbs = 12483F,
+                yAbs = 7926F
+            ),
+            grandPrixName = "Austrian",
+            circuitMap = R.drawable.red_bull_ring
+        ),
+        "silverstone" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -2318F,
+                yOffset = 13123F,
+                xAbs = 10112F,
+                yAbs = 17244F
+            ),
+            grandPrixName = "British",
+            circuitMap = R.drawable.silverstone
+        ),
+        "hungaroring" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -6087F,
+                yOffset = 10573F,
+                xAbs = 10638F,
+                yAbs = 12070F
+            ),
+            grandPrixName = "Hungarian",
+            circuitMap = R.drawable.hungaroring
+        ),
+        "spa" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -4341F,
+                yOffset = 4558F,
+                xAbs = 12658F,
+                yAbs = 20338F
+            ),
+            grandPrixName = "Belgian",
+            circuitMap = R.drawable.spa
+        ),
+        "zandvoort" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -1021F,
+                yOffset = 6715F,
+                xAbs = 9730F,
+                yAbs = 8329F
+            ),
+            grandPrixName = "Dutch",
+            circuitMap = R.drawable.zandvoort
+        ),
+        "monza" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -1502F,
+                yOffset = 15893F,
+                xAbs = 12574F,
+                yAbs = 21698F
+            ),
+            grandPrixName = "Italian",
+            circuitMap = R.drawable.monza
+        ),
+        "americas" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -2554F,
+                yOffset = 6437F,
+                xAbs = 18136F,
+                yAbs = 10534F
+            ),
+            grandPrixName = "United States",
+            circuitMap = R.drawable.americas
+        ),
+        "rodriguez" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -2433F,
+                yOffset = 1287F,
+                xAbs = 14448F,
+                yAbs = 10329F
+            ),
+            grandPrixName = "Mexican",
+            circuitMap = R.drawable.rodriguez
+        ),
+        "interlagos" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -4683F,
+                yOffset = 4988F,
+                xAbs = 6687F,
+                yAbs = 10381F
+            ),
+            grandPrixName = "Brazilian",
+            circuitMap = R.drawable.interlagos
+        ),
+        "yas_marina" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -2181F,
+                yOffset = 11784F,
+                xAbs = 7988F,
+                yAbs = 17136F
+            ),
+            grandPrixName = "Abu Dhabi",
+            circuitMap = R.drawable.yas_marina
+        ),
+        "marina_bay" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -13498F,
+                yOffset = 4154F,
+                xAbs = 14686F,
+                yAbs = 12487F
+            ),
+            grandPrixName = "Singapore",
+            circuitMap = R.drawable.marina_bay
+        ),
+        "suzuka" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -14149F,
+                yOffset = 2832F,
+                xAbs = 20199F,
+                yAbs = 15852F
+            ),
+            grandPrixName = "Japan",
+            circuitMap = R.drawable.suzuka
+        )
+
     )
 }
