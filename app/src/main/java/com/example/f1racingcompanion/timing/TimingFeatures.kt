@@ -104,7 +104,7 @@ fun SectorIndicator(
 }
 
 @Composable
-fun RaceNameText(modifier: Modifier = Modifier, raceName: String) {
+fun RaceNameText(modifier: Modifier = Modifier, raceName: String, sessionType: String) {
     Row(modifier, horizontalArrangement = Arrangement.Start) {
         Box(
             modifier = Modifier
@@ -124,7 +124,14 @@ fun RaceNameText(modifier: Modifier = Modifier, raceName: String) {
         )
         Text(
             modifier = Modifier.align(Alignment.Bottom),
-            text = " GRAND PRIX", color = Color(0xBFFFFFFF), fontFamily = TitilliumWeb,
+            text = " GRAND PRIX - ", color = Color(0xBFFFFFFF), fontFamily = TitilliumWeb,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp
+        )
+        Text(
+            modifier = Modifier.align(Alignment.Bottom),
+            text = sessionType, color = Color(0xBFFFFFFF), fontFamily = TitilliumWeb,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp

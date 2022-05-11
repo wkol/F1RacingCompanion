@@ -62,6 +62,7 @@ fun TimingContent(
     standing: List<F1DriverListElement>,
     fastestLap: FastestRaceLap,
     positions: List<Position>,
+    sessionType: String,
     isLoading: Boolean
 ) {
     Column(
@@ -83,7 +84,8 @@ fun TimingContent(
         } else {
             RaceNameText(
                 raceName = circuitInfo.grandPrixName,
-                modifier = Modifier.align(Alignment.Start)
+                modifier = Modifier.align(Alignment.Start),
+                sessionType = sessionType
             )
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -145,7 +147,8 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
             standing = standing,
             fastestLap = fastestLap,
             positions = positions,
-            isLoading = isLoading
+            isLoading = isLoading,
+            sessionType = timingViewModel.sessionType
         )
     }
 }
@@ -160,7 +163,8 @@ fun TimingScreenPreview(@PreviewParameter(SampleTimingDataProvider::class) data:
                 standing = data.standing,
                 fastestLap = data.fastestLap,
                 positions = data.driversPositions,
-                isLoading = data.isLoading
+                isLoading = data.isLoading,
+                sessionType = data.sessionType
             )
         }
     }

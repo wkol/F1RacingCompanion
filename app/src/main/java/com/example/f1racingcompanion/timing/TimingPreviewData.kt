@@ -7,5 +7,6 @@ data class TimingPreviewData(
     val fastestLap: FastestRaceLap,
     val driversPositions: List<Position>,
     val circuitInfo: CircuitInfo,
+    val sessionType: String,
     val isLoading: Boolean
 )

@@ -59,11 +59,12 @@ class SampleTimingDataProvider : PreviewParameterProvider<TimingPreviewData> {
                     )
                 ),
                 circuitInfo = Constants.CIRCUITS["bahrain"]!!,
-                isLoading = false
+                isLoading = false,
+                sessionType = "FP1"
             ),
             TimingPreviewData(
                 emptyList(), FastestRaceLap(-1, "-"), emptyList(),
-                CircuitInfo(CircuitOffset(0F, 0F, 0F, 0F), "-", R.drawable.bahrain), true
+                CircuitInfo(CircuitOffset(0F, 0F, 0F, 0F), "-", R.drawable.bahrain), "FP1", true
             )
         )
 }

@@ -64,6 +64,8 @@ class TimingViewModel @Inject constructor(
     val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")]
         ?: CircuitInfo.getUnknownCircuitInfo()
 
+    val sessionType = savedStateHandle.get<String>("session_type")!!
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean>
         get() = _isLoading

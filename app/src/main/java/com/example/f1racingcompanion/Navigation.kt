@@ -24,9 +24,13 @@ fun Navigation() {
             HomeScreen(homeViewModel = homeViewModel, navController = navController)
         }
         composable(
-            route = Screen.Timing.route + "/{circuit_id}",
+            route = Screen.Timing.route + "/{circuit_id}/{session_type}",
             arguments = listOf(
                 navArgument("circuit_id") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("session_type") {
                     type = NavType.StringType
                     nullable = false
                 }
