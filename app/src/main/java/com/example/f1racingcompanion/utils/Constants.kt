@@ -225,7 +225,34 @@ object Constants {
             ),
             grandPrixName = "Japan",
             circuitMap = R.drawable.suzuka
+        ),
+        "villeneuve" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = -9857F,
+                yOffset = 16790F,
+                xAbs = 13792F,
+                yAbs = 20408F
+            ),
+            grandPrixName = "Canadian",
+            circuitMap = R.drawable.villeneuve
+        ),
+        "unknown" to CircuitInfo(
+            circuitOffset = CircuitOffset(
+                xOffset = 0F,
+                yOffset = 0F,
+                xAbs = 0F,
+                yAbs = 0F
+            ),
+            grandPrixName = "Unknown",
+            circuitMap = R.drawable.spa
         )
-
+    )
+    val SESSION_TYPE_SHORTCUT = mapOf(
+        "FirstPractice" to "FP1",
+        "SecondPractice" to "FP2",
+        "ThirdPractice" to "FP3",
+        "Qualifying" to "Q",
+        "Race" to "",
+        "unknown" to ""
     )
 }
