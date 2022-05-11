@@ -29,6 +29,11 @@
 -keep class kotlin.Metadata { *; }
 -keep @com.squareup.moshi.JsonQualifier @interface *
 -keep class com.example.f1racingcompanion.data.** { *; }
+
+-keep class com.example.f1racingcompanion.timing.** { *; }
+-keep class com.example.f1racingcompanion.utils.** { *; }
+-keep class com.example.f1racingcompanion.api.** { *; }
+
 # Enum field names are used by the integrated EnumJsonAdapter.
 # values() is synthesized by the Kotlin compiler and is used by EnumJsonAdapter indirectly
 # Annotate enums with @JsonClass(generateAdapter = false) to use them with Moshi.
