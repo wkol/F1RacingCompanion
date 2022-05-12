@@ -35,38 +35,6 @@ import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
 import com.example.f1racingcompanion.utils.Constants
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavController) {
-    val uiState by homeViewModel.uiState.collectAsState()
-    val scaffoldState = rememberScaffoldState()
-    F1RacingCompanionTheme(darkTheme = true) {
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "F1 Racing Companion",
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
-                            color = Color.White
-                        )
-                    },
-                    backgroundColor = Color(0x72000000)
-                )
-            },
-        ) { paddingValue ->
-            HomeContent(
-                uiState,
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValue),
-            ) {
-                navController.navigate(Screen.Timing.withArgs(uiState.nextSession?.circuitId ?: "unknown", Constants.SESSION_TYPE_SHORTCUT[uiState.nextSession?.schedule?.get(0)?.description ?: "unknown"]!!))
-            }
-        }
-    }
-}
-
-@Composable
 fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiveSession: () -> Unit) {
     Column(
         modifier = modifier,
@@ -104,7 +72,7 @@ fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiv
                         onClick = { onActiveSession() }
                     ) {
                         Text(
-                            text = "CONTINUE TO LIVE",
+                            text = "Go live!",
                             modifier = Modifier.wrapContentSize()
                         )
                     }
@@ -119,6 +87,38 @@ fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiv
                         uiState.error
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavController) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    val scaffoldState = rememberScaffoldState()
+    F1RacingCompanionTheme(darkTheme = true) {
+        Scaffold(
+            scaffoldState = scaffoldState,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "F1 Racing Companion",
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                            color = Color.White
+                        )
+                    },
+                    backgroundColor = Color(0x72000000)
+                )
+            },
+        ) { paddingValue ->
+            HomeContent(
+                uiState,
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValue),
+            ) {
+                navController.navigate(Screen.Timing.withArgs(uiState.nextSession?.circuitId ?: "unknown", Constants.SESSION_TYPE_SHORTCUT[uiState.nextSession?.schedule?.get(0)?.description] ?: "unknown"))
             }
         }
     }

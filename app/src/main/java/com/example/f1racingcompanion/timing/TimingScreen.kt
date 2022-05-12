@@ -79,7 +79,7 @@ fun TimingContent(
                     .align(Alignment.CenterHorizontally)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White),
-                text = "Loading..."
+                text = "Connecting to API..."
             )
         } else {
             RaceNameText(
