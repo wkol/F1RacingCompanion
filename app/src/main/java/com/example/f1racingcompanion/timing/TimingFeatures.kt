@@ -264,7 +264,7 @@ fun TeamColorBox(color: Long) {
     Box(
         modifier = Modifier
             .wrapContentSize(Alignment.Center)
-            .fillMaxHeight(0.9f)
+            .fillMaxHeight(0.6f)
             .width(8.dp)
             .background(
                 Color(color),

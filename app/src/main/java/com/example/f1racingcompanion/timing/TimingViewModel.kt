@@ -80,8 +80,10 @@ class TimingViewModel @Inject constructor(
             )
             liveTimingRepository = LiveTimingRepository(service)
             liveTimingRepository.startWebSocket().launchIn(viewModelScope)
+            syncData()
+            startUpdatingData()
+            _isLoading.value = false
         }
-        refreshWebSocket()
     }
 
     fun refreshWebSocket() {

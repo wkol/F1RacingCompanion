@@ -248,11 +248,11 @@ object Constants {
         )
     )
     val SESSION_TYPE_SHORTCUT = mapOf(
-        "FirstPractice" to "FP1",
-        "SecondPractice" to "FP2",
-        "ThirdPractice" to "FP3",
+        "First practice" to "FP1",
+        "Second practice" to "FP2",
+        "Third practice" to "FP3",
         "Qualifying" to "Q",
+        "Sprint" to "Sprint",
         "Race" to "",
-        "unknown" to ""
     )
 }
