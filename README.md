@@ -16,7 +16,7 @@ When no session is running, the app displays countdown to the next session.
 
 ### Screens
 
-<img src="./timing_screen.png" alt="img" style="zoom:33%;" />  <img src="./timing_screen_2.png" alt="img" style="zoom:33%;" /> <img src="./home_screen.png" alt="img" style="zoom:33%;">
+<img src="screenshots/timing_screen.png" alt="img" style="zoom:33%;" />  <img src="screenshots/timing_screen_2.png" alt="img" style="zoom:33%;" /> <img src="screenshots/home_screen.png" alt="img" style="zoom:33%;">
 
 ## Supported tracks for live position of the drivers
 
