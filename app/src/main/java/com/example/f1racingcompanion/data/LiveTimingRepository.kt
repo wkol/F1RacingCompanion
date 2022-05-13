@@ -32,7 +32,10 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
     fun startWebSocket() =
         webSocketService.observeEvents().onEach { event ->
             when (event) {
-                is WebSocketEvent.OnConnectionOpened -> _isOpen = true
+                is WebSocketEvent.OnConnectionOpened -> {
+                    subscribe()
+                    _isOpen = true
+                }
                 is WebSocketEvent.OnConnectionFailed -> _isOpen = false
                 is WebSocketEvent.OnConnectionClosing -> _isOpen = false
                 else -> {}

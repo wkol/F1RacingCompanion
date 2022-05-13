@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.scarlet)
     implementation(libs.scarlet.protocol.websocket)
     implementation(libs.scarlet.message.adapter.moshi)
+    implementation(libs.scarlet.lifecycle.android)
     // Timber log package
     implementation(libs.timber)
 

@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.timing
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.toMutableStateMap
@@ -43,6 +44,7 @@ class TimingViewModel @Inject constructor(
     liveTimingFormula1Repository: LiveTimingFormula1Repository,
     negotiateCookieJar: NegotiateCookieJar,
     moshi: Moshi,
+    application: Application
 ) : ViewModel() {
 
     private var _standing: SnapshotStateMap<Int, F1DriverListElement> = mutableStateMapOf()
@@ -76,7 +78,8 @@ class TimingViewModel @Inject constructor(
             val service = LiveTimingService.create(
                 token.data!!,
                 negotiateCookieJar.getCookies().first(),
-                moshi
+                moshi,
+                application
             )
             liveTimingRepository = LiveTimingRepository(service)
             liveTimingRepository.startWebSocket().launchIn(viewModelScope)
@@ -87,7 +90,7 @@ class TimingViewModel @Inject constructor(
     }
 
     fun refreshWebSocket() {
-        if (!isLoading.value || !liveTimingRepository.isOpen) return
+        if (isLoading.value || liveTimingRepository.isOpen) return
         viewModelScope.launch {
             _isLoading.value = true
             syncData()
@@ -97,7 +100,6 @@ class TimingViewModel @Inject constructor(
     }
 
     private suspend fun syncData() {
-        liveTimingRepository.subscribe()
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
         _standing =
             previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
