@@ -2,7 +2,7 @@
 
 ### Features
 
-An app written in Kotlin allowing to track live timing data from F1 sessions.
+An android app written in Kotlin allowing to track live timing data from F1 sessions.
 The app uses livetiming signalr api to display data such as:
 
 * positions
@@ -15,8 +15,7 @@ The app uses livetiming signalr api to display data such as:
 When no session is running, the app displays countdown to the next session.
 
 ### Screens
-
-<img src="screenshots/timing_screen.png" alt="img" style="zoom:33%;" />  <img src="screenshots/timing_screen_2.png" alt="img" style="zoom:33%;" /> <img src="screenshots/home_screen.png" alt="img" style="zoom:33%;">
+<img src="screenshots/home_screen.png" width="300"> <img src="screenshots/timing_screen.png" width="300" > <img src="screenshots/timing_screen_2.png" width="300" >
 
 ## Supported tracks for live position of the drivers
 
@@ -48,7 +47,7 @@ To install the app, download the latest bundle or apk release from repo or just 
 
 ### Data sources
 
-Currently app's data sources from a [F1 livetiming signalr](https://livetiming.formula1.com/) api
+F1RacingCompanion uses data from a [F1 livetiming signalr](https://livetiming.formula1.com/) api
 (the same which is used in the official mobile app).   
 Huge thanks to [FastF1](https://github.com/theOehrly/Fast-F1/) GitHub repo for understanding the api and data provided by it (if you are interested in data analysis of formula 1 you should check it).
 Also to provide countdown to next events [ErgastAPI](http://ergast.com/mrd/) is used.
