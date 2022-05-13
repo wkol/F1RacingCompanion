@@ -1,5 +1,6 @@
 package com.example.f1racingcompanion.api
 
+import android.app.Application
 import com.example.f1racingcompanion.BuildConfig
 import com.example.f1racingcompanion.data.Subscribe
 import com.example.f1racingcompanion.data.cardatadto.CarDataDto
@@ -17,6 +18,7 @@ import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.tinder.scarlet.Scarlet
+import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import com.tinder.scarlet.websocket.ShutdownReason
 import com.tinder.scarlet.websocket.WebSocketEvent
 import com.tinder.scarlet.websocket.okhttp.OkHttpWebSocket
@@ -76,6 +78,7 @@ interface LiveTimingService {
             token: String,
             cookie: Cookie,
             moshi: Moshi,
+            app: Application,
         ): LiveTimingService {
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
@@ -106,6 +109,7 @@ interface LiveTimingService {
             val config = Scarlet.Configuration(
                 messageAdapterFactories = listOf(CustomMoshiMessageAdapter.Factory(moshi)),
                 streamAdapterFactories = listOf(CoroutinesStreamAdapterFactory()),
+                lifecycle = AndroidLifecycle.ofApplicationForeground(app)
             )
             val scarletInstance = Scarlet(protocol, config)
             return scarletInstance.create()
