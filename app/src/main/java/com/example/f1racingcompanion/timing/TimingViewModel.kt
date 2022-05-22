@@ -130,7 +130,7 @@ class TimingViewModel @Inject constructor(
             _standing[element.driverNum]?.let {
                 _standing[element.driverNum] = it.copy(
                     lastLapTime = element.lapTime ?: it.lastLapTime,
-                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires
+                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires.copy(tyreAge = element.currentTires?.tyreAge ?: it.tires.tyreAge),
                 )
             }
         }

@@ -253,6 +253,6 @@ object Constants {
         "Third practice" to "FP3",
         "Qualifying" to "Q",
         "Sprint" to "Sprint",
-        "Race" to "",
+        "Race" to "Race",
     )
 }
