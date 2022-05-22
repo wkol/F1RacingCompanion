@@ -54,8 +54,13 @@ class HomeViewModel @Inject constructor(
                         isActive = isActive, isLoading = false,
                         nextSession = session.copy(
                             schedule = session.schedule.sortedBy { item ->
-                                ChronoUnit.MINUTES.between(
-                                    ZonedDateTime.now(),
+                                if (isActive)
+                                    -ChronoUnit.MINUTES.between(
+                                        ZonedDateTime.now(),
+                                        item.zonedStartTime
+                                    )
+                                else ChronoUnit.MINUTES.between(
+                                    item.zonedStartTime,
                                     item.zonedStartTime
                                 )
                             }
