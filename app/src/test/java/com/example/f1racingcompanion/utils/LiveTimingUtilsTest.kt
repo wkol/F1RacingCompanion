@@ -81,6 +81,18 @@ class LiveTimingUtilsTest {
     }
 
     @Test
+    fun getCorrectSectorColorWhenValueIsMissing() {
+        // Given three different Sector Values
+        val sectors = listOf(SectorValue("23.12", null, true, false, null), SectorValue("", null, false, false, null), SectorValue("", null, true, true, null))
+
+        // When converting them to corresponding colors
+        val colorsConverted = sectors.map { getColorFromSector(it) }
+
+        // Then each sector should have a different, corresponding color
+        assertEquals(listOf(Color(0xFF33B353), Color.Transparent, Color.Transparent), colorsConverted)
+    }
+
+    @Test
     fun getCorrectTiresIcons() {
         // Given each type of a compound
         val tires = listOf(Compound.UNKNOWN, Compound.HARD, Compound.MEDIUM, Compound.SOFT, Compound.INTERMEDIATE, Compound.WET)

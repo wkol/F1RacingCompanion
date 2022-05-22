@@ -92,6 +92,7 @@ class LiveTimingDataParserTest {
         Assert.assertEquals(53, liveTimingData.date!!.second)
         Assert.assertEquals(34, liveTimingData.date!!.minute)
         Assert.assertEquals("+5.804", liveTimingData.data!!.lines[4]!!.gap)
+        Assert.assertEquals(null, liveTimingData.data!!.lines[4]!!.qualyfingStats)
     }
 
     @Test

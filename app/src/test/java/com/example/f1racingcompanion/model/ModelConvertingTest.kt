@@ -60,7 +60,7 @@ class ModelConvertingTest {
                     15,
                     12,
                     1,
-                    emptyList(),
+                    null,
                     false
                 )
             ),
@@ -107,7 +107,7 @@ class ModelConvertingTest {
                     15,
                     12,
                     1,
-                    emptyList(),
+                    null,
                     false
                 )
             ),
@@ -140,7 +140,7 @@ class ModelConvertingTest {
                             mapOf("Status" to 2048)
                         )
                     ),
-                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, emptyList(), null
+                    null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
                 )
             ),
             null
