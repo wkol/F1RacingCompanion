@@ -56,11 +56,10 @@ object LiveTimingUtils {
     }
 
     fun getColorFromSector(sectorValue: SectorValue?): Color = when {
-        sectorValue == null -> Color.Transparent
+        sectorValue == null || sectorValue.value.isNullOrEmpty() -> Color.Transparent
         sectorValue.overallFastest == true -> Color(0xFF7A30A2)
         sectorValue.personalFastest == true -> Color(0xFF33B353)
-        sectorValue.personalFastest == false -> Color(0x97FFFFFF)
-        else -> Color.Transparent
+        else -> Color(0x97FFFFFF)
     }
 
     fun getTiresIcon(compound: Compound): Int = when (compound) {
@@ -99,12 +98,12 @@ fun ByteArray.zlibDecompress(): String {
 fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { entry ->
     entry.value.sector?.values?.any { it.segments != null } == true
 }.map {
-    val qualyfingPart = this.sessionPart
     val toFirst: String?
     val toNext: String?
-    if (qualyfingPart != null) {
-        toFirst = it.value.qualyfingStats[qualyfingPart - 1].timeDiffToFastest
-        toNext = it.value.qualyfingStats[qualyfingPart - 1].timeDiffToNext
+    if (it.value.qualyfingStats != null) {
+        val key = it.value.qualyfingStats!!.toList().last().first
+        toFirst = it.value.qualyfingStats!![key]!!.timeDiffToFastest
+        toNext = it.value.qualyfingStats!![key]!!.timeDiffToNext
     } else {
         toFirst = it.value.gap ?: it.value.timeDiffToFastest
         toNext = it.value.interval?.value ?: it.value.timeDiffToNext
@@ -116,7 +115,7 @@ fun TimingDataDto.toListTimingData(): List<TimingData> = this.lines.filterNot { 
         lastLapTime = it.value.lastLap?.value,
         fastestLap = it.value.bestLapTime,
         sector = it.value.sector ?: emptyMap(),
-        position = it.value.position,
+        position = it.value.position ?: it.value.linePosition,
         inPit = it.value.inPit,
         retired = it.value.retired,
         pits = it.value.pitsNum,

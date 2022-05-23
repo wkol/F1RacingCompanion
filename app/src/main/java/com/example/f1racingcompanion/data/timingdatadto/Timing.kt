@@ -36,7 +36,9 @@ data class Timing(
     @Json(name = "NumberOfPitstops")
     val pitsNum: Int?,
     @Json(name = "Stats")
-    val qualyfingStats: List<QualifyingStats> = emptyList(),
+    val qualyfingStats: Map<Int, QualifyingStats>?,
     @Json(name = "KnockedOut")
-    val knockedOut: Boolean?
+    val knockedOut: Boolean?,
+    @Json(name = "Line")
+    val linePosition: Int?
 )
