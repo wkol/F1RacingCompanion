@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.onEach
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -55,10 +56,10 @@ class HomeViewModel @Inject constructor(
                         nextSession = session.copy(
                             schedule = session.schedule.sortedBy { item ->
                                 if (isActive)
-                                    -ChronoUnit.MINUTES.between(
+                                    ChronoUnit.MINUTES.between(
                                         ZonedDateTime.now(),
                                         item.zonedStartTime
-                                    )
+                                    ).absoluteValue
                                 else ChronoUnit.MINUTES.between(
                                     item.zonedStartTime,
                                     item.zonedStartTime
