@@ -32,12 +32,12 @@ class LiveTimingFormula1Repository @Inject constructor(
     fun checkForActiveSession(): Flow<Result<Boolean>> = flow {
         try {
             emit(Result.Loading())
-            val response = api.streamingStatus()
+            val response = api.sessionInfo()
             emit(
                 Result.Success(
-                    data = when (response.status) {
-                        "Offline" -> false
-                        "Available" -> true
+                    data = when (response.archiveStatus?.get("Status")) {
+                        "Generating" -> true
+                        "Complete" -> false
                         else -> null
                     }
                 )

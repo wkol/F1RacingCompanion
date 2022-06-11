@@ -33,6 +33,22 @@ class SampleRaceStatusStateDataProvider : PreviewParameterProvider<RaceStatusSta
                 isActive = null,
                 isLoading = false,
                 error = "Error message"
+            ),
+            RaceStatusState(
+                isActive = true,
+                isLoading = false,
+                nextSession = NextSession(
+                    circuitName = "circuitName",
+                    raceName = "Very very very long long long long long long circuit name",
+                    schedule = listOf(
+                        RaceScheduleItem(
+                            isUpcoming = true,
+                            description = "Qualifying",
+                            zonedStartTime = ZonedDateTime.now()
+                        )
+                    ),
+                    circuitId = "1"
+                )
             )
 
         )

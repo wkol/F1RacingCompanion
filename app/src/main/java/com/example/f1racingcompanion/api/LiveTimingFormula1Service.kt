@@ -14,4 +14,7 @@ interface LiveTimingFormula1Service {
 
     @GET("static/StreamingStatus.json")
     suspend fun streamingStatus(): SessionStatusDto
+
+    @GET("static/SessionInfo.json")
+    suspend fun sessionInfo(): SessionStatusDto
 }
