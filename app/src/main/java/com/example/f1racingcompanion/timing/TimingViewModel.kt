@@ -34,7 +34,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -49,7 +48,7 @@ class TimingViewModel @Inject constructor(
 
     private var _standing: SnapshotStateMap<Int, F1DriverListElement> = mutableStateMapOf()
 
-    private var liveTimingRepository: LiveTimingRepository
+    private lateinit var liveTimingRepository: LiveTimingRepository
 
     val standing: StateFlow<List<F1DriverListElement>>
         get() = MutableStateFlow(_standing.values.toList().sortedBy { it.position }).asStateFlow()
@@ -66,14 +65,15 @@ class TimingViewModel @Inject constructor(
     val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")]
         ?: CircuitInfo.getUnknownCircuitInfo()
 
-    val sessionType = savedStateHandle.get<String>("session_type")!!
+    private val _sessionType = MutableStateFlow(savedStateHandle.get<String>("session_type")!!)
+    val sessionType = _sessionType
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean>
         get() = _isLoading
 
     init {
-        runBlocking {
+        viewModelScope.launch {
             val token = liveTimingFormula1Repository.getConnectionToken().take(2).toList()[1]
             val service = LiveTimingService.create(
                 token.data!!,
@@ -101,6 +101,7 @@ class TimingViewModel @Inject constructor(
 
     private suspend fun syncData() {
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
+        previousData.timingDataDto?.sessionPart?.let { _sessionType.value = "Q$it" }
         _standing =
             previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
@@ -163,7 +164,7 @@ class TimingViewModel @Inject constructor(
                     interval = element.gapToNext ?: it.interval,
                     toFirst = element.gapToLeader ?: it.toFirst,
                     position = element.position ?: it.position,
-                    retired = element.retired ?: element.knockedOut ?: it.retired,
+                    retired = element.knockedOut ?: element.retired ?: it.retired,
                     inPit = element.inPit ?: it.inPit,
                     pitstopCount = element.pits ?: it.pitstopCount,
                     lastSectors = when {
@@ -175,5 +176,7 @@ class TimingViewModel @Inject constructor(
                 )
             }
         }
+        if (data.sessionPart != null)
+            _sessionType.value = "Q${data.sessionPart}"
     }
 }

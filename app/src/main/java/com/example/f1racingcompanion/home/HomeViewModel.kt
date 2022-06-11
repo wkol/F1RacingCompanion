@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.onEach
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -35,9 +36,12 @@ class HomeViewModel @Inject constructor(
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(isActive = null, isLoading = true)
                 is Result.Success -> {
-                    it.data?.let { isActive ->
-                        retrieveNextSession(isActive = isActive)
+                    if (it.data == null) {
+                        _uiState.value =
+                            _uiState.value.copy(error = "Invalid message recieved", isLoading = false)
+                        return@onEach
                     }
+                    retrieveNextSession(it.data)
                 }
                 is Result.Error -> _uiState.value = RaceStatusState(isActive = null, isLoading = false, error = it.msg)
             }
@@ -45,6 +49,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun retrieveNextSession(isActive: Boolean) {
+
         ergastRepository.getNextSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(null, true)
@@ -55,13 +60,13 @@ class HomeViewModel @Inject constructor(
                         nextSession = session.copy(
                             schedule = session.schedule.sortedBy { item ->
                                 if (isActive)
-                                    -ChronoUnit.MINUTES.between(
+                                    ChronoUnit.MINUTES.between(
                                         ZonedDateTime.now(),
                                         item.zonedStartTime
-                                    )
+                                    ).absoluteValue
                                 else ChronoUnit.MINUTES.between(
                                     item.zonedStartTime,
-                                    item.zonedStartTime
+                                    ZonedDateTime.now()
                                 )
                             }
                         )

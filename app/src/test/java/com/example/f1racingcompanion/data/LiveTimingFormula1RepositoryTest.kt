@@ -79,7 +79,7 @@ class LiveTimingFormula1RepositoryTest {
         val liveTimingFormula1Repository = LiveTimingFormula1Repository(liveTimingFormula1Service)
 
         mockWebServer.enqueue(
-            MockResponse().setBody("{\"Status\":\"Available\"}")
+            MockResponse().setBody("{\"ArchiveStatus\":{\"Status\": \"Generating\"}}")
         )
 
         val response = liveTimingFormula1Repository.checkForActiveSession().take(2).toList()
@@ -87,7 +87,7 @@ class LiveTimingFormula1RepositoryTest {
 
         assertEquals(true, response[1].data!!)
         assertEquals(
-            "/static/StreamingStatus.json",
+            "/static/SessionInfo.json",
             request.path
         )
     }
