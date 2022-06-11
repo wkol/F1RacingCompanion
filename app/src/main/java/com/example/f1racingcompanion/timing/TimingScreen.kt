@@ -137,6 +137,7 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val positions by timingViewModel.driversPosition.collectAsState()
     val fastestLap by timingViewModel.fastestLap.collectAsState()
     val isLoading by timingViewModel.isLoading.collectAsState()
+    val sessionType by timingViewModel.sessionType.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         timingViewModel.refreshWebSocket()
@@ -148,7 +149,7 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
             fastestLap = fastestLap,
             positions = positions,
             isLoading = isLoading,
-            sessionType = timingViewModel.sessionType
+            sessionType = sessionType
         )
     }
 }

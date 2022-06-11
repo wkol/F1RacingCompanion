@@ -42,7 +42,6 @@ class HomeViewModel @Inject constructor(
                         return@onEach
                     }
                     retrieveNextSession(it.data)
-
                 }
                 is Result.Error -> _uiState.value = RaceStatusState(isActive = null, isLoading = false, error = it.msg)
             }

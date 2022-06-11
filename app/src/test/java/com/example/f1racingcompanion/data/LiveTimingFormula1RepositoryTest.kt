@@ -87,7 +87,7 @@ class LiveTimingFormula1RepositoryTest {
 
         assertEquals(true, response[1].data!!)
         assertEquals(
-            "/static/StreamingStatus.json",
+            "/static/SessionInfo.json",
             request.path
         )
     }
