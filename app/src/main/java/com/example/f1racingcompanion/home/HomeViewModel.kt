@@ -65,9 +65,9 @@ class HomeViewModel @Inject constructor(
                                         item.zonedStartTime
                                     ).absoluteValue
                                 else ChronoUnit.MINUTES.between(
-                                    item.zonedStartTime,
-                                    ZonedDateTime.now()
-                                )
+                                    ZonedDateTime.now(),
+                                    item.zonedStartTime
+                                ).takeIf { diff -> diff > 0 } ?: Long.MAX_VALUE
                             }
                         )
                     )
