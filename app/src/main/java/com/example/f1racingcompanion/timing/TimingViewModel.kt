@@ -1,10 +1,8 @@
 package com.example.f1racingcompanion.timing
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
-import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -35,7 +33,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -105,7 +102,7 @@ class TimingViewModel @Inject constructor(
     private suspend fun syncData() {
         val previousData = liveTimingRepository.getPreviousData().first()
         previousData.timingDataDto?.sessionPart?.let { _sessionType.value = "Q$it" }
-        _standing += previousData.toF1DriverListElementList().associateBy({it.carNumber}, {it})
+        _standing += previousData.toF1DriverListElementList().associateBy({ it.carNumber }, { it })
     }
 
     private fun startUpdatingData() {
