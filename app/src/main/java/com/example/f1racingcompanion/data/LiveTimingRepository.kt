@@ -4,6 +4,7 @@ import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.utils.Constants
 import com.tinder.scarlet.websocket.WebSocketEvent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
@@ -64,9 +65,11 @@ class LiveTimingRepository(private val webSocketService: LiveTimingService) {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun getPreviousData() = webSocketService.observePreviousData().onEach {
-        Timber.d("Recieved PreviousData")
-    }.flowOn(Dispatchers.IO)
+    fun getPreviousData() = flow {
+        subscribe()
+        val data = webSocketService.observePreviousData().first()
+        emit(data)
+    }
 
     fun getPositions() = webSocketService.observeCarPosition().onEach {
         Timber.d("Received PositionData")

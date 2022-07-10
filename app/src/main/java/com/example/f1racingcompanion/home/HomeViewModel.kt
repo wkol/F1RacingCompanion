@@ -49,7 +49,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun retrieveNextSession(isActive: Boolean) {
-
         ergastRepository.getNextSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(null, true)
@@ -69,7 +68,7 @@ class HomeViewModel @Inject constructor(
                                     item.zonedStartTime
                                 ).takeIf { diff -> diff > 0 } ?: Long.MAX_VALUE
                             }
-                        )
+                        ),
                     )
                 }
                 is Result.Error ->

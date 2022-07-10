@@ -23,18 +23,16 @@ val Typography = Typography(
         fontFamily = TitilliumWeb,
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp
-    )
-    /* Other default text styles to override
+    ),
     button = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = TitilliumWeb,
         fontWeight = FontWeight.W500,
         fontSize = 14.sp
     ),
     caption = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = TitilliumWeb,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp
     )
-    */
 
 )

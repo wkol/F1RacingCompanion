@@ -90,7 +90,7 @@ fun TimingContent(
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     StandingLazyList(
-                        standing = standing.sortedBy { it.position },
+                        standing = standing,
                         fastestLap = fastestLap,
                         modifier = Modifier
                             .fillMaxWidth(0.5F)
@@ -110,7 +110,7 @@ fun TimingContent(
                 }
             }
             StandingLazyList(
-                standing = standing.sortedBy { it.position },
+                standing = standing,
                 fastestLap = fastestLap,
                 modifier = Modifier
                     .fillMaxWidth(0.95F)
