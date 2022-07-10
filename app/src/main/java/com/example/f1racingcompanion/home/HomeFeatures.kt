@@ -42,6 +42,7 @@ import com.example.f1racingcompanion.model.RaceScheduleItem
 import com.example.f1racingcompanion.timing.CircuitInfo
 import com.example.f1racingcompanion.utils.Constants
 import java.time.ZonedDateTime
+import kotlin.math.absoluteValue
 
 @Composable
 fun DateTextInsideTire(value: Long, label: String, imageID: Int, modifier: Modifier = Modifier) {
@@ -217,9 +218,9 @@ fun ActiveSessionInfo(
                         color = Color.White
                     )
                     Text(
-                        text = "${sessionInfo.schedule.firstOrNull()?.description ?: ""} T+" + "%02d:%02d".format(
-                            timeElapsed.hours,
-                            timeElapsed.minutes
+                        text = "${sessionInfo.schedule.firstOrNull()?.description ?: ""} T${if (timeElapsed.minutes > 0) "+" else "-"}" + "%02d:%02d".format(
+                            timeElapsed.hours.absoluteValue,
+                            timeElapsed.minutes.absoluteValue
                         ),
                         modifier = Modifier
                             .wrapContentSize(Alignment.Center)
