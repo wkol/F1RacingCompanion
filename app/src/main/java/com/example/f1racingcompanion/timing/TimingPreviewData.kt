@@ -8,5 +8,7 @@ data class TimingPreviewData(
     val driversPositions: List<Position>,
     val circuitInfo: CircuitInfo,
     val sessionType: String,
-    val isLoading: Boolean
+    val isLoading: Boolean,
+    val telemetry: Telemetry,
+    val isTelemetryOpen: Boolean = false
 )

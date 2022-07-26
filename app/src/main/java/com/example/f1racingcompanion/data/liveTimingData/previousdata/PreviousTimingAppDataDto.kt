@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.data.previousdata
+package com.example.f1racingcompanion.data.liveTimingData.previousdata
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

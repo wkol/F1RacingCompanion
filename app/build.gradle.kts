@@ -1,18 +1,18 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    kotlin("android")
+    kotlin("kapt")
     id("dagger.hilt.android.plugin")
-    id("kotlin-kapt")
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
 }
 
 android {
-    compileSdk = 31
 
     defaultConfig {
         applicationId = "com.example.f1racingcompanion"
         minSdk = 24
-        targetSdk = 31
+        targetSdk = 33
+        compileSdk = 32
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
@@ -23,7 +23,12 @@ android {
         kapt.includeCompileClasspath = false
     }
 
-    packagingOptions.resources.excludes += setOf("META-INF/*", "META-INF/gradle/*")
+    packagingOptions {
+        resources {
+            pickFirsts += setOf("META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties")
+            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+        }
+    }
 
     buildTypes {
         release {
@@ -34,13 +39,15 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
         @Suppress("SuspiciousCollectionReassignment")
-        freeCompilerArgs += listOf("-opt-in=kotlin.RequiresOptIn")
+        freeCompilerArgs += listOf(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi"
+        )
     }
 
     buildFeatures {
@@ -58,23 +65,27 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
     implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.immutable.collections)
+
+    // Compose
     implementation(libs.compose.ui)
     implementation(libs.compose.material.material)
     implementation(libs.compose.ui.tooling)
-
+    implementation(libs.compose.animation)
     implementation(libs.compose.navigation)
+
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlin.coroutines.android)
-    debugImplementation(libs.compose.ui.tooling)
-    implementation(libs.compose.ui.tooling.preview)
     coreLibraryDesugaring(libs.android.desugar)
+
     // Dagger(Hilt) packages
     kapt(libs.google.hilt.compiler)
     testImplementation(libs.google.hilt.testing)
     testAnnotationProcessor(libs.google.hilt.compiler)
+
     // Retrofit packages
     implementation(libs.retrofit)
     implementation(libs.moshi)
@@ -92,6 +103,7 @@ dependencies {
     // Moshi wrapped annotation
     implementation(libs.moshi.lazy)
     implementation(libs.compose.material.iconsext)
+
     // Test packages
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.kotlin.coroutines.test)
