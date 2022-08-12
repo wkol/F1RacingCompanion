@@ -1,6 +1,7 @@
 package com.example.f1racingcompanion.timing
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
@@ -35,20 +37,20 @@ import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
 
 @Composable
 fun CircuitDriverPlot(
-    circuitInfo: CircuitInfo,
-    driversPostitions: List<Position>,
+    circuitInfo: () -> CircuitInfo,
+    driversPositions: () -> List<Position>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
         CircuitPlot(
-            circuitMapId = circuitInfo.circuitMap,
+            circuitMapId = circuitInfo().circuitMap,
             modifier = Modifier
                 .fillMaxSize(0.9F)
                 .align(Alignment.Center)
         )
         DriverPlot(
-            driversPosition = driversPostitions,
-            offset = circuitInfo.circuitOffset,
+            driversPosition = driversPositions,
+            offset = circuitInfo().circuitOffset,
             modifier = Modifier
                 .fillMaxSize(0.9F)
                 .align(Alignment.Center)
@@ -58,17 +60,18 @@ fun CircuitDriverPlot(
 
 @Composable
 fun TimingContent(
-    circuitInfo: CircuitInfo,
-    standing: List<F1DriverListElement>,
-    fastestLap: FastestRaceLap,
-    positions: List<Position>,
-    sessionType: String,
-    isLoading: Boolean
+    circuitInfo: () -> CircuitInfo,
+    standing: () -> List<F1DriverListElement>,
+    fastestLap: () -> FastestRaceLap,
+    positions: () -> List<Position>,
+    sessionType: () -> String,
+    isLoading: Boolean,
+    modifier: Modifier
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color.Black),
+        modifier = modifier
+            .background(color = Color.Black)
+            .animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -83,50 +86,49 @@ fun TimingContent(
             )
         } else {
             RaceNameText(
-                raceName = circuitInfo.grandPrixName,
+                raceName = { circuitInfo().grandPrixName },
                 modifier = Modifier.align(Alignment.Start),
                 sessionType = sessionType
             )
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Row(modifier = Modifier.fillMaxSize()) {
                     StandingLazyList(
-                        standing = standing.sortedBy { it.position },
+                        standing = standing,
                         fastestLap = fastestLap,
                         modifier = Modifier
                             .fillMaxWidth(0.5F)
                             .fillMaxHeight()
                     )
-                    Spacer(Modifier.height(10.dp))
                     CircuitDriverPlot(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+                            .fillMaxSize()
                             .clip(RoundedCornerShape(80F))
                             .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
                             .background(Color(0x57141330)),
                         circuitInfo = circuitInfo,
-                        driversPostitions = positions
+                        driversPositions = positions
                     )
                 }
+            } else {
+                StandingLazyList(
+                    standing = standing,
+                    fastestLap = fastestLap,
+                    modifier = Modifier
+                        .fillMaxHeight(0.6F)
+                        .fillMaxWidth()
+                )
+                Spacer(Modifier.height(1.dp))
+                CircuitDriverPlot(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(80F))
+                        .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
+                        .background(Color(0x57141330)),
+                    circuitInfo = circuitInfo,
+                    driversPositions = positions
+                )
             }
-            StandingLazyList(
-                standing = standing.sortedBy { it.position },
-                fastestLap = fastestLap,
-                modifier = Modifier
-                    .fillMaxWidth(0.95F)
-                    .fillMaxHeight(0.65F)
-            )
-            Spacer(Modifier.height(10.dp))
-            CircuitDriverPlot(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(80F))
-                    .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
-                    .background(Color(0x57141330)),
-                circuitInfo = circuitInfo,
-                driversPostitions = positions
-            )
         }
     }
 }
@@ -144,28 +146,34 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     }
     Scaffold(modifier = Modifier.fillMaxSize()) {
         TimingContent(
-            circuitInfo = timingViewModel.circuitInfo,
-            standing = standing,
-            fastestLap = fastestLap,
-            positions = positions,
+            circuitInfo = { timingViewModel.circuitInfo },
+            standing = { standing },
+            fastestLap = { fastestLap },
+            positions = { positions },
             isLoading = isLoading,
-            sessionType = sessionType
+            sessionType = { sessionType },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
         )
     }
 }
 
-@Preview("TimingScreenPreview")
+@Preview(showBackground = true, name = "Timing Screen")
 @Composable
-fun TimingScreenPreview(@PreviewParameter(SampleTimingDataProvider::class) data: TimingPreviewData) {
+fun TimingScreenPreviews(@PreviewParameter(SampleTimingDataProvider::class) data: TimingPreviewData) {
     F1RacingCompanionTheme(darkTheme = true) {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             TimingContent(
-                circuitInfo = data.circuitInfo,
-                standing = data.standing,
-                fastestLap = data.fastestLap,
-                positions = data.driversPositions,
+                circuitInfo = { data.circuitInfo },
+                standing = { data.standing },
+                fastestLap = { data.fastestLap },
+                positions = { data.driversPositions },
                 isLoading = data.isLoading,
-                sessionType = data.sessionType
+                sessionType = { data.sessionType },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
             )
         }
     }
