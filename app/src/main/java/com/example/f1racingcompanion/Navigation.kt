@@ -12,9 +12,7 @@ import com.example.f1racingcompanion.home.HomeViewModel
 import com.example.f1racingcompanion.timing.TimingScreen
 import com.example.f1racingcompanion.timing.TimingViewModel
 import com.example.f1racingcompanion.ui.Screen
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun Navigation() {
     val navController = rememberNavController()

@@ -3,16 +3,16 @@ package com.example.f1racingcompanion.utils
 import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.model.CircuitOffset
 import com.example.f1racingcompanion.timing.CircuitInfo
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 
 object Constants {
-    val CHANNELS_MAP = hashMapOf(
-        "0" to "RPM",
-        "2" to "Speed",
-        "3" to "nGear",
-        "4" to "Throttle",
-        "5" to "Brake",
-        "45" to "DRS"
-    )
+    val DEFAULT_DATETIME_FORMATTER: DateTimeFormatter =
+        DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+            .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 7, true)
+            .appendLiteral('Z')
+            .toFormatter()
 
     const val ERGAST_API_URL = "https://ergast.com/api/f1/"
 
@@ -29,6 +29,10 @@ object Constants {
     const val WEBSCOKET_TRANSPORT = "webSockets"
 
     const val WEBSCOKET_PROTOCOL = "1.5"
+
+    const val MAXIMUM_THROTTLE_VALUE: Int = 104
+
+    const val MAXIMUM_BRAKE_VALUE: Int = 104
 
     val SUBSRIBED_STREAMS = listOf(
         "Position.z", "DriverList",
