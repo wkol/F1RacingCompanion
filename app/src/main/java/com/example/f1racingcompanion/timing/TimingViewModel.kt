@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -85,23 +86,23 @@ class TimingViewModel @Inject constructor(
             liveTimingRepository.startWebSocket().launchIn(viewModelScope)
             syncData()
             startUpdatingData()
-            _isLoading.value = false
+            _isLoading.update { false }
         }
     }
 
     fun refreshWebSocket() {
         if (isLoading.value || liveTimingRepository.isOpen) return
         viewModelScope.launch {
-            _isLoading.value = true
+            _isLoading.update { true }
             syncData()
             startUpdatingData()
-            _isLoading.value = false
+            _isLoading.update { false }
         }
     }
 
     private suspend fun syncData() {
         val previousData = liveTimingRepository.getPreviousData().take(1).first()
-        previousData.timingDataDto?.sessionPart?.let { _sessionType.value = "Q$it" }
+        previousData.timingDataDto?.sessionPart?.let { _sessionType.update { "Q$it" } }
         _standing =
             previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
@@ -158,7 +159,7 @@ class TimingViewModel @Inject constructor(
         for (element in parsedData) {
             _standing[element.driverNum]?.let {
                 if (element.overallFastest == true && element.fastestLap?.time != null) {
-                    _fastestLap.value = FastestRaceLap(element.driverNum, element.fastestLap.time)
+                    _fastestLap.update { FastestRaceLap(element.driverNum, element.fastestLap.time) }
                 }
                 _standing[element.driverNum] = it.copy(
                     interval = element.gapToNext ?: it.interval,
@@ -177,6 +178,6 @@ class TimingViewModel @Inject constructor(
             }
         }
         if (data.sessionPart != null)
-            _sessionType.value = "Q${data.sessionPart}"
+            _sessionType.update { "Q${data.sessionPart}" }
     }
 }
