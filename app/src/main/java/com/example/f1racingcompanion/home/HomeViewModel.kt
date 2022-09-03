@@ -27,11 +27,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<RaceStatusState>
         get() = _uiState
 
-    init {
-        checkRacingStatus()
-    }
-
-    private fun checkRacingStatus() {
+    fun checkRacingStatus() {
         repositoryLiveTiming.checkForActiveSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(isActive = null, isLoading = true)

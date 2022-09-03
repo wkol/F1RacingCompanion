@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -70,7 +71,9 @@ fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiv
                         circuitInfo = Constants.CIRCUITS[uiState.nextSession.circuitId] ?: Constants.CIRCUITS["unknown"]!!,
                         timeElapsed = uiState.countdown!!,
                         onLiveButtonClicked = onActiveSession,
-                        modifier = Modifier.fillMaxWidth().height(250.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
                     )
                 }
                 null -> {
@@ -92,6 +95,9 @@ fun HomeContent(uiState: RaceStatusState, modifier: Modifier = Modifier, onActiv
 fun HomeScreen(homeViewModel: HomeViewModel = viewModel(), navController: NavController) {
     val uiState by homeViewModel.uiState.collectAsState()
     val scaffoldState = rememberScaffoldState()
+    LaunchedEffect(key1 = Unit) {
+        homeViewModel.checkRacingStatus()
+    }
     F1RacingCompanionTheme(darkTheme = true) {
         Scaffold(
             scaffoldState = scaffoldState,
