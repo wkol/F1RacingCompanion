@@ -1,9 +1,9 @@
 package com.example.f1racingcompanion.utils
 
-import com.example.f1racingcompanion.data.previousdata.DriverInfoDto
-import com.example.f1racingcompanion.data.previousdata.PreviousData
-import com.example.f1racingcompanion.data.previousdata.PreviousTimingAppDataDto
-import com.example.f1racingcompanion.data.previousdata.PreviousTimingDataDto
+import com.example.f1racingcompanion.data.liveTimingData.PreviousData
+import com.example.f1racingcompanion.data.liveTimingData.previousdata.DriverInfoDto
+import com.example.f1racingcompanion.data.liveTimingData.previousdata.PreviousTimingAppDataDto
+import com.example.f1racingcompanion.data.liveTimingData.previousdata.PreviousTimingDataDto
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
@@ -15,10 +15,9 @@ import java.lang.reflect.Type
 class PreviousDataParser(
     private val timingAppDataAdapter: JsonAdapter<PreviousTimingAppDataDto>,
     private val timingDataAdapter: JsonAdapter<PreviousTimingDataDto>
-) :
-    JsonAdapter<PreviousData>() {
+) : JsonAdapter<PreviousData>() {
     @FromJson
-    override fun fromJson(reader: JsonReader): PreviousData {
+    override fun fromJson(reader: JsonReader): PreviousData = with(reader) {
         reader.beginObject()
         val driverInfoMap = mutableMapOf<Int, DriverInfoDto>()
         var timinAppData: PreviousTimingAppDataDto? = null
@@ -29,13 +28,12 @@ class PreviousDataParser(
                 if (el == "DriverList") {
                     reader.beginObject()
                     while (reader.hasNext()) {
-
                         el = reader.nextName()
                         if (el == "_kf") {
                             reader.skipValue()
                         } else {
-                            @Suppress("UNCHECKED_CAST")
-                            val json = reader.readJsonValue() as Map<String, String>
+                            @Suppress("UNCHECKED_CAST") val json =
+                                reader.readJsonValue() as Map<String, String>
                             driverInfoMap[json["RacingNumber"]!!.toInt()] = DriverInfoDto(
                                 json["BroadcastName"].toString(),
                                 json["CountryCode"]!!,
@@ -49,10 +47,9 @@ class PreviousDataParser(
                                 json["Tla"]!!
                             )
                         }
-                        if (reader.peek() == JsonReader.Token.END_OBJECT) {
-                            reader.endObject()
-                            break
-                        }
+                    }
+                    if (reader.peek() == JsonReader.Token.END_OBJECT) {
+                        reader.endObject()
                     }
                 } else if (el == "TimingAppData") {
                     timinAppData = timingAppDataAdapter.fromJson(reader)!!
@@ -84,8 +81,7 @@ class PreviousDataParser(
                 val dataAdapter = moshi.adapter(PreviousTimingDataDto::class.java)
                 val timingAppDataAdapter = moshi.adapter(PreviousTimingAppDataDto::class.java)
                 return PreviousDataParser(
-                    timingAppDataAdapter,
-                    dataAdapter
+                    timingAppDataAdapter, dataAdapter
                 )
             }
             return null

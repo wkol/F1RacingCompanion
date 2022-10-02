@@ -3,14 +3,16 @@ package com.example.f1racingcompanion.data
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.utils.DateParser
-import com.example.f1racingcompanion.utils.LiveTimingDataParser
 import com.example.f1racingcompanion.utils.PreviousDataParser
 import com.example.f1racingcompanion.utils.coroutineadapter.CoroutinesStreamAdapterFactory
+import com.example.f1racingcompanion.utils.parsers.LiveTimingDataParser
+import com.example.f1racingcompanion.utils.parsers.LiveTimingListParser
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.tinder.scarlet.Scarlet
+import com.tinder.scarlet.messageadapter.moshi.MoshiMessageAdapter
 import com.tinder.scarlet.websocket.ShutdownReason
 import com.tinder.scarlet.websocket.WebSocketEvent
 import com.tinder.scarlet.websocket.okhttp.OkHttpWebSocket
@@ -46,6 +48,7 @@ class LiveTimingRepositoryTest {
     fun setUpMockWebSocket() {
         server = DefaultMockServer()
         moshi = Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
+            .add(LiveTimingListParser.Factory)
             .add(PreviousDataParser.Factory)
             .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory())
             .build()
@@ -59,7 +62,7 @@ class LiveTimingRepositoryTest {
             )
         )
         val config = Scarlet.Configuration(
-            messageAdapterFactories = listOf(com.example.f1racingcompanion.utils.moshiadapter.CustomMoshiMessageAdapter.Factory(moshi)),
+            messageAdapterFactories = listOf(MoshiMessageAdapter.Factory(moshi)),
             streamAdapterFactories = listOf(CoroutinesStreamAdapterFactory())
         )
         val scarletInstance = Scarlet(protocol, config)
@@ -139,10 +142,10 @@ class LiveTimingRepositoryTest {
             .done()
             .once()
 
-        val element = repository.getDriverTelemetry(33).first()
+        val element = repository.getDriverTelemetry().first()
 
-        assertEquals(219, element!!.telemetry.speed)
-        assertEquals(0, element.telemetry.DRSValue)
+        assertEquals(219, element.data!!.entries[0].cars[33]!!.telemetry.speed)
+        assertEquals(0, element.data!!.entries[0].cars[33]!!.telemetry.DRSValue)
     }
 
     @Test

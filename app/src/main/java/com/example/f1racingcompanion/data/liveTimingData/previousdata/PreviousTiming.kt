@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.data.previousdata
+package com.example.f1racingcompanion.data.liveTimingData.previousdata
 
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.Interval
@@ -38,7 +38,7 @@ data class PreviousTiming(
     @Json(name = "TimeDiffToFastest")
     val timeDiffToFastest: String?,
     @Json(name = "Stats")
-    val qualyfingStats: List<QualifyingStats>? = emptyList<QualifyingStats>(),
+    val qualyfingStats: List<QualifyingStats>?,
     @Json(name = "KnockedOut")
     val knockedOut: Boolean?
 )
