@@ -11,22 +11,28 @@ import androidx.lifecycle.viewModelScope
 import com.example.f1racingcompanion.api.LiveTimingService
 import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.data.LiveTimingRepository
+import com.example.f1racingcompanion.data.cardatadto.CarDataDto
 import com.example.f1racingcompanion.data.liveTimingData.LiveTimingData
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.TimingDataDto
 import com.example.f1racingcompanion.model.F1DriverListElement
+import com.example.f1racingcompanion.model.TelemetryInfo
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.NegotiateCookieJar
 import com.example.f1racingcompanion.utils.toF1DriverListElementList
 import com.example.f1racingcompanion.utils.toListTimingAppData
 import com.example.f1racingcompanion.utils.toListTimingData
 import com.example.f1racingcompanion.utils.toPositionDataList
+import com.example.f1racingcompanion.utils.toTelemtryInfoList
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
@@ -35,6 +41,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -59,9 +66,9 @@ class TimingViewModel @Inject constructor(
     val fastestLap: StateFlow<FastestRaceLap>
         get() = _fastestLap
 
-    private val _driversPositions: SnapshotStateMap<Int, Position> = mutableStateMapOf()
+    private val _driversPositions: MutableStateFlow<List<Position>> = MutableStateFlow(emptyList())
     val driversPosition: StateFlow<List<Position>>
-        get() = MutableStateFlow(_driversPositions.values.toList()).asStateFlow()
+        get() = _driversPositions
 
     val circuitInfo = Constants.CIRCUITS[savedStateHandle.get<String>("circuit_id")]
         ?: CircuitInfo.getUnknownCircuitInfo()
@@ -72,6 +79,27 @@ class TimingViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean>
         get() = _isLoading
+
+    private var driverTelemetryNum: Int? = null
+
+    private val _driverTelemetry =
+        MutableStateFlow(
+            TelemetryInfo(
+                delayInMilis = 0,
+                currentSpeed = 0,
+                currentRPMValue = 0,
+                isDRSEnabled = false,
+                currentThrottleValue = 0,
+                currentBrakeValue = 0,
+                currentGear = 0,
+                driverStr = null,
+                sectors = emptyMap()
+            )
+        )
+    val driverTelemetry: StateFlow<TelemetryInfo>
+        get() = _driverTelemetry
+
+    private var telemetryJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -101,9 +129,9 @@ class TimingViewModel @Inject constructor(
     }
 
     private suspend fun syncData() {
-        val previousData = liveTimingRepository.getPreviousData().take(1).first()
-        previousData.timingDataDto?.sessionPart?.let { _sessionType.update { "Q$it" } }
-        _standing =
+        val previousData = liveTimingRepository.getPreviousData().first()
+        previousData.timingDataDto?.sessionPart?.let { _sessionType.value = "Q$it" }
+        _standing +=
             previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()
     }
 
@@ -117,12 +145,26 @@ class TimingViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun updateStandings(newData: LiveTimingData<*>) {
+    private fun updateStandings(newData: LiveTimingData) {
         when (newData) {
             is LiveTimingData.LiveTimingAppDataDto -> updateTimingAppData(newData.data as TimingAppDataDto)
             is LiveTimingData.LiveTimingDataDto -> updateTimingData(newData.data as TimingDataDto)
             is LiveTimingData.LivePositionDataDto -> updatePositionData(newData.data as PositionDataDto)
             else -> {}
+        }
+    }
+
+    private fun updateCarData(carDataDto: CarDataDto) {
+        driverTelemetryNum?.let {
+            val sectors = _standing[it]?.lastSectors ?: emptyMap()
+            val name = _standing[it]?.shortcut ?: "-"
+            val parsedData = carDataDto.toTelemtryInfoList(it, name, sectors)
+            viewModelScope.launch {
+                for (timestamp in parsedData) {
+                    _driverTelemetry.value = timestamp
+                    delay(timestamp.delayInMilis)
+                }
+            }
         }
     }
 
@@ -132,7 +174,9 @@ class TimingViewModel @Inject constructor(
             _standing[element.driverNum]?.let {
                 _standing[element.driverNum] = it.copy(
                     lastLapTime = element.lapTime ?: it.lastLapTime,
-                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires.copy(tyreAge = element.currentTires?.tyreAge ?: it.tires.tyreAge),
+                    tires = if (element.currentTires?.isNew != null) element.currentTires else it.tires.copy(
+                        tyreAge = element.currentTires?.tyreAge ?: it.tires.tyreAge
+                    ),
                 )
             }
         }
@@ -140,16 +184,21 @@ class TimingViewModel @Inject constructor(
 
     private fun updatePositionData(data: PositionDataDto) {
         val parsedData = data.toPositionDataList()
-        for (timestamp in parsedData) {
-            for (driver in timestamp.position) {
-                _driversPositions[driver.driverNum] =
-                    Position(
-                        _standing[driver.driverNum]?.teamColor ?: 0,
-                        Offset(
-                            (circuitInfo.circuitOffset.xOffset - driver.xPos).absoluteValue,
-                            (circuitInfo.circuitOffset.yOffset - driver.yPos).absoluteValue
+        viewModelScope.launch {
+            for (timestamp in parsedData) {
+                delay(timestamp.delayInMilis)
+                _driversPositions.update {
+                    timestamp.position.map { driver ->
+                        Position(
+                            _standing[driver.driverNum]?.teamColor ?: 0,
+                            Offset(
+                                (circuitInfo.circuitOffset.xOffset - driver.xPos).absoluteValue,
+                                (circuitInfo.circuitOffset.yOffset - driver.yPos).absoluteValue
+                            ),
+                            driverTelemetryNum == driver.driverNum
                         )
-                    )
+                    }
+                }
             }
         }
     }
@@ -159,7 +208,12 @@ class TimingViewModel @Inject constructor(
         for (element in parsedData) {
             _standing[element.driverNum]?.let {
                 if (element.overallFastest == true && element.fastestLap?.time != null) {
-                    _fastestLap.update { FastestRaceLap(element.driverNum, element.fastestLap.time) }
+                    _fastestLap.update {
+                        FastestRaceLap(
+                            element.driverNum,
+                            element.fastestLap.time
+                        )
+                    }
                 }
                 _standing[element.driverNum] = it.copy(
                     interval = element.gapToNext ?: it.interval,
@@ -179,5 +233,31 @@ class TimingViewModel @Inject constructor(
         }
         if (data.sessionPart != null)
             _sessionType.update { "Q${data.sessionPart}" }
+    }
+
+    fun startDriverTelemetry(driverNum: Int) {
+        stopDriverTelemetry()
+        Timber.d("startDriverTelemetry $driverNum")
+        driverTelemetryNum = driverNum
+        _driverTelemetry.value = TelemetryInfo(
+            delayInMilis = 0,
+            currentSpeed = 0,
+            currentRPMValue = 0,
+            isDRSEnabled = false,
+            currentThrottleValue = 0,
+            currentBrakeValue = 0,
+            currentGear = 0,
+            sectors = _standing[driverNum]?.lastSectors ?: emptyMap(),
+            driverStr = _standing[driverNum]?.shortcut ?: "-"
+        )
+        telemetryJob = liveTimingRepository.getDriverTelemetry().cancellable()
+            .onEach { updateCarData(it.data as CarDataDto) }
+            .launchIn(viewModelScope)
+    }
+
+    fun stopDriverTelemetry() {
+        Timber.d("stopDriverTelemetry $driverTelemetryNum")
+        telemetryJob?.cancel()
+        driverTelemetryNum = null
     }
 }

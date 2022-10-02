@@ -4,7 +4,9 @@ import android.content.res.Configuration
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
@@ -30,11 +33,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.model.NextSession
-import com.example.f1racingcompanion.ui.theme.TitilliumWeb
+import com.example.f1racingcompanion.model.RaceScheduleItem
+import com.example.f1racingcompanion.timing.CircuitInfo
+import com.example.f1racingcompanion.utils.Constants
+import java.time.ZonedDateTime
+import kotlin.math.absoluteValue
 
 @Composable
 fun DateTextInsideTire(value: Long, label: String, imageID: Int, modifier: Modifier = Modifier) {
@@ -88,7 +96,6 @@ fun SessionDate(countdown: MeetingCountdown, sessionName: String, modifier: Modi
                     .padding(10.dp)
                     .wrapContentSize(Alignment.Center),
                 text = "$sessionName starts in: ",
-                fontFamily = TitilliumWeb,
                 fontStyle = FontStyle.Normal,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp
@@ -163,4 +170,129 @@ fun SessionInfo(nextSession: NextSession, modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+@Composable
+fun ActiveSessionInfo(
+    sessionInfo: NextSession,
+    circuitInfo: CircuitInfo,
+    timeElapsed: MeetingCountdown,
+    onLiveButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(0, 0, 10, 10))
+            .background(Color(0x57141330))
+    ) {
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.Start) {
+            Row(
+                modifier = Modifier.fillMaxHeight(0.86F),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = circuitInfo.circuitMap),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .padding(5.dp)
+                        .scale(0.8F)
+                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Live session:",
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .padding(10.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 15.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = sessionInfo.raceName,
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .padding(10.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 15.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "${sessionInfo.schedule.firstOrNull()?.description ?: ""} T${if (timeElapsed.minutes > 0) "+" else "-"}" + "%02d:%02d".format(
+                            timeElapsed.hours.absoluteValue,
+                            timeElapsed.minutes.absoluteValue
+                        ),
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.Center)
+                            .padding(10.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 15.sp,
+                        color = Color.White
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onLiveButtonClicked() }
+                    .background(Color(0xFFB71C1C))
+            ) {
+                Text(
+                    text = "Go Live",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    textAlign = TextAlign.Center,
+
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "Session Info")
+@Composable
+fun SessionInfoPreview() {
+    val nextSession = NextSession(
+        circuitName = "circuitName",
+        raceName = "Very very very long long long long long long circuit name",
+        schedule = listOf(
+            RaceScheduleItem(
+                isUpcoming = true,
+                description = "Qualifying",
+                zonedStartTime = ZonedDateTime.now()
+            )
+        ),
+        circuitId = "1"
+    )
+    SessionInfo(
+        nextSession = nextSession,
+        modifier = Modifier.size(width = 500.dp, height = 200.dp)
+    )
+}
+
+@Preview(name = "Active Session Info")
+@Composable
+fun ActiveSessionPreview() {
+    val activeSession = NextSession(
+        circuitName = "circuitName",
+        raceName = "Very very very long long long long long long circuit name",
+        schedule = listOf(
+            RaceScheduleItem(
+                isUpcoming = true,
+                description = "Qualifying",
+                zonedStartTime = ZonedDateTime.now()
+            )
+        ),
+        circuitId = "1"
+    )
+
+    ActiveSessionInfo(
+        sessionInfo = activeSession,
+        circuitInfo = Constants.CIRCUITS["imola"]!!,
+        timeElapsed = MeetingCountdown(days = 0, hours = 2, minutes = 59),
+        onLiveButtonClicked = {},
+        modifier = Modifier.size(width = 500.dp, height = 200.dp)
+    )
 }

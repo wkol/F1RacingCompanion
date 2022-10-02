@@ -1,4 +1,4 @@
-package com.example.f1racingcompanion.data.previousdata
+package com.example.f1racingcompanion.data.liveTimingData.previousdata
 
 data class DriverInfoDto(
     var broadcastName: String,

@@ -1,6 +1,18 @@
 package com.example.f1racingcompanion.timing
 
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,34 +38,47 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.f1racingcompanion.R
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
 import com.example.f1racingcompanion.model.CircuitOffset
 import com.example.f1racingcompanion.model.Compound
 import com.example.f1racingcompanion.model.F1DriverListElement
 import com.example.f1racingcompanion.model.Tires
 import com.example.f1racingcompanion.ui.theme.TitilliumWeb
+import com.example.f1racingcompanion.ui.theme.Typography
 import com.example.f1racingcompanion.utils.LiveTimingUtils
 
 @Composable
@@ -75,30 +101,16 @@ fun SectorIndicator(
         )
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-            Box(
-                Modifier
-                    .width(30.dp)
-                    .height(12.dp)
-                    .padding(1.dp)
-                    .clip(RoundedCornerShape(60))
-                    .background(LiveTimingUtils.getColorFromSector(sectors["0"]))
-            )
-            Box(
-                Modifier
-                    .width(30.dp)
-                    .height(12.dp)
-                    .padding(1.dp)
-                    .clip(RoundedCornerShape(60))
-                    .background(LiveTimingUtils.getColorFromSector(sectors["1"]))
-            )
-            Box(
-                Modifier
-                    .width(30.dp)
-                    .height(12.dp)
-                    .padding(1.dp)
-                    .clip(RoundedCornerShape(60))
-                    .background(LiveTimingUtils.getColorFromSector(sectors["2"]))
-            )
+            repeat(3) {
+                Box(
+                    Modifier
+                        .width(30.dp)
+                        .height(12.dp)
+                        .padding(1.dp)
+                        .clip(RoundedCornerShape(60))
+                        .background(LiveTimingUtils.getColorFromSector(sectors["$it"]))
+                )
+            }
         }
     }
 }
@@ -214,58 +226,47 @@ fun StandingHeader(
     isInterval: Boolean,
     onIntervalChanged: () -> Unit
 ) {
-    Box(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                text = "Pos",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(start = 10.dp, end = 5.dp),
-                color = Color.White, fontSize = 15.sp,
-                fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                text = "Driver",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 7.dp),
-                color = Color.White, fontSize = 15.sp,
-                fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start
-            )
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(
-                text = if (isInterval) "Interval" else "Gap To first",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
-                    .clickable { onIntervalChanged() },
-                color = Color.White,
-                fontSize = 15.sp,
-                fontFamily = TitilliumWeb,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End
-            )
-        }
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Text(
+            text = "Pos",
+            modifier = Modifier
+                .padding(start = 10.dp, end = 5.dp),
+            color = Color.White,
+            style = Typography.subtitle2,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = "Driver",
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 7.dp),
+            color = Color.White,
+            style = Typography.subtitle2,
+            textAlign = TextAlign.Start
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = if (isInterval) "Interval" else "Gap To first",
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .weight(1F)
+                .clickable { onIntervalChanged() },
+            color = Color.White,
+            style = Typography.subtitle2,
+            textAlign = TextAlign.End
+        )
     }
 }
 
 @Composable
-fun TeamColorBox(color: Long) {
+fun TeamColorBox(color: Long, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .wrapContentSize(Alignment.Center)
-            .fillMaxHeight(0.6f)
-            .width(8.dp)
+        modifier = modifier
             .background(
                 Color(color),
                 RoundedCornerShape(5)
@@ -286,7 +287,7 @@ fun PositionBox(position: Int, modifier: Modifier = Modifier) {
             text = position.toString(),
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = (-2).dp),
+                .offset(y = (-3).dp),
             fontFamily = TitilliumWeb,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
@@ -315,11 +316,19 @@ fun DriverPlot(
     Canvas(modifier) {
         val xScale: Float = size.width / offset.xAbs
         val yScale: Float = size.height / offset.yAbs
-        driversPosition().forEach { (color, position) ->
+        driversPosition().forEach { (color, position, isTelemetry) ->
+            if (isTelemetry) {
+                drawCircle(
+                    color = Color.White,
+                    radius = 23F,
+                    center = Offset(position.x * xScale, position.y * yScale),
+                    style = Stroke(width = 3F, cap = StrokeCap.Round)
+                )
+            }
             drawCircle(
                 color = Color(color),
                 radius = 20F,
-                center = Offset(position.x * xScale, position.y * yScale)
+                center = Offset(position.x * xScale, position.y * yScale),
             )
         }
     }
@@ -333,7 +342,9 @@ fun DriverElement(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier.clickable { onClick() }.alpha(if (driverListElement.retired) 0.5F else 1F),
+        modifier = modifier
+            .clickable { onClick() }
+            .alpha(if (driverListElement.retired) 0.5F else 1F),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -344,41 +355,72 @@ fun DriverElement(
                 .padding(start = 8.dp, top = 3.dp, end = 3.dp, bottom = 3.dp)
                 .size(25.dp)
         )
-        Spacer(Modifier.width(10.dp))
-        TeamColorBox(driverListElement.teamColor)
+        Spacer(Modifier.width(5.dp))
+        TeamColorBox(
+            color = driverListElement.teamColor,
+            modifier = Modifier
+                .width(7.dp)
+                .fillMaxHeight(0.6F)
+                .align(Alignment.CenterVertically)
+        )
         Text(
             text = "${driverListElement.firstName[0]}.${driverListElement.lastName}",
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 10.dp),
+                .padding(horizontal = 5.dp),
             color = Color.White,
-            fontSize = 25.sp,
-            fontFamily = TitilliumWeb,
-            fontWeight = FontWeight.Bold,
+            style = Typography.subtitle1,
             textAlign = TextAlign.Start
         )
         Text(
             text = if (isInterval) driverListElement.interval else driverListElement.toFirst,
             modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .wrapContentSize(Alignment.CenterEnd)
-                .padding(horizontal = 10.dp),
+                .weight(1F)
+                .padding(horizontal = 5.dp),
             color = Color.White,
-            fontSize = 25.sp,
-            fontFamily = TitilliumWeb,
-            fontWeight = FontWeight.Bold
+            textAlign = TextAlign.End,
+            style = Typography.subtitle1,
         )
     }
 }
 
 @Composable
-fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement) {
+fun TelemetryIconButton(modifier: Modifier = Modifier, onTelemetryStart: () -> Unit) {
+    Column(
+        modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Telemetry", style = Typography.subtitle2)
+        Spacer(Modifier.height(2.dp))
+        IconButton(onClick = onTelemetryStart) {
+            Icon(
+                painter = painterResource(id = R.drawable.telemetry_arrow),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(25.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun DriverDetails(
+    modifier: Modifier = Modifier,
+    driver: F1DriverListElement,
+    onTelemetryStart: (Int) -> Unit
+) {
     Box(modifier = modifier) {
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceAround) {
             TiresIndicator(modifier = Modifier.fillMaxHeight(), tires = driver.tires)
             LapTimeIndicator(modifier = Modifier.fillMaxHeight(), lapTime = driver.lastLapTime)
             SectorIndicator(modifier = Modifier.fillMaxHeight(), sectors = driver.lastSectors)
+            AnimatedVisibility(visible = LocalConfiguration.current.orientation == ORIENTATION_LANDSCAPE) {
+                TelemetryIconButton(
+                    onTelemetryStart = { onTelemetryStart(driver.carNumber) },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
         }
     }
 }
@@ -388,17 +430,19 @@ fun DriverDetails(modifier: Modifier = Modifier, driver: F1DriverListElement) {
 fun StandingLazyList(
     standing: () -> List<F1DriverListElement>,
     fastestLap: () -> FastestRaceLap,
+    onTelemetryStart: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isInterval by remember { mutableStateOf(false) }
-    val expandedStates = remember {
-        List(20) { false }.toMutableStateList()
+    val expandedStates = remember(standing().size) {
+        standing().map { it.carNumber to false }.toMutableStateMap()
     }
 
     Column(modifier = modifier) {
         StandingHeader(
             modifier = Modifier
                 .height(25.dp)
+                .fillMaxWidth()
                 .clip(
                     RoundedCornerShape(
                         topStartPercent = 50,
@@ -446,11 +490,12 @@ fun StandingLazyList(
                     driverListElement = element,
                     isInterval = isInterval
                 ) {
-                    expandedStates[idx] = !expandedStates[idx]
+                    expandedStates[element.carNumber] = (expandedStates[element.carNumber])?.not() ?: false
                 }
-                AnimatedVisibility(expandedStates[idx]) {
+                AnimatedVisibility(expandedStates[element.carNumber] == true) {
                     DriverDetails(
                         driver = element,
+                        onTelemetryStart = onTelemetryStart,
                         modifier = Modifier
                             .height(60.dp)
                             .fillMaxWidth()
@@ -469,4 +514,298 @@ fun StandingLazyList(
             }
         }
     }
+}
+
+@Composable
+fun TelemtrySection(
+    telemetry: () -> Telemetry,
+    onEndTelemetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Top
+        ) {
+            IconButton(
+                onClick = onEndTelemetry,
+                modifier = Modifier
+                    .size(15.dp)
+                    .padding(2.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = null,
+                    tint = Color.White,
+                )
+            }
+            Text(
+                text = "Telemetry",
+                style = Typography.body2,
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
+            )
+        }
+        TelemetryBoxInfo(
+            speed = { telemetry().speed },
+            rpm = { telemetry().rpm },
+            throttleValue = { telemetry().throttle.value },
+            brakeValue = { telemetry().brake.value },
+            gearValue = { telemetry().gear },
+            isDrsEnabled = { telemetry().isDrs },
+            driverStr = { telemetry().driverStr ?: "-" },
+            sectors = { telemetry().sectors }
+        )
+    }
+}
+
+@Composable
+fun TelemetryBoxInfo(
+    speed: () -> Int,
+    rpm: () -> Int,
+    throttleValue: () -> Float,
+    brakeValue: () -> Float,
+    gearValue: () -> Int,
+    isDrsEnabled: () -> Boolean,
+    driverStr: () -> String,
+    sectors: () -> Map<String, SectorValue>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = driverStr(),
+            style = Typography.subtitle2,
+            modifier = Modifier
+                .padding(1.dp)
+        )
+        SectorTimesRow(
+            sectorValue = sectors(),
+            modifier = Modifier
+                .padding(2.dp)
+                .height(IntrinsicSize.Min)
+        )
+        Row(
+            modifier = Modifier
+                .padding(bottom = 2.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LabeledText(
+                label = "Speed",
+                text = "${speed()}",
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+            )
+            LabeledText(
+                label = "RPM",
+                text = "${rpm()}",
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(bottom = 2.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TelemetryValueLine(
+                percentage = throttleValue(),
+                label = "Throttle",
+                color = Color(0xFF024981),
+                modifier = Modifier.padding(2.dp)
+            )
+            TelemetryValueLine(
+                percentage = brakeValue(),
+                label = "Brakes",
+                color = Color(0xFF801414),
+                modifier = Modifier.padding(2.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .padding(2.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Gear",
+                modifier = Modifier.padding(4.dp),
+                style = Typography.subtitle2,
+                color = Color.White
+            )
+            AnimatedIntValue(
+                value = gearValue(),
+                modifier = Modifier
+                    .padding(2.dp)
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+            DRSIndicator(
+                isDRSenabled = isDrsEnabled(),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(
+                        Color(
+                            0xFF5A5959
+                        )
+                    )
+                    .padding(2.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SectorTimesRow(sectorValue: Map<String, SectorValue>, modifier: Modifier) {
+    Row(
+        modifier,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Top
+    ) {
+        repeat(3) {
+            LabeledText(
+                label = "S${it + 1}",
+                text = sectorValue["$it"]?.value ?: "-",
+                textStyle = Typography.body2.copy(
+                    color = LiveTimingUtils.getColorFromSector(
+                        sectorValue[it.toString()]
+                    )
+                ),
+                labelStyle = Typography.body2,
+                modifier = Modifier
+                    .padding(2.dp)
+                    .weight(1F)
+            )
+        }
+    }
+}
+
+@Composable
+fun DRSIndicator(isDRSenabled: Boolean, modifier: Modifier = Modifier) {
+    Box(modifier = modifier) {
+        Text(
+            text = "DRS",
+            color = if (isDRSenabled) Color(0xFF26852D) else Color(0xFF919191),
+            style = Typography.body2
+        )
+    }
+}
+
+@Composable
+fun LabeledText(
+    label: String,
+    text: String,
+    labelStyle: TextStyle = Typography.subtitle2,
+    textStyle: TextStyle = Typography.body2,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(1.dp),
+            style = labelStyle,
+        )
+        Text(
+            text = text,
+            modifier = Modifier.padding(1.dp),
+            style = textStyle,
+        )
+    }
+}
+
+@Composable
+fun TelemetryValueLine(
+    percentage: Float,
+    label: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.width(35.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier
+                .padding(bottom = 2.dp),
+            color = Color.White,
+            style = Typography.body2,
+        )
+        Canvas(
+            modifier = Modifier
+                .height(100.dp)
+                .padding(horizontal = 5.dp, vertical = 1.dp)
+        ) {
+            repeat(10) {
+                drawRoundRect(
+                    color = if ((it + 1) / 10F < percentage) color else Color.Transparent,
+                    topLeft = Offset(size.width / 2F - 15, it.toFloat() * 20),
+                    size = Size(30F, 10F),
+                    cornerRadius = CornerRadius(5F, 3F),
+                )
+                drawRoundRect(
+                    color = Color(0xFF474747),
+                    topLeft = Offset(size.width / 2F - 15, it.toFloat() * 20),
+                    size = Size(30F, 10F),
+                    cornerRadius = CornerRadius(5F, 3F),
+                    style = Stroke(2F)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun AnimatedIntValue(value: Int, modifier: Modifier = Modifier) {
+    var lastValue by remember { mutableStateOf(value) }
+    val color =
+        remember(value) { Animatable(if (value < lastValue) Color(0xFFB71C1C) else Color(0xFF26852D)) }
+    LaunchedEffect(key1 = value) {
+        color.animateTo(Color.White, animationSpec = tween(durationMillis = 500))
+        lastValue = value
+    }
+    AnimatedContent(
+        targetState = value,
+        transitionSpec = {
+            intChangeAnimation().using(
+                SizeTransform(clip = false)
+            )
+        },
+        modifier = modifier
+    ) {
+        Text(
+            text = "$value",
+            modifier = Modifier
+                .padding(horizontal = 1.dp),
+            color = color.value,
+            style = Typography.subtitle2,
+            textAlign = TextAlign.Start
+        )
+    }
+}
+
+@ExperimentalAnimationApi
+private fun intChangeAnimation(duration: Int = 250): ContentTransform {
+    return slideInVertically(animationSpec = tween(durationMillis = duration)) { height -> 2 * height / 3 } +
+        fadeIn(
+            animationSpec = tween(durationMillis = duration)
+        ) with slideOutVertically(animationSpec = tween(durationMillis = duration)) { height -> -2 * height / 3 } +
+        fadeOut(
+            animationSpec = tween(durationMillis = duration)
+        )
 }

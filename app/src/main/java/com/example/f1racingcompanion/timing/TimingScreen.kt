@@ -1,6 +1,7 @@
 package com.example.f1racingcompanion.timing
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -66,6 +68,10 @@ fun TimingContent(
     positions: () -> List<Position>,
     sessionType: () -> String,
     isLoading: Boolean,
+    telemetryStateProvider: () -> Telemetry,
+    telemetryOnSelection: (Int) -> Unit,
+    telemetryOnEnd: () -> Unit,
+    isTelemetryOpen: () -> Boolean,
     modifier: Modifier
 ) {
     Column(
@@ -95,13 +101,22 @@ fun TimingContent(
                     StandingLazyList(
                         standing = standing,
                         fastestLap = fastestLap,
+                        onTelemetryStart = telemetryOnSelection,
                         modifier = Modifier
-                            .fillMaxWidth(0.5F)
+                            .weight(0.5F, false)
                             .fillMaxHeight()
                     )
+                    AnimatedVisibility(isTelemetryOpen()) {
+                        TelemtrySection(
+                            telemetry = telemetryStateProvider,
+                            onEndTelemetry = telemetryOnEnd,
+                            modifier = Modifier.width(120.dp)
+                        )
+                    }
                     CircuitDriverPlot(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxHeight()
+                            .weight(0.5F, false)
                             .clip(RoundedCornerShape(80F))
                             .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
                             .background(Color(0x57141330)),
@@ -110,9 +125,11 @@ fun TimingContent(
                     )
                 }
             } else {
+                telemetryOnEnd()
                 StandingLazyList(
                     standing = standing,
                     fastestLap = fastestLap,
+                    onTelemetryStart = telemetryOnSelection,
                     modifier = Modifier
                         .fillMaxHeight(0.6F)
                         .fillMaxWidth()
@@ -140,6 +157,7 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val fastestLap by timingViewModel.fastestLap.collectAsState()
     val isLoading by timingViewModel.isLoading.collectAsState()
     val sessionType by timingViewModel.sessionType.collectAsState()
+    val telemetryState = rememberTelemetryState(viewModel = timingViewModel)
 
     LaunchedEffect(key1 = Unit) {
         timingViewModel.refreshWebSocket()
@@ -152,6 +170,10 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
             positions = { positions },
             isLoading = isLoading,
             sessionType = { sessionType },
+            telemetryStateProvider = { telemetryState.telemetry },
+            telemetryOnSelection = telemetryState::openTelemetry,
+            telemetryOnEnd = telemetryState::closeTelemetry,
+            isTelemetryOpen = { telemetryState.isOpen },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
@@ -171,6 +193,10 @@ fun TimingScreenPreviews(@PreviewParameter(SampleTimingDataProvider::class) data
                 positions = { data.driversPositions },
                 isLoading = data.isLoading,
                 sessionType = { data.sessionType },
+                telemetryStateProvider = { data.telemetry },
+                telemetryOnSelection = {},
+                telemetryOnEnd = {},
+                isTelemetryOpen = { data.isTelemetryOpen },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)

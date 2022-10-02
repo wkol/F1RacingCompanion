@@ -4,10 +4,11 @@ import android.util.Base64
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.example.f1racingcompanion.R
+import com.example.f1racingcompanion.data.cardatadto.CarDataDto
+import com.example.f1racingcompanion.data.liveTimingData.PreviousData
 import com.example.f1racingcompanion.data.nextsessiondto.EventSessionDto
 import com.example.f1racingcompanion.data.nextsessiondto.F1EventDto
 import com.example.f1racingcompanion.data.positiondatadto.PositionDataDto
-import com.example.f1racingcompanion.data.previousdata.PreviousData
 import com.example.f1racingcompanion.data.timingappdatadto.TimingAppDataDto
 import com.example.f1racingcompanion.data.timingdatadto.BestLap
 import com.example.f1racingcompanion.data.timingdatadto.SectorValue
@@ -18,6 +19,7 @@ import com.example.f1racingcompanion.model.NextSession
 import com.example.f1racingcompanion.model.PositionData
 import com.example.f1racingcompanion.model.PositionOnTrack
 import com.example.f1racingcompanion.model.RaceScheduleItem
+import com.example.f1racingcompanion.model.TelemetryInfo
 import com.example.f1racingcompanion.model.TimingAppData
 import com.example.f1racingcompanion.model.TimingData
 import com.example.f1racingcompanion.model.Tires
@@ -28,10 +30,12 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 import java.util.zip.Inflater
 
 object LiveTimingUtils {
 
+    @Throws(IllegalArgumentException::class)
     fun decodeMessage(text: String): String {
         if (text.length % 4 != 0 || !text.matches(Regex("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?\$"))) {
             throw IllegalArgumentException("Invalid Base64 encoded string")
@@ -141,15 +145,20 @@ fun TimingAppDataDto.toListTimingAppData(): List<TimingAppData> = this.lapInfo.m
 
 fun Offset.times(operand: Offset): Offset = Offset(x * operand.x, y * operand.y)
 
-fun PositionDataDto.toPositionDataList(): List<PositionData> {
+fun PositionDataDto.toPositionDataList(lastTimestamp: Long = LocalTime.parse(entries.first().time, Constants.DEFAULT_DATETIME_FORMATTER).getLong(ChronoField.MILLI_OF_DAY)): List<PositionData> {
+    var firstTime = lastTimestamp
     return entries.map { entry ->
+        val time = LocalTime.parse(entry.time, Constants.DEFAULT_DATETIME_FORMATTER).getLong(ChronoField.MILLI_OF_DAY)
+        val timeDiff = time - firstTime
+        firstTime = time
         PositionData(
-            entry.time,
-            entry.cars.entries.map {
+            delayInMilis = timeDiff,
+            position = entry.cars.entries.map {
                 PositionOnTrack(
                     it.key, it.value.xPosition, it.value.yPosition
                 )
-            }
+            },
+            timestamp = time
         )
     }
 }
@@ -241,4 +250,25 @@ fun Map<String, SectorValue>.updateSectors(sectors: Map<String, SectorValue>?): 
     }
     val validSectors = sectors.filter { it.value.value?.isNotEmpty() == true }
     return (this + validSectors).toMutableMap()
+}
+
+fun CarDataDto.toTelemtryInfoList(driverNum: Int, driverShortcut: String, sectors: Map<String, SectorValue>): List<TelemetryInfo> {
+    var firstTime = LocalTime.parse(entries.first().time, Constants.DEFAULT_DATETIME_FORMATTER).getLong(ChronoField.MILLI_OF_DAY)
+    return entries.map { entry ->
+        val time = LocalTime.parse(entry.time, Constants.DEFAULT_DATETIME_FORMATTER)
+            .getLong(ChronoField.MILLI_OF_DAY)
+        val timeDiff = time - firstTime
+        firstTime = time
+        TelemetryInfo(
+            delayInMilis = timeDiff,
+            currentSpeed = entry.cars.getValue(driverNum).telemetry.speed,
+            currentRPMValue = entry.cars.getValue(driverNum).telemetry.rpmValue,
+            isDRSEnabled = entry.cars.getValue(driverNum).telemetry.DRSValue in 10..14,
+            currentThrottleValue = entry.cars.getValue(driverNum).telemetry.throttleValue,
+            currentBrakeValue = entry.cars.getValue(driverNum).telemetry.brakeValue,
+            currentGear = entry.cars.getValue(driverNum).telemetry.currentGear,
+            driverStr = driverShortcut,
+            sectors = sectors
+        )
+    }
 }

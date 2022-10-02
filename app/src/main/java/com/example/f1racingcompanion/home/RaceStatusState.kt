@@ -14,9 +14,12 @@ data class RaceStatusState(
         isActive = isActive,
         isLoading = isLoading,
         nextSession = nextSession,
-        countdown = MeetingCountdown(
+        countdown = if (!isActive) MeetingCountdown(
             ZonedDateTime.now(),
             nextSession.schedule.firstOrNull()?.zonedStartTime ?: ZonedDateTime.now()
+        ) else MeetingCountdown(
+            nextSession.schedule.firstOrNull()?.zonedStartTime ?: ZonedDateTime.now(),
+            ZonedDateTime.now()
         )
     )
 }

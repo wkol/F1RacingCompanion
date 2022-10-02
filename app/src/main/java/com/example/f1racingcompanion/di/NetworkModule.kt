@@ -7,9 +7,10 @@ import com.example.f1racingcompanion.data.ErgastRepository
 import com.example.f1racingcompanion.data.LiveTimingFormula1Repository
 import com.example.f1racingcompanion.utils.Constants
 import com.example.f1racingcompanion.utils.DateParser
-import com.example.f1racingcompanion.utils.LiveTimingDataParser
 import com.example.f1racingcompanion.utils.NegotiateCookieJar
 import com.example.f1racingcompanion.utils.PreviousDataParser
+import com.example.f1racingcompanion.utils.parsers.LiveTimingDataParser
+import com.example.f1racingcompanion.utils.parsers.LiveTimingListParser
 import com.serjltt.moshi.adapters.FirstElement
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
@@ -60,6 +61,7 @@ class NetworkModule {
     @Provides
     fun provideMoshi(): Moshi =
         Moshi.Builder().add(Wrapped.ADAPTER_FACTORY).add(FirstElement.ADAPTER_FACTORY)
+            .add(LiveTimingListParser.Factory)
             .add(PreviousDataParser.Factory)
             .add(LiveTimingDataParser.Factory).add(DateParser()).add(KotlinJsonAdapterFactory())
             .build()

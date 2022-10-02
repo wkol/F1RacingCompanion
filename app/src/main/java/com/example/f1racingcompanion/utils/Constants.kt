@@ -8,6 +8,16 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
 object Constants {
+
+    enum class LiveTimingDataType {
+        CAR_DATA,
+        POSITION_DATA,
+        TIMING_APP_DATA,
+        TIMING_STATS,
+        TIMING_DATA,
+        PREVIOUS_DATA,
+    }
+
     val DEFAULT_DATETIME_FORMATTER: DateTimeFormatter =
         DateTimeFormatterBuilder().appendPattern("yyyy-MM-dd'T'HH:mm:ss")
             .appendFraction(ChronoField.MILLI_OF_SECOND, 1, 7, true)
@@ -36,7 +46,7 @@ object Constants {
 
     val SUBSRIBED_STREAMS = listOf(
         "Position.z", "DriverList",
-        "TimingAppData", "TimingData"
+        "TimingAppData", "TimingData", "CarData.z"
     )
 
     val CIRCUITS = mapOf(
@@ -212,10 +222,10 @@ object Constants {
         ),
         "marina_bay" to CircuitInfo(
             circuitOffset = CircuitOffset(
-                xOffset = -13498F,
-                yOffset = 4154F,
-                xAbs = 14686F,
-                yAbs = 12487F
+                xOffset = -13201F,
+                yOffset = 4089F,
+                xAbs = 14397F,
+                yAbs = 8995F
             ),
             grandPrixName = "Singapore",
             circuitMap = R.drawable.marina_bay

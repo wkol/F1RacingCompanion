@@ -1,12 +1,12 @@
 [versions]
-agp = "7.1.2"
-kotlin = "1.6.10"
+agp = "7.2.2"
+kotlin = "1.7.0"
 coroutines = "1.6.0"
 androidxhilt = "1.0.0"
-dagger = "2.41"
-hilt = "2.41"
+dagger = "2.43.2"
+hilt = "2.43.2"
 androidxlifecycle = "2.4.1"
-compose = "1.1.1"
+compose = "1.2.0"
 junit = "5.7.0"
 retrofit = "2.9.0"
 moshi = "1.13.0"
@@ -15,12 +15,15 @@ scarlet = "0.2.4"
 okhttp_logger = "4.9.2"
 mockwebserver = "0.1.8"
 
-navigation = "2.4.2"
+navigation = "2.5.0"
 
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version = "1.7.0-1.0.6" }
 
 
 [libraries]
-android-gradlePluginClasspath = { module = "com.android.tools.build:gradle", version.ref = "agp"}
+android-gradlePluginClasspath = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+android-r8 = { module = "com.android.tools:r8", version = "3.3.28"}
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "1.1.5" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.4.0" }
@@ -40,8 +43,7 @@ compose-material-iconsext = { module = "androidx.compose.material:material-icons
 compose-material-material = { module = "androidx.compose.material:material", version.ref = "compose" } # Material Design
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" } # Tooling support (Previews, etc.)
-
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose"}
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 google-material = { module = "com.google.android.material:material", version = "1.5.0" } # https://github.com/material-components/material-components-android/releases
 
@@ -80,3 +82,4 @@ scarlet = { module = "com.github.tinder.scarlet:scarlet", version.ref = "scarlet
 scarlet-lifecycle-android = { module = "com.github.tinder.scarlet:scarlet-lifecycle-android", version.ref = "scarlet" }
 scarlet-protocol-websocket = { module = "com.github.tinder.scarlet:scarlet-protocol-websocket-okhttp", version.ref = "scarlet" }
 scarlet-message-adapter-moshi = { module = "com.github.tinder.scarlet:scarlet-message-adapter-moshi", version.ref = "scarlet" }
+kotlin-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.5" }
