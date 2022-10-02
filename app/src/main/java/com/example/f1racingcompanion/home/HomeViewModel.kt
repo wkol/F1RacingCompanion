@@ -27,11 +27,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<RaceStatusState>
         get() = _uiState
 
-    init {
-        checkRacingStatus()
-    }
-
-    private fun checkRacingStatus() {
+    fun checkRacingStatus() {
         repositoryLiveTiming.checkForActiveSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(isActive = null, isLoading = true)
@@ -49,7 +45,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun retrieveNextSession(isActive: Boolean) {
-
         ergastRepository.getNextSession().onEach {
             when (it) {
                 is Result.Loading -> _uiState.value = RaceStatusState(null, true)
@@ -69,7 +64,7 @@ class HomeViewModel @Inject constructor(
                                     item.zonedStartTime
                                 ).takeIf { diff -> diff > 0 } ?: Long.MAX_VALUE
                             }
-                        )
+                        ),
                     )
                 }
                 is Result.Error ->

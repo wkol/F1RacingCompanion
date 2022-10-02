@@ -45,4 +45,14 @@ val Typography = Typography(
         color = Color.White,
         fontSize = 10.sp
     ),
+    button = TextStyle(
+        fontFamily = TitilliumWeb,
+        fontWeight = FontWeight.W500,
+        fontSize = 14.sp
+    ),
+    caption = TextStyle(
+        fontFamily = TitilliumWeb,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    )
 )

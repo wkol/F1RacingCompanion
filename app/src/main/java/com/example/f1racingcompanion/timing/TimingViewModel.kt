@@ -129,7 +129,7 @@ class TimingViewModel @Inject constructor(
     }
 
     private suspend fun syncData() {
-        val previousData = liveTimingRepository.getPreviousData().take(1).first()
+        val previousData = liveTimingRepository.getPreviousData().first()
         previousData.timingDataDto?.sessionPart?.let { _sessionType.value = "Q$it" }
         _standing +=
             previousData.toF1DriverListElementList().map { it.carNumber to it }.toMutableStateMap()

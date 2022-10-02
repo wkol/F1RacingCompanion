@@ -458,7 +458,7 @@ fun StandingLazyList(
             modifier = Modifier
                 .padding(2.dp),
         ) {
-            itemsIndexed(standing, { _, it -> it.carNumber }) { idx, element ->
+            itemsIndexed(standing, { _, it -> it.carNumber }) { _, element ->
                 DriverElement(
                     modifier = Modifier
                         .fillMaxWidth()
