@@ -22,7 +22,7 @@ ksp = { id = "com.google.devtools.ksp", version = "1.7.0-1.0.6" }
 
 
 [libraries]
-android-gradlePluginClasspath = { module = "com.android.tools.build:gradle", version.ref = "agp"}
+android-gradlePluginClasspath = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 android-r8 = { module = "com.android.tools:r8", version = "3.3.28"}
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "1.1.5" }
 

@@ -116,7 +116,7 @@ fun SectorIndicator(
 }
 
 @Composable
-fun RaceNameText(modifier: Modifier = Modifier, raceName: String, sessionType: String) {
+fun RaceNameText(modifier: Modifier = Modifier, raceName: () -> String, sessionType: () -> String) {
     Row(modifier, horizontalArrangement = Arrangement.Start) {
         Box(
             modifier = Modifier
@@ -129,7 +129,7 @@ fun RaceNameText(modifier: Modifier = Modifier, raceName: String, sessionType: S
         )
         Spacer(Modifier.width(10.dp))
         Text(
-            text = raceName, color = Color.White, fontFamily = TitilliumWeb,
+            text = raceName(), color = Color.White, fontFamily = TitilliumWeb,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.Bold,
             fontSize = 30.sp
@@ -143,7 +143,7 @@ fun RaceNameText(modifier: Modifier = Modifier, raceName: String, sessionType: S
         )
         Text(
             modifier = Modifier.align(Alignment.Bottom),
-            text = sessionType, color = Color(0xBFFFFFFF), fontFamily = TitilliumWeb,
+            text = sessionType(), color = Color(0xBFFFFFFF), fontFamily = TitilliumWeb,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.Bold,
             fontSize = 25.sp
@@ -310,13 +310,13 @@ fun CircuitPlot(modifier: Modifier = Modifier, circuitMapId: Int) {
 @Composable
 fun DriverPlot(
     modifier: Modifier = Modifier,
-    driversPosition: List<Position>,
+    driversPosition: () -> List<Position>,
     offset: CircuitOffset
 ) {
     Canvas(modifier) {
         val xScale: Float = size.width / offset.xAbs
         val yScale: Float = size.height / offset.yAbs
-        driversPosition.forEach { (color, position, isTelemetry) ->
+        driversPosition().forEach { (color, position, isTelemetry) ->
             if (isTelemetry) {
                 drawCircle(
                     color = Color.White,
@@ -428,14 +428,14 @@ fun DriverDetails(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StandingLazyList(
-    standing: List<F1DriverListElement>,
-    fastestLap: FastestRaceLap,
+    standing: () -> List<F1DriverListElement>,
+    fastestLap: () -> FastestRaceLap,
     onTelemetryStart: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isInterval by remember { mutableStateOf(false) }
-    val expandedStates = remember(standing.size) {
-        standing.map { it.carNumber to false }.toMutableStateMap()
+    val expandedStates = remember(standing().size) {
+        standing().map { it.carNumber to false }.toMutableStateMap()
     }
 
     Column(modifier = modifier) {
@@ -458,7 +458,7 @@ fun StandingLazyList(
             modifier = Modifier
                 .padding(2.dp),
         ) {
-            itemsIndexed(standing, { _, it -> it.carNumber }) { _, element ->
+            itemsIndexed(standing(), { _, it -> it.carNumber }) { idx, element ->
                 DriverElement(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -474,7 +474,7 @@ fun StandingLazyList(
                         .border(
                             BorderStroke(
                                 2.dp,
-                                if (fastestLap.driverNum == element.carNumber) Color(0xFFB124D5) else Color(
+                                if (fastestLap().driverNum == element.carNumber) Color(0xFFB124D5) else Color(
                                     0xFF474747
                                 )
                             ),

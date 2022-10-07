@@ -39,20 +39,20 @@ import com.example.f1racingcompanion.ui.theme.F1RacingCompanionTheme
 
 @Composable
 fun CircuitDriverPlot(
-    circuitInfo: CircuitInfo,
-    driversPostitions: List<Position>,
+    circuitInfo: () -> CircuitInfo,
+    driversPositions: () -> List<Position>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
         CircuitPlot(
-            circuitMapId = circuitInfo.circuitMap,
+            circuitMapId = circuitInfo().circuitMap,
             modifier = Modifier
                 .fillMaxSize(0.9F)
                 .align(Alignment.Center)
         )
         DriverPlot(
-            driversPosition = driversPostitions,
-            offset = circuitInfo.circuitOffset,
+            driversPosition = driversPositions,
+            offset = circuitInfo().circuitOffset,
             modifier = Modifier
                 .fillMaxSize(0.9F)
                 .align(Alignment.Center)
@@ -62,16 +62,16 @@ fun CircuitDriverPlot(
 
 @Composable
 fun TimingContent(
-    circuitInfo: CircuitInfo,
-    standing: List<F1DriverListElement>,
-    fastestLap: FastestRaceLap,
-    positions: List<Position>,
-    sessionType: String,
+    circuitInfo: () -> CircuitInfo,
+    standing: () -> List<F1DriverListElement>,
+    fastestLap: () -> FastestRaceLap,
+    positions: () -> List<Position>,
+    sessionType: () -> String,
+    isLoading: Boolean,
     telemetryStateProvider: () -> Telemetry,
     telemetryOnSelection: (Int) -> Unit,
     telemetryOnEnd: () -> Unit,
     isTelemetryOpen: () -> Boolean,
-    isLoading: Boolean,
     modifier: Modifier
 ) {
     Column(
@@ -92,7 +92,7 @@ fun TimingContent(
             )
         } else {
             RaceNameText(
-                raceName = circuitInfo.grandPrixName,
+                raceName = { circuitInfo().grandPrixName },
                 modifier = Modifier.align(Alignment.Start),
                 sessionType = sessionType
             )
@@ -121,7 +121,7 @@ fun TimingContent(
                             .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
                             .background(Color(0x57141330)),
                         circuitInfo = circuitInfo,
-                        driversPostitions = positions
+                        driversPositions = positions
                     )
                 }
             } else {
@@ -143,7 +143,7 @@ fun TimingContent(
                         .border(BorderStroke(2.dp, Color(0xFF474747)), RoundedCornerShape(80F))
                         .background(Color(0x57141330)),
                     circuitInfo = circuitInfo,
-                    driversPostitions = positions
+                    driversPositions = positions
                 )
             }
         }
@@ -164,12 +164,12 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     }
     Scaffold(modifier = Modifier.fillMaxSize()) {
         TimingContent(
-            circuitInfo = timingViewModel.circuitInfo,
-            standing = standing,
-            fastestLap = fastestLap,
-            positions = positions,
+            circuitInfo = { timingViewModel.circuitInfo },
+            standing = { standing },
+            fastestLap = { fastestLap },
+            positions = { positions },
             isLoading = isLoading,
-            sessionType = sessionType,
+            sessionType = { sessionType },
             telemetryStateProvider = { telemetryState.telemetry },
             telemetryOnSelection = telemetryState::openTelemetry,
             telemetryOnEnd = telemetryState::closeTelemetry,
@@ -187,12 +187,12 @@ fun TimingScreenPreviews(@PreviewParameter(SampleTimingDataProvider::class) data
     F1RacingCompanionTheme(darkTheme = true) {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             TimingContent(
-                circuitInfo = data.circuitInfo,
-                standing = data.standing,
-                fastestLap = data.fastestLap,
-                positions = data.driversPositions,
+                circuitInfo = { data.circuitInfo },
+                standing = { data.standing },
+                fastestLap = { data.fastestLap },
+                positions = { data.driversPositions },
                 isLoading = data.isLoading,
-                sessionType = data.sessionType,
+                sessionType = { data.sessionType },
                 telemetryStateProvider = { data.telemetry },
                 telemetryOnSelection = {},
                 telemetryOnEnd = {},
