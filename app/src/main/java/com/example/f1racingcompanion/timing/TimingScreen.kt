@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,6 +73,7 @@ fun TimingContent(
     telemetryOnSelection: (Int) -> Unit,
     telemetryOnEnd: () -> Unit,
     isTelemetryOpen: () -> Boolean,
+    expandedState: () -> ExpandedState,
     modifier: Modifier
 ) {
     Column(
@@ -102,6 +104,7 @@ fun TimingContent(
                         standing = standing,
                         fastestLap = fastestLap,
                         onTelemetryStart = telemetryOnSelection,
+                        expandedState = expandedState,
                         modifier = Modifier
                             .weight(0.5F, false)
                             .fillMaxHeight()
@@ -130,6 +133,7 @@ fun TimingContent(
                     standing = standing,
                     fastestLap = fastestLap,
                     onTelemetryStart = telemetryOnSelection,
+                    expandedState = expandedState,
                     modifier = Modifier
                         .fillMaxHeight(0.6F)
                         .fillMaxWidth()
@@ -158,6 +162,9 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
     val isLoading by timingViewModel.isLoading.collectAsState()
     val sessionType by timingViewModel.sessionType.collectAsState()
     val telemetryState = rememberTelemetryState(viewModel = timingViewModel)
+    val expandedStates = rememberSaveable(standing.size) {
+        ExpandedState(standing.map { it.carNumber }.toList())
+    }
 
     LaunchedEffect(key1 = Unit) {
         timingViewModel.refreshWebSocket()
@@ -174,6 +181,7 @@ fun TimingScreen(timingViewModel: TimingViewModel = viewModel()) {
             telemetryOnSelection = telemetryState::openTelemetry,
             telemetryOnEnd = telemetryState::closeTelemetry,
             isTelemetryOpen = { telemetryState.isOpen },
+            expandedState = { expandedStates },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
@@ -197,6 +205,7 @@ fun TimingScreenPreviews(@PreviewParameter(SampleTimingDataProvider::class) data
                 telemetryOnSelection = {},
                 telemetryOnEnd = {},
                 isTelemetryOpen = { data.isTelemetryOpen },
+                expandedState = { data.expandedState },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)

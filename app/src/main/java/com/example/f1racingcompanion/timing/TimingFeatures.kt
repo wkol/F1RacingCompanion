@@ -49,7 +49,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -431,13 +430,10 @@ fun StandingLazyList(
     standing: () -> List<F1DriverListElement>,
     fastestLap: () -> FastestRaceLap,
     onTelemetryStart: (Int) -> Unit,
+    expandedState: () -> ExpandedState,
     modifier: Modifier = Modifier
 ) {
     var isInterval by remember { mutableStateOf(false) }
-    val expandedStates = remember(standing().size) {
-        standing().map { it.carNumber to false }.toMutableStateMap()
-    }
-
     Column(modifier = modifier) {
         StandingHeader(
             modifier = Modifier
@@ -490,9 +486,9 @@ fun StandingLazyList(
                     driverListElement = element,
                     isInterval = isInterval
                 ) {
-                    expandedStates[element.carNumber] = (expandedStates[element.carNumber])?.not() ?: false
+                    expandedState().onExpand(element.carNumber)
                 }
-                AnimatedVisibility(expandedStates[element.carNumber] == true) {
+                AnimatedVisibility(expandedState().expandedState.value[element.carNumber] == true) {
                     DriverDetails(
                         driver = element,
                         onTelemetryStart = onTelemetryStart,

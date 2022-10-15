@@ -10,5 +10,6 @@ data class TimingPreviewData(
     val sessionType: String,
     val isLoading: Boolean,
     val telemetry: Telemetry,
-    val isTelemetryOpen: Boolean = false
+    val isTelemetryOpen: Boolean = false,
+    val expandedState: ExpandedState = ExpandedState(standing.map { it.carNumber })
 )
