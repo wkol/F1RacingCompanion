@@ -11,11 +11,12 @@ The app uses livetiming signalr api to display data such as:
 * current tires and their age
 * indicators of every sector
 * current position of every driver on the track
+* telemetry stats (speed, RPM, current gear, throttle and brake pressed level)
 
 When no session is running, the app displays countdown to the next session.
 
 ### Screens
-<img src="screenshots/home_screen.png" width="300"> <img src="screenshots/timing_screen.png" width="300" > <img src="screenshots/timing_screen_2.png" width="300" >
+<img src="screenshots/home_screen.png" width="300"> <img src="screenshots/timing_screen.png" width="300" > <img src="screenshots/timing_screen_telemetry.png" width="600">
 
 ## Supported tracks for live position of the drivers
 
@@ -55,7 +56,7 @@ Also to provide countdown to next events [ErgastAPI](http://ergast.com/mrd/) is 
 
 ### TO DO:
 
-* implement car telemetry - data layer (dtos, repository) is done.
+* ~~implement car telemetry - data layer (dtos, repository) is done.~~
 * change protocol from websocket to SSE - need to find a way to test them.
 * add missing tracks and their information
 * improve UI design - currently it only supports dark mode and home
